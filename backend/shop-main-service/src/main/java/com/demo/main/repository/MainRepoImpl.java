@@ -79,12 +79,12 @@ public class MainRepoImpl implements MainRepo {
     }
 
     @Override
-    public List<OrderRecord> getOrderDetailsOfUser(String username, String status) {
+    public List<OrderRecord> getOrderDetailsByOrderID(Long orderID) {
         String rawQuery = "select od.id, order_id, order_name, product_id, product_name, selling_price, quantity from " + 
                           "(order_details od left join o on od.order_id = o.id) left join product p on od.product_id = p.id " +
-                          "where od.username = :username and o.status = :status";
+                          "where od.orderID = :orderID";
         TypedQuery<Object[]> query = entityManager.createQuery(rawQuery, Object[].class);
-        query.setParameter("username", username);
+        query.setParameter("orderID", orderID);
         return query.getResultList().stream().map(e -> new OrderRecord((Long) e[0], (Long) e[1], (String) e[2], (Long) e[3], (String) e[4], (BigDecimal) e[5], (Integer) e[6])).collect(Collectors.toList());
     }
 

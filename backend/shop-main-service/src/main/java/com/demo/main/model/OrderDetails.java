@@ -43,6 +43,9 @@ public class OrderDetails {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
 
@@ -60,9 +63,10 @@ public class OrderDetails {
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public OrderDetails(Long orderID, Long productID, Integer quantity) {
+    public OrderDetails(Long orderID, Long productID, Integer quantity, String status) {
         this.orderID = orderID;
         this.productID = productID;
         this.quantity = quantity;
+        this.status = status;
     }
 }

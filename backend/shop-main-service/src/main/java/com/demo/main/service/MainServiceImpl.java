@@ -46,23 +46,48 @@ public class MainServiceImpl implements MainService {
 
     @Override
     public String getAddProductToShoppingCartResult(Long productID, Integer quantity) {
-        // At first, check in orders table is there any active order or not?
-        String username = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
-        List<Order> activeOrders = orderRepository.findOrdersByUsernameAndStatus("active", username);
-        if (activeOrders.size() == 0) {
-            Order newOrder = orderRepository.save(new Order(UUID.randomUUID().toString().replace("-", "").substring(0, 20), username, "active"));
-            orderDetailsRepository.save(new OrderDetails(newOrder.getId(), productID, quantity));
-            return "SUCCESS";
+        try {
+            // At first, check in orders table is there any active order or not?
+            String username = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
+            List<Order> activeOrders = orderRepository.findOrdersByUsernameAndStatus("active", username);
+            if (activeOrders.size() == 0) {
+                Order newOrder = orderRepository.save(new Order(UUID.randomUUID().toString().replace("-", "").substring(0, 20), username, "active"));
+                orderDetailsRepository.save(new OrderDetails(newOrder.getId(), productID, quantity, "waiting for checkout"));
+                return "SUCCESS";
+            }
+
+            // Second, check in order details table
+            orderDetailsRepository.upsertOrderDetails(activeOrders.get(0).getId(), productID, quantity, "waiting for checkout", new Date(), username);
+        } catch (Exception e) {
+            return "FAIL";
         }
 
-        // Second, check in order details table
-        orderDetailsRepository.upsertOrderDetails(activeOrders.get(0).getId(), productID, quantity, new Date(), username);
         return "SUCCESS";
     }
 
     @Override
-    public List<OrderRecord> getOrderDetails(String status) {
-        return mainRepo.getOrderDetailsOfUser((String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST), status);
+    public List<OrderRecord> getOrderDetails(Long orderID) {
+        return mainRepo.getOrderDetailsByOrderID(orderID);
+    }
+
+    @Override
+    public String getRemoveProductFromShoppingCartResult(Long orderDetailsID) {
+        try {
+            orderDetailsRepository.removeOrderDetails(orderDetailsID, new Date(), (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST));
+        } catch (Exception e) {
+            return "FAIL";
+        }
+        return "SUCCESS";
+    }
+
+    @Override
+    public String updateProductQuantityInShoppingCart(OrderDetails orderDetails) {
+        try {
+            orderDetailsRepository.save(orderDetails);
+        } catch (Exception e) {
+            return "FAIL";
+        }
+        return "SUCCESS";
     }
 
 }

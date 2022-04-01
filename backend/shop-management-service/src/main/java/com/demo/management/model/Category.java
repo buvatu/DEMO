@@ -23,7 +23,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter
-@Table(name = "standards", uniqueConstraints = { @UniqueConstraint(columnNames = "standard_name") })
+@Table(name = "categories", uniqueConstraints = { @UniqueConstraint(columnNames = "category_name") })
 public class Category {
 
     @NonNull

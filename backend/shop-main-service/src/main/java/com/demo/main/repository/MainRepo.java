@@ -16,6 +16,6 @@ public interface MainRepo {
 
     ProductDetails getProductDetails(Long productID);
 
-    List<OrderRecord> getOrderDetailsOfUser(String username, String status);
+    List<OrderRecord> getOrderDetailsByOrderID(Long orderID);
 
 }
