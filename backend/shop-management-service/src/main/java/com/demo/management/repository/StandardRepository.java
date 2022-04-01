@@ -12,7 +12,7 @@ import com.demo.management.model.Standard;
 @Repository
 public interface StandardRepository extends JpaRepository<Standard, Long> {
 
-    @Query("select id, standard_name from standards WHERE standard_name like %:standardName%")
+    @Query(value = "select id, standard_name from standards where standard_name like %:standardName%", nativeQuery = true)
     List<Standard> findByStandardNameLike(@Param("standardName") String standardName);
 
 }

@@ -17,13 +17,14 @@ import javax.validation.constraints.Size;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Table(name = "specs", uniqueConstraints = { @UniqueConstraint(columnNames = "spec_name") })
 public class Spec {
 
@@ -55,12 +56,11 @@ public class Spec {
     }
 
     public Spec(String specName) {
-        super();
         this.specName = specName;
     }
 
     public Spec(Long id, String specName) {
-        super();
         this.id = id;
+        this.specName = specName;
     }
 }

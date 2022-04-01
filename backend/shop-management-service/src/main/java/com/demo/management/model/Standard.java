@@ -10,13 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -40,9 +37,7 @@ public class Standard {
     @Column(name = "standard_name")
     private String standardName;
 
-    @UpdateTimestamp
     @Column(name = "updated_timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
 
     @Column(name = "updated_user")

@@ -10,10 +10,10 @@ import com.demo.management.model.SpecStandard;
 
 public interface SpecStandardRepository extends JpaRepository<SpecStandard, Long> {
 
-    @Query("select id, spec_id, standard_id, standard_value from spec_standard WHERE spec_id = :specID")
+    @Query(value = "select id, spec_id, standard_id, standard_value from spec_standard where spec_id = :specID", nativeQuery = true)
     List<SpecStandard> findBySpecID(@Param("specID") Long specID);
 
-    @Query("delete from spec_standard WHERE spec_id = :specID")
+    @Query(value = "delete from spec_standard where spec_id = :specID", nativeQuery = true)
     void deleteBySpecID(@Param("specID") Long specID);
 
 }

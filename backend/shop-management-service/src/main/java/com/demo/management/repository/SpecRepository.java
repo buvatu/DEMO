@@ -10,7 +10,7 @@ import com.demo.management.model.Spec;
 
 public interface SpecRepository extends JpaRepository<Spec, Long> {
 
-    @Query("select id, spec_name from specs WHERE spec_name like %:specName%")
+    @Query(value = "select id, spec_name, updated_timestamp, updated_user from specs where spec_name like %:specName%", nativeQuery = true)
     List<Spec> findBySpecNameLike(@Param("specName") String specName);
 
 }

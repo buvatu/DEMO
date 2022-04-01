@@ -10,8 +10,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.stereotype.Repository;
+
 import com.demo.management.model.Product;
 
+@Repository
 public class CustomProductRepoImpl implements CustomProductRepo {
 
     @PersistenceContext
