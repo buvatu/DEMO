@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,7 +49,7 @@ public class AuthController {
     private static final long DEFAULT_EXPIRE_TIME = 60 * 60 * 1000; // Default JWT expire time is 60 minutes
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestParam @Valid @NotBlank String username, @RequestParam @Valid @NotBlank String password) {
+    public ResponseEntity<?> login(@RequestParam @Valid @NotBlank String username, @RequestParam @Valid @NotBlank String password) {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -81,7 +82,7 @@ public class AuthController {
         // Create new user's account
         userRepository.save(new User(username, fullname, email, encoder.encode(password), "USER"));
 
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
     }
 
     private Date getExpirationTime() {

@@ -5,6 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,7 +37,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<?> addCategory(@RequestParam @Valid @NotBlank String categoryName) {
         categoryRepository.save(new Category(categoryName));
-        return ResponseEntity.ok("Category " + categoryName + " has been added to DB successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Category " + categoryName + " has been added to DB successfully");
     }
 
     @PutMapping

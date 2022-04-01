@@ -1,4 +1,4 @@
-package com.demo.management.model;
+package com.demo.main.model;
 
 import java.util.Date;
 
@@ -12,7 +12,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,8 +23,8 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "specs", uniqueConstraints = { @UniqueConstraint(columnNames = "spec_name") })
-public class Spec {
+@Table(name = "order_details", uniqueConstraints = { @UniqueConstraint(columnNames = {"order_id", "product_id"} ) })
+public class OrderDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +32,16 @@ public class Spec {
 
     @NonNull
     @NotBlank
-    @Size(max = 200)
-    @Column(name = "spec_name")
-    private String specName;
+    @Column(name = "order_id")
+    private Long orderID;
+
+    @NonNull
+    @NotBlank
+    @Column(name = "product_id")
+    private Long productID;
+
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
@@ -54,13 +60,9 @@ public class Spec {
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public Spec(String specName) {
-        super();
-        this.specName = specName;
-    }
-
-    public Spec(Long id, String specName) {
-        super();
-        this.id = id;
+    public OrderDetails(Long orderID, Long productID, Integer quantity) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.quantity = quantity;
     }
 }

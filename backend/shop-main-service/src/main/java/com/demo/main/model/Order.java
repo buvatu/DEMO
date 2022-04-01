@@ -1,4 +1,4 @@
-package com.demo.management.model;
+package com.demo.main.model;
 
 import java.util.Date;
 
@@ -24,8 +24,8 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "specs", uniqueConstraints = { @UniqueConstraint(columnNames = "spec_name") })
-public class Spec {
+@Table(name = "orders", uniqueConstraints = { @UniqueConstraint(columnNames = "order_name") })
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +34,20 @@ public class Spec {
     @NonNull
     @NotBlank
     @Size(max = 200)
-    @Column(name = "spec_name")
-    private String specName;
+    @Column(name = "order_name")
+    private String orderName;
+
+    @NonNull
+    @NotBlank
+    @Size(max = 200)
+    @Column(name = "username")
+    private String username;
+
+    @NonNull
+    @NotBlank
+    @Size(max = 200)
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
@@ -54,13 +66,10 @@ public class Spec {
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public Spec(String specName) {
-        super();
-        this.specName = specName;
+    public Order(String orderName, String username, String status) {
+        this.orderName = orderName;
+        this.username = username;
+        this.status = status;
     }
 
-    public Spec(Long id, String specName) {
-        super();
-        this.id = id;
-    }
 }

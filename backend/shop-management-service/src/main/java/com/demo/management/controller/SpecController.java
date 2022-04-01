@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -50,7 +51,7 @@ public class SpecController {
     @PostMapping
     public ResponseEntity<?> addSpec(@RequestParam @Valid @NotBlank String specName) {
         specRepository.save(new Spec(specName));
-        return ResponseEntity.ok("Spec " + specName + " has been added to DB successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Spec " + specName + " has been added to DB successfully");
     }
 
     @PutMapping
@@ -74,7 +75,7 @@ public class SpecController {
     public ResponseEntity<?> addSpecStandards(@PathVariable @Valid @NotBlank Long specID, @RequestBody List<SpecStandard> specStandards) {
         specStandardRepository.deleteBySpecID(specID);
         specStandardRepository.saveAll(specStandards);
-        return ResponseEntity.ok("New standards was added successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("New standards was added successfully");
     }
 
 }

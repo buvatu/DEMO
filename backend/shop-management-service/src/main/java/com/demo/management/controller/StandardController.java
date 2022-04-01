@@ -5,6 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,7 +36,7 @@ public class StandardController {
 
     @GetMapping("/items")
     public ResponseEntity<?> getStandards(@RequestParam @Valid @NotBlank String standardName) {
-        return ResponseEntity.ok(standardRepository.findByStandardNameLike(standardName));
+        return ResponseEntity.status(HttpStatus.CREATED).body(standardRepository.findByStandardNameLike(standardName));
     }
 
     @PostMapping

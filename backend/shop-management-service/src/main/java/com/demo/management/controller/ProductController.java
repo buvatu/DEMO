@@ -1,6 +1,7 @@
 package com.demo.management.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -41,7 +42,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> addProduct(@RequestBody Product product) {
         productRepository.save(product);
-        return ResponseEntity.ok("Product" + product.getProductName() + " has been added to DB successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product" + product.getProductName() + " has been added to DB successfully");
     }
 
     @PutMapping
