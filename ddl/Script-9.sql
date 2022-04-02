@@ -63,3 +63,40 @@ create table shop.products (
     foreign key (category_id) references shop.categories (id)
 );
 
+drop table if exists shop.stocks;
+create table shop.stocks (
+	id serial primary key,
+	product_id integer,
+	quantity integer,
+	unit varchar(20),
+	updated_timestamp timestamp,
+    updated_user varchar,
+    foreign key (product_id) references shop.products (id)
+);
+
+drop table if exists shop.orders;
+create table shop.orders (
+	id serial primary key,
+	order_name varchar(20),
+	owner varchar(200),
+	tester varchar(200),
+	approver varchar(200),
+	shipper varchar(200),
+	status varchar(200),
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists shop.order_details;
+create table shop.order_details (
+	id serial primary key,
+	order_id integer,
+	product_id integer,
+	quantity integer,
+	status varchar(200),
+	updated_timestamp timestamp,
+    updated_user varchar,
+    foreign key (order_id) references shop.orders (id),
+    foreign key (product_id) references shop.products (id)
+);
+alter table shop.order_details add constraint order_product_unique UNIQUE (order_id, product_id);

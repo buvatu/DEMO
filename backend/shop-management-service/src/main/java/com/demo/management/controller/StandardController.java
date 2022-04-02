@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.management.model.Standard;
+import com.demo.management.entity.Standard;
 import com.demo.management.repository.StandardRepository;
 
 @CrossOrigin(origins = "*", maxAge = 3600)

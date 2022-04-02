@@ -11,8 +11,6 @@ import lombok.Setter;
 public class OrderRecord {
 
     private Long id;
-    private Long orderID;
-    private String orderName;
     private Long productID;
     private String productName;
     private BigDecimal price;

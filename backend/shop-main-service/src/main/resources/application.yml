@@ -1,0 +1,18 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /api/main
+spring:
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        "[default_schema]": shop
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shop_db
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driverClassName: org.postgresql.Driver

@@ -11,8 +11,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import com.demo.management.model.Product;
+import com.demo.management.entity.Product;
 
 @Repository
 public class CustomProductRepoImpl implements CustomProductRepo {
@@ -26,13 +27,13 @@ public class CustomProductRepoImpl implements CustomProductRepo {
         CriteriaQuery<Product> query = cb.createQuery(Product.class);
         Root<Product> product = query.from(Product.class);
 
-        // Custom conditions
+        // Custom conditions without using raw query
         List<Predicate> predicates = new ArrayList<Predicate>();
-        if (!productName.isEmpty()) {
-            predicates.add(cb.like(product.get("product_name"), productName));
+        if (StringUtils.hasText(productName)) {
+            predicates.add(cb.like(product.get("productName"), "%".concat(productName).concat("%")));
         }
         if (categoryID != null) {
-            predicates.add(cb.equal(product.get("category_id"), categoryID));
+            predicates.add(cb.equal(product.get("categoryID"), categoryID));
         }
 
         query.select(product).where(cb.and(predicates.toArray(new Predicate[predicates.size()])));

@@ -1,5 +1,6 @@
-package com.demo.main.model;
+package com.demo.management.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,6 +13,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -23,8 +25,8 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "order_details", uniqueConstraints = { @UniqueConstraint(columnNames = {"order_id", "product_id"} ) })
-public class OrderDetails {
+@Table(name = "products", uniqueConstraints = { @UniqueConstraint(columnNames = "product_name") })
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,19 +34,25 @@ public class OrderDetails {
 
     @NonNull
     @NotBlank
-    @Column(name = "order_id")
-    private Long orderID;
+    @Size(max = 200)
+    @Column(name = "product_name")
+    private String productName;
+
+    @Column(name = "cost_price")
+    private BigDecimal costPrice;
+
+    @Column(name = "selling_price")
+    private BigDecimal sellingPrice;
+
+    @Column(name = "description")
+    private String description;
 
     @NonNull
-    @NotBlank
-    @Column(name = "product_id")
-    private Long productID;
+    @Column(name = "category_id")
+    private Long categoryID;
 
-    @Column(name = "quantity")
-    private Integer quantity;
-
-    @Column(name = "status")
-    private String status;
+    @Column(name = "spec_id")
+    private Long specID;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
@@ -60,13 +68,8 @@ public class OrderDetails {
 
     @PreUpdate
     protected void preUpdate() {
+        updatedTimestamp = new Date();
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public OrderDetails(Long orderID, Long productID, Integer quantity, String status) {
-        this.orderID = orderID;
-        this.productID = productID;
-        this.quantity = quantity;
-        this.status = status;
-    }
 }

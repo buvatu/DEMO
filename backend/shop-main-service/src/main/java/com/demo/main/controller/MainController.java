@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.demo.main.entity.OrderDetail;
 import com.demo.main.model.Condition;
-import com.demo.main.model.OrderDetails;
+import com.demo.main.model.OrderInfo;
 import com.demo.main.model.ProductDetails;
 import com.demo.main.repository.MainRepo;
 import com.demo.main.service.MainService;
@@ -36,10 +37,13 @@ public class MainController {
     @GetMapping("/product/items")
     public ResponseEntity<?> getProducts(@RequestParam(required = false) Long categoryID,
                                          @RequestBody(required = false) List<Condition> filterConditions,
+                                         @RequestParam(required = false, defaultValue = "0") Integer minPrice,
+                                         @RequestParam(required = false, defaultValue = "1000000000") Integer maxPrice,
                                          @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
                                          @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                         @RequestParam(required = false, defaultValue = "price") String sortColumn,
                                          @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
-        return ResponseEntity.ok(mainService.getProductInfoList(categoryID, filterConditions, pageNumber, pageSize, sortOrder));
+        return ResponseEntity.ok(mainService.getProductInfoList(categoryID, filterConditions, minPrice, maxPrice, pageNumber, pageSize, sortColumn, sortOrder));
     }
 
     @GetMapping("/product/{productID}")
@@ -52,39 +56,41 @@ public class MainController {
         }
     }
 
+    // This action occurs when user press button [Add To Card]
     @PostMapping("/order/detail")
     public ResponseEntity<?> addProductToShoppingCart(@RequestParam Long productID, @RequestParam Integer quantity) {
-        String result = mainService.getAddProductToShoppingCartResult(productID, quantity);
-        if (!"SUCCESS".equals(result)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Product was added to shopping cart successfully!!!");
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(mainService.getAddProductToShoppingCartResult(productID, quantity));
     }
 
+    // This action occurs when user delete a product from shopping cart in OrderDetails screen
     @DeleteMapping("/order/detail")
-    public ResponseEntity<?> removeProductFromShoppingCart(@RequestParam Long orderDetailsID) {
-        String result = mainService.getRemoveProductFromShoppingCartResult(orderDetailsID);
-        if (!"SUCCESS".equals(result)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    public ResponseEntity<?> removeProductFromShoppingCart(@RequestParam Long orderDetailID) {
+        OrderInfo orderInfo = mainService.getRemoveProductFromShoppingCartResult(orderDetailID);
+        if (orderInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found in shopping cart!!!");
         } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Product was removed to shopping cart successfully!!!");
+            return ResponseEntity.ok(orderInfo);
         }
     }
 
+    // This action occurs when user update quantity of product from shopping cart in OrderDetails screen
     @PutMapping("/order/detail")
-    public ResponseEntity<?> updateProductQuantityInShoppingCart(@RequestBody OrderDetails orderDetails) {
-        String result = mainService.updateProductQuantityInShoppingCart(orderDetails);
-        if (!"SUCCESS".equals(result)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Product was updated in shopping cart successfully!!!");
-        }
+    public ResponseEntity<?> updateProductQuantityInShoppingCart(@RequestBody OrderDetail orderDetail) {
+        return ResponseEntity.ok(mainService.updateProductQuantityInShoppingCart(orderDetail));
     }
 
     @GetMapping("/order/details")
     public ResponseEntity<?> getOrderDetails(@RequestParam Long orderID) {
         return ResponseEntity.ok(mainService.getOrderDetails(orderID));
+    }
+
+    @PutMapping("/order/{orderID}/checkout")
+    public ResponseEntity<?> checkout(@RequestParam Long orderID) {
+        String checkoutResult = mainService.checkout(orderID);
+        if (checkoutResult == null) {
+            return ResponseEntity.badRequest().body("Failed to checkout");
+        }
+        return ResponseEntity.ok(checkoutResult);
     }
 
 }

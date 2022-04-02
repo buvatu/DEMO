@@ -1,4 +1,4 @@
-package com.demo.management.model;
+package com.demo.management.entity;
 
 import java.util.Date;
 
@@ -17,15 +17,16 @@ import javax.validation.constraints.Size;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter @NoArgsConstructor
-@Table(name = "spec_standard", uniqueConstraints = { @UniqueConstraint(columnNames = {"spec_id", "standard_id"} ) })
-public class SpecStandard {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Table(name = "specs", uniqueConstraints = { @UniqueConstraint(columnNames = "spec_name") })
+public class Spec {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,19 +34,9 @@ public class SpecStandard {
 
     @NonNull
     @NotBlank
-    @Column(name = "spec_id")
-    private Long specID;
-
-    @NonNull
-    @NotBlank
-    @Column(name = "standard_id")
-    private Long standardID;
-
-    @NonNull
-    @NotBlank
     @Size(max = 200)
-    @Column(name = "standard_value")
-    private String standardValue;
+    @Column(name = "spec_name")
+    private String specName;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
@@ -61,19 +52,16 @@ public class SpecStandard {
 
     @PreUpdate
     protected void preUpdate() {
+        updatedTimestamp = new Date();
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public SpecStandard(Long id, Long specID, Long standardID, String standardValue) {
-        this.id = id;
-        this.specID = specID;
-        this.standardID = standardID;
-        this.standardValue = standardValue;
+    public Spec(String specName) {
+        this.specName = specName;
     }
 
-    public SpecStandard(Long specID, Long standardID, String standardValue) {
-        this.specID = specID;
-        this.standardID = standardID;
-        this.standardValue = standardValue;
+    public Spec(Long id, String specName) {
+        this.id = id;
+        this.specName = specName;
     }
 }

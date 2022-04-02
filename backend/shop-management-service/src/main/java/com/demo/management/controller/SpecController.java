@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.management.model.Spec;
-import com.demo.management.model.SpecStandard;
+import com.demo.management.entity.Spec;
+import com.demo.management.entity.SpecStandard;
 import com.demo.management.repository.SpecRepository;
 import com.demo.management.repository.SpecStandardRepository;
 
@@ -66,16 +66,18 @@ public class SpecController {
         return ResponseEntity.ok("Spec has been deleted from DB successfully");
     }
 
-    @GetMapping("/{specID}")
+    @GetMapping("/{specID}/standards")
     public ResponseEntity<?> getSpecStandards(@PathVariable @Valid @NotBlank Long specID) {
         return ResponseEntity.ok(specStandardRepository.findBySpecID(specID));
     }
 
-    @PostMapping("/{specID}")
-    public ResponseEntity<?> addSpecStandards(@PathVariable @Valid @NotBlank Long specID, @RequestBody List<SpecStandard> specStandards) {
-        specStandardRepository.deleteBySpecID(specID);
+    @PostMapping("/{specID}/standards")
+    public ResponseEntity<?> addSpecStandards(@PathVariable Long specID, @RequestBody List<SpecStandard> specStandards) {
+        if (specStandardRepository.findBySpecID(specID).size() > 0) {
+            specStandardRepository.deleteBySpecID(specID);
+        }
         specStandardRepository.saveAll(specStandards);
-        return ResponseEntity.status(HttpStatus.CREATED).body("New standards was added successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("New standards were added successfully");
     }
 
 }

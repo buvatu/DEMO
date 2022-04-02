@@ -1,4 +1,4 @@
-package com.demo.main.model;
+package com.demo.management.entity;
 
 import java.util.Date;
 
@@ -24,9 +24,10 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "orders", uniqueConstraints = { @UniqueConstraint(columnNames = "order_name") })
-public class Order {
+@Table(name = "categories", uniqueConstraints = { @UniqueConstraint(columnNames = "category_name") })
+public class Category {
 
+    @NonNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,20 +35,8 @@ public class Order {
     @NonNull
     @NotBlank
     @Size(max = 200)
-    @Column(name = "order_name")
-    private String orderName;
-
-    @NonNull
-    @NotBlank
-    @Size(max = 200)
-    @Column(name = "username")
-    private String username;
-
-    @NonNull
-    @NotBlank
-    @Size(max = 200)
-    @Column(name = "status")
-    private String status;
+    @Column(name = "category_name")
+    private String categoryName;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
@@ -63,13 +52,16 @@ public class Order {
 
     @PreUpdate
     protected void preUpdate() {
+        updatedTimestamp = new Date();
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public Order(String orderName, String username, String status) {
-        this.orderName = orderName;
-        this.username = username;
-        this.status = status;
+    public Category (String categoryName) {
+        this.categoryName = categoryName;
     }
 
+    public Category (Long id, String categoryName) {
+        this.id = id;
+        this.categoryName = categoryName;
+    }
 }

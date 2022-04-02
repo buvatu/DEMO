@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.management.model.Product;
+import com.demo.management.entity.Product;
 import com.demo.management.repository.CustomProductRepo;
 import com.demo.management.repository.ProductRepository;
 

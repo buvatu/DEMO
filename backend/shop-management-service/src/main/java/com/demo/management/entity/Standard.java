@@ -1,4 +1,4 @@
-package com.demo.management.model;
+package com.demo.management.entity;
 
 import java.util.Date;
 
@@ -18,11 +18,12 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 @Table(name = "standards", uniqueConstraints = { @UniqueConstraint(columnNames = "standard_name") })
 public class Standard {
 
@@ -51,6 +52,7 @@ public class Standard {
 
     @PreUpdate
     protected void preUpdate() {
+        updatedTimestamp = new Date();
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 

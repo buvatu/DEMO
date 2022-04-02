@@ -1,5 +1,6 @@
-package com.demo.main.model;
+package com.demo.main.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -10,13 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -27,8 +25,8 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "spec_standard", uniqueConstraints = { @UniqueConstraint(columnNames = {"spec_id", "standard_id"} ) })
-public class SpecStandard {
+@Table(name = "products", uniqueConstraints = { @UniqueConstraint(columnNames = "product_name") })
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,23 +34,27 @@ public class SpecStandard {
 
     @NonNull
     @NotBlank
+    @Size(max = 200)
+    @Column(name = "product_name")
+    private String productName;
+
+    @Column(name = "cost_price")
+    private BigDecimal costPrice;
+
+    @Column(name = "selling_price")
+    private BigDecimal sellingPrice;
+
+    @Column(name = "description")
+    private String description;
+
+    @NonNull
+    @Column(name = "category_id")
+    private Long categoryID;
+
     @Column(name = "spec_id")
     private Long specID;
 
-    @NonNull
-    @NotBlank
-    @Column(name = "standard_id")
-    private Long standardID;
-
-    @NonNull
-    @NotBlank
-    @Size(max = 200)
-    @Column(name = "standard_value")
-    private String standardValue;
-
-    @UpdateTimestamp
     @Column(name = "updated_timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
 
     @Column(name = "updated_user")
@@ -66,19 +68,8 @@ public class SpecStandard {
 
     @PreUpdate
     protected void preUpdate() {
+        updatedTimestamp = new Date();
         updatedUser = (String) RequestContextHolder.getRequestAttributes().getAttribute("currentLoggedInUser", RequestAttributes.SCOPE_REQUEST);
     }
 
-    public SpecStandard(Long id, Long specID, Long standardID, String standardValue) {
-        this.id = id;
-        this.specID = specID;
-        this.standardID = standardID;
-        this.standardValue = standardValue;
-    }
-
-    public SpecStandard(Long specID, Long standardID, String standardValue) {
-        this.specID = specID;
-        this.standardID = standardID;
-        this.standardValue = standardValue;
-    }
 }
