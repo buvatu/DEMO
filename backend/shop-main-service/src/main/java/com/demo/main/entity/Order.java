@@ -53,8 +53,6 @@ public class Order {
     @Column(name = "shipper")
     private String shipper;
 
-    @NonNull
-    @NotBlank
     @Size(max = 200)
     @Column(name = "status")
     private String status;

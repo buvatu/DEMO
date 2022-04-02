@@ -28,6 +28,9 @@ public class MainFilter extends AbstractGatewayFilterFactory<MainFilter.Config> 
         super(Config.class);
     }
 
+    // There are two ways to implement Filter in CloudGateway
+    // First solution is use GlobaFilter --> It's suitable if there are many common rules
+    // Second solution is use GatewayFilterFactory --> It's just work for one module but very helpful with specify rules
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
@@ -57,6 +60,7 @@ public class MainFilter extends AbstractGatewayFilterFactory<MainFilter.Config> 
                 return unauthorizedResponse(exchange);
             }
             exchange.getRequest().mutate().headers(headers -> {
+                // Add current user to custom header of request - That's the best way
                 headers.add("X-Current-Logged-In-User", userOptional.get().getUsername());
             }).build();
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
@@ -66,7 +70,7 @@ public class MainFilter extends AbstractGatewayFilterFactory<MainFilter.Config> 
     }
 
     public static class Config {
-        // Put the configuration properties here
+        // configuration properties are here
     }
 
     private Mono<Void> unauthorizedResponse(ServerWebExchange exchange) {

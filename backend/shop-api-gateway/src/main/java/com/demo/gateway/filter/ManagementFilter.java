@@ -30,7 +30,6 @@ public class ManagementFilter extends AbstractGatewayFilterFactory<ManagementFil
 
     @Override
     public GatewayFilter apply(Config config) {
-      //Custom Pre-Filter. Suppose we can extract JWT and perform Authentication
         return (exchange, chain) -> {
             List<String> headerAuthList = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
             if (headerAuthList.isEmpty()) {
@@ -66,7 +65,7 @@ public class ManagementFilter extends AbstractGatewayFilterFactory<ManagementFil
     }
 
     public static class Config {
-        // Put the configuration properties here
+        // configuration properties are here
     }
 
     private Mono<Void> unauthorizedResponse(ServerWebExchange exchange) {

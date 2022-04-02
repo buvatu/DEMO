@@ -34,6 +34,28 @@ public class MainController {
     @Autowired
     MainService mainService;
 
+    /**
+     * The naive solution is add more attribute to products table.
+     * But when more domains come in app, the complexity and the waste of data increases
+     * Example:
+     *  At first, we just filter in mobile domain --> we just need some attributes such as: CPU, RAM, Screen size,...
+     *  But what will happen if customers need a filter in consumer electric domain?
+     *  We cannot continue adding more attributes to products
+     * My solution:
+     *  1 Product has 1 or many Spec (In this app, I use 1 - 1)
+     *  1 Spec has many Standards with corresponding values
+     *  To filter Product, we will filter with Standard name and value
+     *  That's the way we can custom many dynamic filters as we want
+     * @param categoryID
+     * @param filterConditions
+     * @param minPrice
+     * @param maxPrice
+     * @param pageNumber
+     * @param pageSize
+     * @param sortColumn
+     * @param sortOrder
+     * @return
+     */
     @GetMapping("/product/items")
     public ResponseEntity<?> getProducts(@RequestParam(required = false) Long categoryID,
                                          @RequestBody(required = false) List<Condition> filterConditions,

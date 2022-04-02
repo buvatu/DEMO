@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "bca21524-0899-4b59-91e9-aa82cddbe900",
+		"name": "DEMO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8080/api/auth/signup?username=tung&fullname=TUNG Bui Van&password=talavodich&email=buivantung.it@gmail.com",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/auth/signup?username=tung&fullname=TUNG Bui Van&password=talavodich&email=buivantung.it@gmail.com",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "tung"
+						},
+						{
+							"key": "fullname",
+							"value": "TUNG Bui Van"
+						},
+						{
+							"key": "password",
+							"value": "talavodich"
+						},
+						{
+							"key": "email",
+							"value": "buivantung.it@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/auth/signin?username=tung&password=talavodich",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/auth/signin?username=tung&password=talavodich",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signin"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "tung"
+						},
+						{
+							"key": "password",
+							"value": "talavodich"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/category?categoryName=Watches",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODIwNjQ3LCJleHAiOjE2NDg4MjQyNDd9.341-D5g0_vCB6iJ2qPVUl1JjDNMpvwNsh8JKSWOrZvrjdRIkKFxWL8Tl4qBvH8LSgcMvGcH-Y4i-X7HtaUqGlQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/management/category?categoryName=Watches",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"category"
+					],
+					"query": [
+						{
+							"key": "categoryName",
+							"value": "Watches"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/category?id=2&categoryName=Books",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/management/category?id=2&categoryName=Books",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"category"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "2"
+						},
+						{
+							"key": "categoryName",
+							"value": "Books"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/standard?standardName=Screen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODIwNjQ3LCJleHAiOjE2NDg4MjQyNDd9.341-D5g0_vCB6iJ2qPVUl1JjDNMpvwNsh8JKSWOrZvrjdRIkKFxWL8Tl4qBvH8LSgcMvGcH-Y4i-X7HtaUqGlQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/management/standard?standardName=Screen",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"standard"
+					],
+					"query": [
+						{
+							"key": "standardName",
+							"value": "Screen"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/spec?specName=Samsung A12 spec",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODIwNjQ3LCJleHAiOjE2NDg4MjQyNDd9.341-D5g0_vCB6iJ2qPVUl1JjDNMpvwNsh8JKSWOrZvrjdRIkKFxWL8Tl4qBvH8LSgcMvGcH-Y4i-X7HtaUqGlQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/management/spec?specName=Samsung A12 spec",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"spec"
+					],
+					"query": [
+						{
+							"key": "specName",
+							"value": "Samsung A12 spec"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/spec/items?specName=11",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODYyODE1LCJleHAiOjE2NDg4NjY0MTV9.O4kq5a3OF596hnCzxGi_KiMFJbYSbYZzQTEVj8sUwLdKITvnm9hZCfihupx34FEdosVoS6k6Z2b1bPFJK8FWHA",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/management/spec/items?specName=11",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"spec",
+						"items"
+					],
+					"query": [
+						{
+							"key": "specName",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODYyODE1LCJleHAiOjE2NDg4NjY0MTV9.O4kq5a3OF596hnCzxGi_KiMFJbYSbYZzQTEVj8sUwLdKITvnm9hZCfihupx34FEdosVoS6k6Z2b1bPFJK8FWHA",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productName\": \"Samsung A12\",\r\n    \"costPrice\": 225.4,\r\n    \"sellingPrice\": 459.9,\r\n    \"description\": \"This is a Samsung product\",\r\n    \"categoryID\": 1,\r\n    \"specID\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/management/product",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/product/items?productName=11&categoryID=1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODYyODE1LCJleHAiOjE2NDg4NjY0MTV9.O4kq5a3OF596hnCzxGi_KiMFJbYSbYZzQTEVj8sUwLdKITvnm9hZCfihupx34FEdosVoS6k6Z2b1bPFJK8FWHA",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/management/product/items?productName=11&categoryID=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"product",
+						"items"
+					],
+					"query": [
+						{
+							"key": "productName",
+							"value": "11"
+						},
+						{
+							"key": "categoryID",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/management/spec/5/standards",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODY2NjIyLCJleHAiOjE2NDg4NzAyMjJ9.XlUUJ8DRNEzpKeJj6mYEb2harnkS-ZgN-u5svasag1zSgPWe6ekx_2Kul7BW0V0qYJgXEulN4fdSpy0IMyIkJQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"specID\": 1,\r\n        \"standardID\": 1,\r\n        \"standardValue\": \"Samsung\"\r\n    },\r\n    {\r\n        \"specID\": 1,\r\n        \"standardID\": 2,\r\n        \"standardValue\": \"Pink\"\r\n    },\r\n    {\r\n        \"specID\": 1,\r\n        \"standardID\": 3,\r\n        \"standardValue\": \"Exynos\"\r\n    },\r\n    {\r\n        \"specID\": 1,\r\n        \"standardID\": 4,\r\n        \"standardValue\": \"8Gb\"\r\n    },\r\n    {\r\n        \"specID\": 1,\r\n        \"standardID\": 5,\r\n        \"standardValue\": \"6.9 inches HD\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/management/spec/5/standards",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"management",
+						"spec",
+						"5",
+						"standards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/main/product/items",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODc5ODAzLCJleHAiOjE2NDg4ODM0MDN9.FeRb7us79Poftf2llvRwaCOlzLV-0KHRsLEJmvROIuuKv60_oHwxU_DJ7b_E2HYkQ8d2garhumoPfVMN3-4X0A",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"standardID\": 1,\r\n        \"standardValue\": \"Samsung\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/main/product/items",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"main",
+						"product",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/main/product/5",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODc5ODAzLCJleHAiOjE2NDg4ODM0MDN9.FeRb7us79Poftf2llvRwaCOlzLV-0KHRsLEJmvROIuuKv60_oHwxU_DJ7b_E2HYkQ8d2garhumoPfVMN3-4X0A",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/main/product/5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"main",
+						"product",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/main/order/detail",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dW5nIiwiaWF0IjoxNjQ4ODk3Mzk5LCJleHAiOjE2NDg5MDA5OTl9.4Yx31M8BMm09Sil7pJO5Ue1hLpGOayN4pPjpBD4dT_ufYqNlvGGB_ERCUBh6M3YPXP9lf1f5MwDW71wZIDmprQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 5,\r\n    \"orderID\": 4,\r\n    \"productID\": 1,\r\n    \"quantity\": 3,\r\n    \"status\": \"waiting for checkout\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/main/order/detail",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"main",
+						"order",
+						"detail"
+					],
+					"query": [
+						{
+							"key": "orderDetailID",
+							"value": "3",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
