@@ -3,12 +3,12 @@ import {
   Button,
   ComboBox,
   ComposedModal,
-  DataTable,
   InlineNotification,
   Loading,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +16,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableSelectRow,
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
@@ -61,16 +60,8 @@ class TechStandard extends Component {
     setLoading(false);
     const { pageSize } = this.state;
     this.setState({
-      standardList: getTechStandardsResult.data.map((e, index) => {
-        e.id = index.toString();
-        return e;
-      }),
-      standardListDisplay: getTechStandardsResult.data
-        .map((e, index) => {
-          e.id = index.toString();
-          return e;
-        })
-        .slice(0, pageSize),
+      standardList: getTechStandardsResult.data,
+      standardListDisplay: getTechStandardsResult.data.slice(0, pageSize),
     });
   };
 
@@ -80,11 +71,10 @@ class TechStandard extends Component {
     setLoading(true);
     const getTechStandardsResult = await getTechStandards();
     setLoading(false);
+    const { pageSize } = this.state;
     this.setState({
-      standardList: getTechStandardsResult.data.map((e, index) => {
-        e.id = index.toString();
-        return e;
-      }),
+      standardList: getTechStandardsResult.data,
+      standardListDisplay: getTechStandardsResult.data.slice(0, pageSize),
       newStandardID: '',
       newStandardIDErrorMessage: '',
       newStandardName: '',
@@ -106,7 +96,7 @@ class TechStandard extends Component {
   };
 
   addNewStandard = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
     const { standardList, newStandardID, newStandardName, newStandardUnit, newMinValue, newMaxValue, newDefaultValue } = this.state;
     let hasError = false;
     if (newStandardID.trim() === '') {
@@ -162,7 +152,7 @@ class TechStandard extends Component {
   };
 
   updateStandard = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
     const { id, standardList, updatedStandardID, updatedStandardName, updatedStandardUnit, updatedMinValue, updatedMaxValue, updatedDefaultValue } = this.state;
     let hasError = false;
     if (updatedStandardName.trim() === '') {
@@ -191,7 +181,6 @@ class TechStandard extends Component {
         maxValue: updatedMaxValue,
         defaultValue: updatedDefaultValue,
       });
-
       setSubmitResult('Tiêu chuẩn được cập nhật thành công!');
     } catch {
       setErrorMessage('Tiêu chuẩn mới đã tồn tại. Vui lòng kiểm tra lại.');
@@ -224,6 +213,10 @@ class TechStandard extends Component {
       updatedMinValue,
       updatedMaxValue,
       updatedDefaultValue,
+
+      standardListDisplay,
+      page,
+      pageSize,
     } = this.state;
 
     return (
@@ -409,6 +402,8 @@ class TechStandard extends Component {
                 labelText="Tên tiêu chuẩn"
                 value={updatedStandardName}
                 onChange={(e) => this.setState({ updatedStandardName: e.target.value })}
+                invalid={updatedStandardNameErrorMessage !== ''}
+                invalidText={updatedStandardNameErrorMessage}
               />
             </div>
           </div>
@@ -455,57 +450,49 @@ class TechStandard extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
-              <DataTable
-                rows={standardList}
-                headers={[
-                  { header: 'Mã tiêu chuẩn', key: 'standard_id' },
-                  { header: 'Tên tiêu chuẩn', key: 'standard_name' },
-                  { header: 'Đơn vị', key: 'unit' },
-                  { header: 'Giá trị nhỏ nhất', key: 'min_value' },
-                  { header: 'Giá trị lớn nhất', key: 'max_value' },
-                  { header: 'Giá trị mặc định', key: 'default_value' },
-                ]}
-                radio
-                render={({ rows, headers, getSelectionProps, selectRow }) => (
-                  <div>
-                    <TableContainer title={`Có tất cả ${techStandardList.length} tiêu chuẩn.`}>
-                      <Table style={{ maxHeigh: '50vh', overFlowY: 'auto' }}>
-                        <TableHead>
-                          <TableRow>
-                            <TableHeader />
-                            {headers.map((header) => (
-                              <TableHeader key={header.key}>{header.header}</TableHeader>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {rows.map((row) => (
-                            <TableRow key={row.id}>
-                              <TableSelectRow
-                                // eslint-disable-next-line react/jsx-props-no-spreading
-                                {...getSelectionProps({ row })}
-                                onSelect={() => {
-                                  selectRow(row.id);
-                                  this.setState({
-                                    updatedStandardID: row.cells[0].value,
-                                    updatedStandardName: row.cells[1].value,
-                                    updatedStandardUnit: row.cells[2].value,
-                                    updatedMinValue: row.cells[3].value,
-                                    updatedMaxValue: row.cells[4].value,
-                                    updatedDefaultValue: row.cells[5].value,
-                                  });
-                                }}
-                              />
-                              {row.cells.map((cell) => (
-                                <TableCell key={cell.id}>{cell.value}</TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </div>
-                )}
+              <TableContainer title={`Có tất cả ${standardList.length} tiêu chuẩn.`}>
+                <Table style={{ maxHeigh: '50vh', overFlowY: 'auto' }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader key="standardID">Mã tiêu chuẩn</TableHeader>
+                      <TableHeader key="standardName">Tên tiêu chuẩn</TableHeader>
+                      <TableHeader key="unit">Đơn vị</TableHeader>
+                      <TableHeader key="minValue">Giá trị nhỏ nhất</TableHeader>
+                      <TableHeader key="maxValue">Giá trị lớn nhất</TableHeader>
+                      <TableHeader key="defaultValue">Giá trị mặc định</TableHeader>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {standardListDisplay.map((standard, index) => (
+                      <TableRow key={standard.id}>
+                        <TableCell key={`standardID-cell-${index.toString()}`}>{standard.standardID}</TableCell>
+                        <TableCell key={`standardName-cell-${index.toString()}`}>{standard.standardName}</TableCell>
+                        <TableCell key={`unit-cell-${index.toString()}`}>{standard.unit}</TableCell>
+                        <TableCell key={`minValue-cell-${index.toString()}`}>{standard.minValue}</TableCell>
+                        <TableCell key={`maxValue-cell-${index.toString()}`}>{standard.maxValue}</TableCell>
+                        <TableCell key={`defaultValue-cell-${index.toString()}`}>{standard.defaultValue}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[10, 20, 30, 40, 50]}
+                totalItems={standardList.length}
+                onChange={(target) => {
+                  this.setState({
+                    standardListDisplay: standardList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />
@@ -535,7 +522,6 @@ TechStandard.propTypes = {
     companyID: PropTypes.string,
     companyName: PropTypes.string,
   }).isRequired,
-  history: PropTypes.instanceOf(Object).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
     search: PropTypes.string,

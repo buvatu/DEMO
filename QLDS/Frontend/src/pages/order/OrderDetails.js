@@ -712,7 +712,7 @@ class OrderDetails extends Component {
                   </TableHead>
                   <TableBody>
                     {orderDetails.map((row, index) => (
-                      <TableRow key={index.toString()}>
+                      <TableRow key={row.id}>
                         <TableCell key={`stt-${index.toString()}`}>{index + 1}</TableCell>
                         <TableCell key={`material-${index.toString()}`}>{orderDetails[index].material_id}</TableCell>
                         <TableCell key={`materialName-${index.toString()}`}>{orderDetails[index].material_name}</TableCell>

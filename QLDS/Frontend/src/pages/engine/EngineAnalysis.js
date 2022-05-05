@@ -521,7 +521,7 @@ class EngineAnalysis extends Component {
                     )}
                     {(repairPart === '' || repairPart === 'phandien') &&
                       electricComponentList.map((row, index) => (
-                        <TableRow key={index.toString()}>
+                        <TableRow key={row.id}>
                           <TableCell>
                             {repairPart === '' ? (
                               ''
@@ -624,7 +624,7 @@ class EngineAnalysis extends Component {
                     )}
                     {(repairPart === '' || repairPart === 'phankhunggam') &&
                       chassisComponentList.map((row, index) => (
-                        <TableRow key={index.toString()}>
+                        <TableRow key={row.id}>
                           <TableCell>
                             {repairPart === '' ? (
                               ''
@@ -725,7 +725,7 @@ class EngineAnalysis extends Component {
                     )}
                     {(repairPart === '' || repairPart === 'phandongco') &&
                       engineComponentList.map((row, index) => (
-                        <TableRow key={index.toString()}>
+                        <TableRow key={row.id}>
                           <TableCell>
                             {repairPart === '' ? (
                               ''
@@ -826,7 +826,7 @@ class EngineAnalysis extends Component {
                     )}
                     {(repairPart === '' || repairPart === 'phanham') &&
                       breakComponentList.map((row, index) => (
-                        <TableRow key={index.toString()}>
+                        <TableRow key={row.id}>
                           <TableCell>
                             {repairPart === '' ? (
                               ''
@@ -925,7 +925,7 @@ class EngineAnalysis extends Component {
                     )}
                     {(repairPart === '' || repairPart === 'phancokhi') &&
                       machanicComponentList.map((row, index) => (
-                        <TableRow key={index.toString()}>
+                        <TableRow key={row.id}>
                           <TableCell>
                             {repairPart === '' ? (
                               ''
@@ -1028,7 +1028,7 @@ class EngineAnalysis extends Component {
                     )}
                     {(repairPart === '' || repairPart === 'phantruyendong') &&
                       transmissionComponentList.map((row, index) => (
-                        <TableRow key={index.toString()}>
+                        <TableRow key={row.id}>
                           <TableCell>
                             {repairPart === '' ? (
                               ''

@@ -269,7 +269,7 @@ class StockUpdate extends Component {
                   </TableHead>
                   <TableBody>
                     {stockList.map((row, index) => (
-                      <TableRow key={index.toString()}>
+                      <TableRow key={row.id}>
                         <TableCell>
                           <Checkbox
                             id={`materialID-checkbox-${index}`}

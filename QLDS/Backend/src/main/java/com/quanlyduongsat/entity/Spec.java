@@ -41,8 +41,6 @@ public class Spec {
     @Column(name = "spec_name")
     private String specName;
 
-    private String status;
-
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
 

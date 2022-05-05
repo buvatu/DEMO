@@ -266,7 +266,7 @@ class TechSpecUpdate extends Component {
                   </TableHead>
                   <TableBody>
                     {techStandardList.map((row, index) => (
-                      <TableRow key={index.toString()}>
+                      <TableRow key={row.id}>
                         <TableCell>
                           <Checkbox
                             id={`techStandards-checkbox-${index}`}

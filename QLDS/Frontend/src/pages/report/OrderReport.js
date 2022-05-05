@@ -212,8 +212,8 @@ class OrderReport extends Component {
                       <TableHead>
                         <TableRow>
                           <TableExpandHeader />
-                          {headers.map((header, i) => (
-                            <TableHeader key={i.toString()}>{header.header}</TableHeader>
+                          {headers.map((header) => (
+                            <TableHeader key={header.key}>{header.header}</TableHeader>
                           ))}
                         </TableRow>
                       </TableHead>

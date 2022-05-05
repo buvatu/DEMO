@@ -29,8 +29,7 @@ public class SpecStandard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "spec_standard_id")
-    private Long specStandardID;
+    private Long id;
 
     @NonNull
     @NotBlank

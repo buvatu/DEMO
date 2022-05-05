@@ -65,6 +65,7 @@ create table qlds.spec_standard (
 	min_value varchar,
 	max_value varchar,
 	default_value varchar,
+	status varchar(1),
 	updated_timestamp timestamp,
     updated_user varchar,
     unique (spec_id, standard_id)

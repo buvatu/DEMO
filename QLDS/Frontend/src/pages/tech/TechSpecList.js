@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { deleteTechSpec, getTechSpecs } from '../../services';
+import { getTechSpecs } from '../../services';
 
 class TechSpecList extends Component {
   constructor(props) {
@@ -43,16 +43,8 @@ class TechSpecList extends Component {
     const getTechSpecsResult = await getTechSpecs();
     setLoading(false);
     this.setState({
-      techSpecList: getTechSpecsResult.data.map((e, index) => {
-        e.id = index.toString();
-        return e;
-      }),
-      techSpecListDisplay: getTechSpecsResult.data
-        .map((e, index) => {
-          e.id = index.toString();
-          return e;
-        })
-        .slice(0, pageSize),
+      techSpecList: getTechSpecsResult.data,
+      techSpecListDisplay: getTechSpecsResult.data.slice(0, pageSize),
     });
   };
 
@@ -64,29 +56,9 @@ class TechSpecList extends Component {
     const getTechSpecsResult = await getTechSpecs();
     setLoading(false);
     this.setState({
-      techSpecList: getTechSpecsResult.data.map((e, index) => {
-        e.id = index.toString();
-        return e;
-      }),
-      techSpecListDisplay: getTechSpecsResult.data
-        .map((e, index) => {
-          e.id = index.toString();
-          return e;
-        })
-        .slice(0, pageSize),
+      techSpecList: getTechSpecsResult.data,
+      techSpecListDisplay: getTechSpecsResult.data.slice(0, pageSize),
     });
-  };
-
-  removeTechSpec = async (techSpecID) => {
-    const { setLoading, setErrorMessage, setSubmitResult } = this.props;
-    setLoading(true);
-    const getDeleteTechSpecResult = await deleteTechSpec(techSpecID);
-    if (getDeleteTechSpecResult.data === 1) {
-      setSubmitResult('Thông số kĩ thuật được xoá thành công');
-    } else {
-      setErrorMessage('Có lỗi xảy ra khi xoá thông số kĩ thuật');
-    }
-    setLoading(false);
   };
 
   render() {
@@ -98,7 +70,7 @@ class TechSpecList extends Component {
     const { techSpecList, techSpecListDisplay, page, pageSize } = this.state;
 
     return (
-      <div className="tech-spec-def">
+      <div className="tech-spec-list">
         {/* Loading */}
         {isLoading && <Loading description="Loading data. Please wait..." withOverlay />}
         {/* Success Modal */}
@@ -133,9 +105,8 @@ class TechSpecList extends Component {
               <DataTable
                 rows={techSpecListDisplay}
                 headers={[
-                  { header: 'Mã thông số', key: 'spec_id' },
-                  { header: 'Tên thông số', key: 'spec_name' },
-                  { header: 'Số lượng tiêu chuẩn', key: 'standard_count' },
+                  { header: 'Mã thông số', key: 'specID' },
+                  { header: 'Tên thông số', key: 'specName' },
                 ]}
                 render={({ rows, headers }) => (
                   <div>
@@ -157,8 +128,7 @@ class TechSpecList extends Component {
                               ))}
                               <TableCell>
                                 <OverflowMenu>
-                                  <OverflowMenuItem itemText="Sửa" onClick={() => history.push(`/tech/spec/update?techSpecID=${row.cells[0].value}`)} />
-                                  <OverflowMenuItem itemText="Xoá" onClick={() => this.removeTechSpec(row.cells[0].value)} />
+                                  <OverflowMenuItem itemText="Sửa" onClick={() => history.push(`/tech/spec/update?specID=${row.cells[0].value}`)} />
                                 </OverflowMenu>
                               </TableCell>
                             </TableRow>

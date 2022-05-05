@@ -663,7 +663,7 @@ class StockOutOrder extends Component {
                   </TableHead>
                   <TableBody>
                     {orderDetails.map((row, index) => (
-                      <TableRow key={index.toString()}>
+                      <TableRow key={row.id}>
                         <TableCell>
                           <Checkbox
                             id={`materialID-checkbox-${index}`}

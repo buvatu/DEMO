@@ -192,18 +192,18 @@ export const getTechStandards = () => {
   });
 };
 
-export const insertTechStandard = (standardID, standardName, unit, minValue = '', maxValue = '', defaultValue = '', updatedUser) => {
+export const insertTechStandard = (standard) => {
   return request({
     url: '/standard',
-    params: { standardID, standardName, unit, minValue, maxValue, defaultValue, updatedUser },
+    data: standard,
     method: POST,
   });
 };
 
-export const updateTechStandard = (standardID, standardName, unit, minValue = '', maxValue = '', defaultValue = '', updatedUser) => {
+export const updateTechStandard = (standard) => {
   return request({
     url: '/standard',
-    params: { standardID, standardName, unit, minValue, maxValue, defaultValue, updatedUser },
+    data: standard,
     method: PUT,
   });
 };
