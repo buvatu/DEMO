@@ -34,8 +34,9 @@ create table qlds.company (
 
 drop table if exists qlds.standard;
 create table qlds.standard (
-	standard_id serial primary key,
-	standard_name varchar unique not null,
+    id serial primary key,
+	standard_id varchar unique not null,
+	standard_name varchar,
 	unit varchar,
 	min_value varchar,
 	max_value varchar,
@@ -46,17 +47,18 @@ create table qlds.standard (
 
 drop table if exists qlds.spec;
 create table qlds.spec (
-	spec_id serial primary key,
-	spec_name varchar unique not null,
+    id serial primary key,
+	spec_id varchar unique not null,
+	spec_name varchar,
 	updated_timestamp timestamp,
     updated_user varchar
 );
 
 drop table if exists qlds.spec_standard;
 create table qlds.spec_standard (
-    spec_standard_id serial primary key,
-	spec_id integer,
-	standard_id integer,
+    id serial primary key,
+	spec_id varchar,
+	standard_id varchar,
 	standard_name varchar,
 	value varchar,
 	unit varchar,

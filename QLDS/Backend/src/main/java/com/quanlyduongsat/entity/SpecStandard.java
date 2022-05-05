@@ -35,12 +35,12 @@ public class SpecStandard {
     @NonNull
     @NotBlank
     @Column(name = "spec_id")
-    private Long specID;
+    private String specID;
 
     @NonNull
     @NotBlank
     @Column(name = "standard_id")
-    private Long standardID;
+    private String standardID;
 
     @NonNull
     @NotBlank
@@ -59,6 +59,8 @@ public class SpecStandard {
 
     @Column(name = "default_value")
     private String defaultValue;
+
+    private String status; // A = Active, D = De-active
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;

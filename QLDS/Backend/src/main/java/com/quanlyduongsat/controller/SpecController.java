@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.quanlyduongsat.entity.Standard;
+import com.quanlyduongsat.entity.Spec;
 import com.quanlyduongsat.repository.SpecRepository;
 
 @RestController
@@ -24,16 +24,16 @@ public class SpecController {
 
     @GetMapping(value="/spec/list")
     public ResponseEntity<?> getSpecList() {
-        return ResponseEntity.ok().body(specRepository.findAll());
+        return ResponseEntity.ok().body(specRepository.findByStatus("A"));
     }
 
     @PostMapping(value="/spec")
-    public ResponseEntity<?> addSpec(@RequestBody Standard standard) {
-        return ResponseEntity.ok().body(standardRepository.save(standard));
+    public ResponseEntity<?> addSpec(@RequestBody Spec spec) {
+        return ResponseEntity.ok().body(specRepository.save(spec));
     }
 
     @PutMapping(value="/spec")
-    public ResponseEntity<?> updateStandard(@RequestBody Standard standard) {
-        return ResponseEntity.ok().body(standardRepository.save(standard));
+    public ResponseEntity<?> updateStandard(@RequestBody Spec spec) {
+        return ResponseEntity.ok().body(specRepository.save(spec));
     }
 }

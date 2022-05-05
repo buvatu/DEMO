@@ -24,18 +24,24 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @AllArgsConstructor
-@Table(name = "spec", uniqueConstraints = { @UniqueConstraint(columnNames = "spec_name") })
+@Table(name = "spec", uniqueConstraints = { @UniqueConstraint(columnNames = "spec_id") })
 public class Spec {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NonNull
+    @NotBlank
     @Column(name = "spec_id")
-    private Long specID;
+    private String specID;
 
     @NonNull
     @NotBlank
     @Column(name = "spec_name")
     private String specName;
+
+    private String status;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;

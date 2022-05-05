@@ -1,6 +1,7 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
   Button,
+  ComboBox,
   ComposedModal,
   DataTable,
   InlineNotification,
@@ -28,7 +29,8 @@ class TechStandard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      techStandardList: [],
+      standardList: [],
+      standardListDisplay: [],
       newStandardID: '',
       newStandardIDErrorMessage: '',
       newStandardName: '',
@@ -37,7 +39,8 @@ class TechStandard extends Component {
       newStandardUnitErrorMessage: '',
       newMinValue: '',
       newMaxValue: '',
-      newStandardValue: '',
+      newDefaultValue: '',
+      id: '',
       updatedStandardID: '',
       updatedStandardName: '',
       updatedStandardNameErrorMessage: '',
@@ -45,7 +48,9 @@ class TechStandard extends Component {
       updatedStandardUnitErrorMessage: '',
       updatedMinValue: '',
       updatedMaxValue: '',
-      updatedStandardValue: '',
+      updatedDefaultValue: '',
+      page: 1,
+      pageSize: 10,
     };
   }
 
@@ -54,11 +59,18 @@ class TechStandard extends Component {
     setLoading(true);
     const getTechStandardsResult = await getTechStandards();
     setLoading(false);
+    const { pageSize } = this.state;
     this.setState({
-      techStandardList: getTechStandardsResult.data.map((e, index) => {
+      standardList: getTechStandardsResult.data.map((e, index) => {
         e.id = index.toString();
         return e;
       }),
+      standardListDisplay: getTechStandardsResult.data
+        .map((e, index) => {
+          e.id = index.toString();
+          return e;
+        })
+        .slice(0, pageSize),
     });
   };
 
@@ -69,7 +81,7 @@ class TechStandard extends Component {
     const getTechStandardsResult = await getTechStandards();
     setLoading(false);
     this.setState({
-      techStandardList: getTechStandardsResult.data.map((e, index) => {
+      standardList: getTechStandardsResult.data.map((e, index) => {
         e.id = index.toString();
         return e;
       }),
@@ -81,7 +93,7 @@ class TechStandard extends Component {
       newStandardUnitErrorMessage: '',
       newMinValue: '',
       newMaxValue: '',
-      newStandardValue: '',
+      newDefaultValue: '',
       updatedStandardID: '',
       updatedStandardName: '',
       updatedStandardNameErrorMessage: '',
@@ -89,22 +101,22 @@ class TechStandard extends Component {
       updatedStandardUnitErrorMessage: '',
       updatedMinValue: '',
       updatedMaxValue: '',
-      updatedStandardValue: '',
+      updatedDefaultValue: '',
     });
   };
 
   addNewStandard = async () => {
     const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const { techStandardList, newStandardID, newStandardName, newStandardUnit, newMinValue, newMaxValue, newStandardValue } = this.state;
+    const { standardList, newStandardID, newStandardName, newStandardUnit, newMinValue, newMaxValue, newDefaultValue } = this.state;
     let hasError = false;
     if (newStandardID.trim() === '') {
       this.setState({ newStandardIDErrorMessage: 'Mã tiêu chuẩn không được bỏ trống' });
       hasError = true;
     }
     if (
-      techStandardList
+      standardList
         .map((e) => {
-          return e.standard_id;
+          return e.standardID;
         })
         .includes(newStandardID.trim())
     ) {
@@ -116,9 +128,9 @@ class TechStandard extends Component {
       hasError = true;
     }
     if (
-      techStandardList
+      standardList
         .map((e) => {
-          return e.Standard_name;
+          return e.standardName;
         })
         .includes(newStandardName.trim())
     ) {
@@ -133,38 +145,31 @@ class TechStandard extends Component {
       return;
     }
     setLoading(true);
-    const getAddStandardResult = await insertTechStandard(
-      newStandardID,
-      newStandardName,
-      newStandardUnit,
-      newMinValue,
-      newMaxValue,
-      newStandardValue,
-      auth.userID
-    );
-    setLoading(false);
-    if (getAddStandardResult.data === 1) {
+    try {
+      await insertTechStandard({
+        standardID: newStandardID,
+        standardName: newStandardName,
+        unit: newStandardUnit,
+        minValue: newMinValue,
+        maxValue: newMaxValue,
+        defaultValue: newDefaultValue,
+      });
       setSubmitResult('Tiêu chuẩn mới được thêm thành công!');
-    } else {
-      setErrorMessage('Tiêu chuẩn mới đã tồn tại. Vui lòng kiểm tra lại.');
+    } catch {
+      setErrorMessage('Tiêu chuẩn mới đã tồn tại. Vui lòng thử lại.');
     }
+    setLoading(false);
   };
 
   updateStandard = async () => {
     const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const { techStandardList, updatedStandardID, updatedStandardName, updatedStandardUnit, updatedMinValue, updatedMaxValue, updatedStandardValue } = this.state;
+    const { id, standardList, updatedStandardID, updatedStandardName, updatedStandardUnit, updatedMinValue, updatedMaxValue, updatedDefaultValue } = this.state;
     let hasError = false;
     if (updatedStandardName.trim() === '') {
       this.setState({ updatedStandardNameErrorMessage: 'Tên tiêu chuẩn không được bỏ trống' });
       hasError = true;
     }
-    if (
-      techStandardList
-        .map((e) => {
-          return e.standard_id === updatedStandardID ? '' : e.standard_name;
-        })
-        .includes(updatedStandardName.trim())
-    ) {
+    if (standardList.find((e) => e.standardName === updatedStandardID) !== undefined) {
       this.setState({ updatedStandardNameErrorMessage: 'Tên tiêu chuẩn đã tồn tại' });
       hasError = true;
     }
@@ -176,21 +181,22 @@ class TechStandard extends Component {
       return;
     }
     setLoading(true);
-    const getUpdatStandardResult = await updateTechStandard(
-      updatedStandardID,
-      updatedStandardName,
-      updatedStandardUnit,
-      updatedMinValue,
-      updatedMaxValue,
-      updatedStandardValue,
-      auth.userID
-    );
-    setLoading(false);
-    if (getUpdatStandardResult.data === 1) {
+    try {
+      await updateTechStandard({
+        id,
+        standardID: updatedStandardID,
+        standardName: updatedStandardName,
+        unit: updatedStandardUnit,
+        minValue: updatedMinValue,
+        maxValue: updatedMaxValue,
+        defaultValue: updatedDefaultValue,
+      });
+
       setSubmitResult('Tiêu chuẩn được cập nhật thành công!');
-    } else {
+    } catch {
       setErrorMessage('Tiêu chuẩn mới đã tồn tại. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   render() {
@@ -200,7 +206,7 @@ class TechStandard extends Component {
 
     // Then state
     const {
-      techStandardList,
+      standardList,
       newStandardID,
       newStandardIDErrorMessage,
       newStandardName,
@@ -209,7 +215,7 @@ class TechStandard extends Component {
       newStandardUnitErrorMessage,
       newMinValue,
       newMaxValue,
-      newStandardValue,
+      newDefaultValue,
       updatedStandardID,
       updatedStandardName,
       updatedStandardNameErrorMessage,
@@ -217,7 +223,7 @@ class TechStandard extends Component {
       updatedStandardUnitErrorMessage,
       updatedMinValue,
       updatedMaxValue,
-      updatedStandardValue,
+      updatedDefaultValue,
     } = this.state;
 
     return (
@@ -311,11 +317,11 @@ class TechStandard extends Component {
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <TextInput
-                id="newStandardValue-TextInput"
+                id="newDefaultValue-TextInput"
                 placeholder=""
                 labelText="Giá trị mặc định"
-                value={newStandardValue}
-                onChange={(e) => this.setState({ newStandardValue: e.target.value })}
+                value={newDefaultValue}
+                onChange={(e) => this.setState({ newDefaultValue: e.target.value })}
               />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
@@ -330,14 +336,57 @@ class TechStandard extends Component {
           <br />
           <div className="bx--row">
             <div className="bx--col-lg-5">
-              <TextInput
-                id="updatedStandardName-TextInput"
-                placeholder="Vui lòng tên tiêu chuẩn kĩ thuật"
-                labelText="Tên tiêu chuẩn kĩ thuật"
-                value={updatedStandardName}
-                onChange={(e) => this.setState({ updatedStandardName: e.target.value })}
-                invalid={updatedStandardNameErrorMessage !== ''}
-                invalidText={updatedStandardNameErrorMessage}
+              <ComboBox
+                id="updatedStandardName-ComboBox"
+                titleText="Tiêu chuẩn kĩ thuật"
+                placeholder=""
+                label=""
+                items={standardList.map((e) => {
+                  return {
+                    id: e.standardID,
+                    label: e.standardID.concat(' - ').concat(e.standardName),
+                  };
+                })}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+                selectedItem={
+                  updatedStandardID === ''
+                    ? null
+                    : standardList
+                        .map((e) => {
+                          return {
+                            id: e.standardID,
+                            label: e.standardID.concat(' - ').concat(e.standardName),
+                          };
+                        })
+                        .find((e) => e.id === updatedStandardID)
+                }
+                onChange={(e) => {
+                  if (e.selectedItem == null) {
+                    this.setState({
+                      id: '',
+                      updatedStandardID: '',
+                      updatedStandardName: '',
+                      updatedStandardUnit: '',
+                      updatedMinValue: '',
+                      updatedMaxValue: '',
+                      updatedDefaultValue: '',
+                    });
+                  } else {
+                    const selectedStandard = standardList.find((item) => item.standardID === e.selectedItem.id);
+                    this.setState({
+                      id: selectedStandard.id,
+                      updatedStandardID: selectedStandard.standardID,
+                      updatedStandardName: selectedStandard.standardName,
+                      updatedStandardUnit: selectedStandard.unit,
+                      updatedMinValue: selectedStandard.minValue,
+                      updatedMaxValue: selectedStandard.maxValue,
+                      updatedDefaultValue: selectedStandard.defaultValue,
+                    });
+                  }
+                }}
               />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
@@ -355,12 +404,11 @@ class TechStandard extends Component {
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <TextInput
-                id="updatedStandardID-TextInput"
+                id="updatedStandardName-TextInput"
                 placeholder=""
-                labelText="Mã tiêu chuẩn"
-                value={updatedStandardID}
-                disabled
-                onChange={(e) => this.setState({ updatedStandardID: e.target.value })}
+                labelText="Tên tiêu chuẩn"
+                value={updatedStandardName}
+                onChange={(e) => this.setState({ updatedStandardName: e.target.value })}
               />
             </div>
           </div>
@@ -388,11 +436,11 @@ class TechStandard extends Component {
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <TextInput
-                id="updatedStandardValue-TextInput"
+                id="updatedDefaultValue-TextInput"
                 placeholder=""
                 labelText="Giá trị mặc định"
-                value={updatedStandardValue}
-                onChange={(e) => this.setState({ updatedStandardValue: e.target.value })}
+                value={updatedDefaultValue}
+                onChange={(e) => this.setState({ updatedDefaultValue: e.target.value })}
               />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
@@ -408,7 +456,7 @@ class TechStandard extends Component {
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
               <DataTable
-                rows={techStandardList}
+                rows={standardList}
                 headers={[
                   { header: 'Mã tiêu chuẩn', key: 'standard_id' },
                   { header: 'Tên tiêu chuẩn', key: 'standard_name' },
@@ -444,7 +492,7 @@ class TechStandard extends Component {
                                     updatedStandardUnit: row.cells[2].value,
                                     updatedMinValue: row.cells[3].value,
                                     updatedMaxValue: row.cells[4].value,
-                                    updatedStandardValue: row.cells[5].value,
+                                    updatedDefaultValue: row.cells[5].value,
                                   });
                                 }}
                               />

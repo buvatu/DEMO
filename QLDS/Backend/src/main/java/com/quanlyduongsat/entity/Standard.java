@@ -29,8 +29,12 @@ public class Standard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NonNull
+    @NotBlank
     @Column(name = "standard_id")
-    private Long standardID;
+    private String standardID;
 
     @NonNull
     @NotBlank
