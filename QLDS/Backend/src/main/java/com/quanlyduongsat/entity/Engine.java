@@ -1,0 +1,68 @@
+package com.quanlyduongsat.entity;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @AllArgsConstructor
+@Table(name = "engine", uniqueConstraints = { @UniqueConstraint(columnNames = "engine_id") })
+public class Engine {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NonNull
+    @NotBlank
+    @Column(name = "engine_id")
+    private String engineID;
+
+    @NonNull
+    @NotBlank
+    @Column(name = "company_id")
+    private String companyID;
+
+    @Column(name = "company_name")
+    private String companyName;
+
+    @NonNull
+    @Column(name = "engine_type")
+    private String engineType;
+
+    @Column(name = "updated_timestamp")
+    private Date updatedTimestamp;
+
+    @Column(name = "updated_user")
+    private String updatedUser;
+
+    @PrePersist
+    protected void onCreate() {
+        updatedUser = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        updatedTimestamp = new Date();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        updatedUser = (String) (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        updatedTimestamp = new Date();
+    }
+}

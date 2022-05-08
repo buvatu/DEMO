@@ -35,14 +35,15 @@ class Supplier extends Component {
       newSupplierNameErrorMessage: '',
       newTaxCode: '',
       newPhoneNumber: '',
-      newDescription: '',
+      newAddress: '',
 
+      id: '',
       updatedSupplierID: '',
       updatedSupplierName: '',
       updatedSupplierNameErrorMessage: '',
       updatedTaxCode: '',
       updatedPhoneNumber: '',
-      updatedDescription: '',
+      updatedAddress: '',
     };
   }
 
@@ -51,14 +52,7 @@ class Supplier extends Component {
     setLoading(true);
     const getSupplierListResult = await getSupplierList();
     setLoading(false);
-    this.setState({
-      supplierList: getSupplierListResult.data
-        .map((e, index) => {
-          e.id = index.toString();
-          return e;
-        })
-        .sort((a, b) => a.supplier_name.localeCompare(b.supplier_name)),
-    });
+    this.setState({ supplierList: getSupplierListResult.data.sort((a, b) => a.supplierName.localeCompare(b.supplierName)) });
   };
 
   reload = async () => {
@@ -68,44 +62,34 @@ class Supplier extends Component {
     const getSupplierListResult = await getSupplierList();
     setLoading(false);
     this.setState({
-      supplierList: getSupplierListResult.data
-        .map((e, index) => {
-          e.id = index.toString();
-          return e;
-        })
-        .sort((a, b) => a.supplier_name.localeCompare(b.supplier_name)),
+      supplierList: getSupplierListResult.data.sort((a, b) => a.supplierName.localeCompare(b.supplierName)),
       newSupplierID: '',
       newSupplierIDErrorMessage: '',
       newSupplierName: '',
       newSupplierNameErrorMessage: '',
       newTaxCode: '',
       newPhoneNumber: '',
-      newDescription: '',
+      newAddress: '',
 
+      id: '',
       updatedSupplierID: '',
       updatedSupplierName: '',
       updatedSupplierNameErrorMessage: '',
       updatedTaxCode: '',
       updatedPhoneNumber: '',
-      updatedDescription: '',
+      updatedAddress: '',
     });
   };
 
   addNewSupplier = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const { supplierList, newSupplierID, newSupplierName, newTaxCode, newPhoneNumber, newDescription } = this.state;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
+    const { supplierList, newSupplierID, newSupplierName, newTaxCode, newPhoneNumber, newAddress } = this.state;
     let hasError = false;
     if (newSupplierID.trim() === '') {
       this.setState({ newSupplierIDErrorMessage: 'Mã nhà cung cấp không được bỏ trống' });
       hasError = true;
     }
-    if (
-      supplierList
-        .map((e) => {
-          return e.supplier_id;
-        })
-        .includes(newSupplierID.trim())
-    ) {
+    if (newSupplierID !== '' && supplierList.find((e) => e.supplierID === newSupplierID) !== undefined) {
       this.setState({ newSupplierIDErrorMessage: 'Mã nhà cung cấp đã tồn tại' });
       hasError = true;
     }
@@ -113,65 +97,58 @@ class Supplier extends Component {
       this.setState({ newSupplierNameErrorMessage: 'Tên nhà cung cấp không được bỏ trống' });
       hasError = true;
     }
-    if (
-      supplierList
-        .map((e) => {
-          return e.supplier_name;
-        })
-        .includes(newSupplierName.trim())
-    ) {
-      this.setState({ newSupplierNameErrorMessage: 'Tên nhà cung cấp đã tồn tại' });
-      hasError = true;
-    }
     if (hasError) {
       return;
     }
     setLoading(true);
-    const getAddSupplierResult = await insertSupplier(newSupplierID, newSupplierName, newTaxCode, newPhoneNumber, newDescription, auth.userID);
-    setLoading(false);
-    if (getAddSupplierResult.data === 1) {
+    try {
+      await insertSupplier({ supplierID: newSupplierID, supplierName: newSupplierName, taxCode: newTaxCode, phoneNumber: newPhoneNumber, address: newAddress });
       setSubmitResult('Nhà cung cấp mới được thêm thành công!');
-    } else {
+    } catch {
       setErrorMessage('Nhà cung cấp mới đã tồn tại. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   updateSupplier = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const { updatedSupplierID, updatedSupplierName, updatedTaxCode, updatedPhoneNumber, updatedDescription } = this.state;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
+    const { id, updatedSupplierID, updatedSupplierName, updatedTaxCode, updatedPhoneNumber, updatedAddress } = this.state;
     if (updatedSupplierName.trim() === '') {
       this.setState({ updatedSupplierNameErrorMessage: 'Tên nhà cung cấp không được bỏ trống' });
       return;
     }
     setLoading(true);
-    const getUpdatSupplierResult = await updateSupplier(
-      updatedSupplierID,
-      updatedSupplierName,
-      updatedTaxCode,
-      updatedPhoneNumber,
-      updatedDescription,
-      auth.userID
-    );
-    setLoading(false);
-    if (getUpdatSupplierResult.data === 1) {
+    try {
+      await updateSupplier({
+        id,
+        supplierID: updatedSupplierID,
+        supplierName: updatedSupplierName,
+        taxCode: updatedTaxCode,
+        phoneNumber: updatedPhoneNumber,
+        address: updatedAddress,
+      });
       setSubmitResult('Nhà cung cấp được cập nhật thành công!');
-      this.setState({ updatedSupplierID: '', updatedSupplierName: '', updatedTaxCode: '', updatedPhoneNumber: '', updatedDescription: '' });
-    } else {
+    } catch {
       setErrorMessage('Có lỗi khi cập nhật nhà cung cấp. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   deleteSupplier = async () => {
     const { setLoading, setSubmitResult, setErrorMessage } = this.props;
-    const { updatedSupplierID } = this.state;
+    const { id, updatedSupplierID } = this.state;
+    if (updatedSupplierID === '') {
+      setErrorMessage('Vui lòng chọn nhà cung cấp.');
+      return;
+    }
     setLoading(true);
-    const getDeleteSupplierResult = await deleteSupplier(updatedSupplierID);
-    setLoading(false);
-    if (getDeleteSupplierResult.data === 1) {
+    try {
+      await deleteSupplier(id);
       setSubmitResult('Nhà cung cấp đã được xoá thành công!');
-    } else {
+    } catch {
       setErrorMessage('Có lỗi khi xoá nhà cung cấp. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   render() {
@@ -189,23 +166,27 @@ class Supplier extends Component {
       newSupplierNameErrorMessage,
       newTaxCode,
       newPhoneNumber,
-      newDescription,
+      newAddress,
 
       updatedSupplierID,
       updatedSupplierName,
       updatedSupplierNameErrorMessage,
       updatedTaxCode,
       updatedPhoneNumber,
-      updatedDescription,
+      updatedAddress,
     } = this.state;
+
+    const supplierIDList = supplierList.map((e) => {
+      return { id: e.supplierID, label: e.supplierID.concat(' - ').concat(e.supplierName) };
+    });
 
     return (
       <div className="supplier">
         {/* Loading */}
-        {isLoading && <Loading description="Loading data. Please wait..." withOverlay />}
+        {isLoading && <Loading Address="Loading data. Please wait..." withOverlay />}
         {/* Success Modal */}
         <ComposedModal className="btn-success" open={submitResult !== ''} size="sm" onClose={() => this.reload()}>
-          <ModalHeader iconDescription="Close" title={<div>Thao tác thành công</div>} />
+          <ModalHeader iconAddress="Close" title={<div>Thao tác thành công</div>} />
           <ModalBody aria-label="Modal content">
             <div className="form-icon">
               <CloudUpload32 className="icon-prop" />
@@ -236,7 +217,7 @@ class Supplier extends Component {
                 helperText="Ví dụ: NCC_000001"
                 labelText="Mã nhà cung cấp"
                 value={newSupplierID}
-                onChange={(e) => this.setState({ newSupplierID: e.target.value })}
+                onChange={(e) => this.setState({ newSupplierID: e.target.value, newSupplierIDErrorMessage: '' })}
                 invalid={newSupplierIDErrorMessage !== ''}
                 invalidText={newSupplierIDErrorMessage}
               />
@@ -247,7 +228,7 @@ class Supplier extends Component {
                 placeholder=""
                 labelText="Tên nhà cung cấp"
                 value={newSupplierName}
-                onChange={(e) => this.setState({ newSupplierName: e.target.value })}
+                onChange={(e) => this.setState({ newSupplierName: e.target.value, newSupplierNameErrorMessage: '' })}
                 invalid={newSupplierNameErrorMessage !== ''}
                 invalidText={newSupplierNameErrorMessage}
               />
@@ -275,11 +256,11 @@ class Supplier extends Component {
             </div>
             <div className="bx--col-lg-4">
               <TextInput
-                id="newDescription-TextInput"
+                id="newAddress-TextInput"
                 placeholder=""
                 labelText="Địa chỉ"
-                value={newDescription}
-                onChange={(e) => this.setState({ newDescription: e.target.value })}
+                value={newAddress}
+                onChange={(e) => this.setState({ newAddress: e.target.value })}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
@@ -298,39 +279,24 @@ class Supplier extends Component {
                 titleText="Đơn vị cung cấp"
                 placeholder=""
                 label=""
-                items={supplierList.map((e) => {
-                  return {
-                    id: e.supplier_id,
-                    label: e.supplier_id.concat(' - ').concat(e.supplier_name),
-                  };
-                })}
+                items={supplierIDList}
                 shouldFilterItem={({ item, inputValue }) => {
                   if (!inputValue) return true;
                   return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
-                selectedItem={
-                  updatedSupplierID === ''
-                    ? null
-                    : supplierList
-                        .map((e) => {
-                          return {
-                            id: e.supplier_id,
-                            label: e.supplier_id.concat(' - ').concat(e.supplier_name),
-                          };
-                        })
-                        .find((e) => e.id === updatedSupplierID)
-                }
+                selectedItem={updatedSupplierID === '' ? null : supplierIDList.find((e) => e.id === updatedSupplierID)}
                 onChange={(e) => {
                   if (e.selectedItem == null) {
-                    this.setState({ updatedSupplierID: '', updatedSupplierName: '', updatedTaxCode: '', updatedPhoneNumber: '', updatedDescription: '' });
+                    this.setState({ id: '', updatedSupplierID: '', updatedSupplierName: '', updatedTaxCode: '', updatedPhoneNumber: '', updatedAddress: '' });
                   } else {
-                    const selectedSupplier = supplierList.find((item) => item.supplier_id === e.selectedItem.id);
+                    const selectedSupplier = supplierList.find((item) => item.supplierID === e.selectedItem.id);
                     this.setState({
-                      updatedSupplierID: selectedSupplier.supplier_id,
-                      updatedSupplierName: selectedSupplier.supplier_name,
-                      updatedTaxCode: selectedSupplier.tax_code,
-                      updatedPhoneNumber: selectedSupplier.phone_number,
-                      updatedDescription: selectedSupplier.description,
+                      id: selectedSupplier.id,
+                      updatedSupplierID: selectedSupplier.supplierID,
+                      updatedSupplierName: selectedSupplier.supplierName,
+                      updatedTaxCode: selectedSupplier.taxCode,
+                      updatedPhoneNumber: selectedSupplier.phoneNumber,
+                      updatedAddress: selectedSupplier.address,
                     });
                   }
                 }}
@@ -370,11 +336,11 @@ class Supplier extends Component {
             </div>
             <div className="bx--col-lg-4">
               <TextInput
-                id="updatedDescription-TextInput"
+                id="updatedAddress-TextInput"
                 placeholder=""
                 labelText="Địa chỉ"
-                value={updatedDescription}
-                onChange={(e) => this.setState({ updatedDescription: e.target.value })}
+                value={updatedAddress}
+                onChange={(e) => this.setState({ updatedAddress: e.target.value })}
               />
             </div>
             <div className="bx--col-lg-4">
@@ -404,13 +370,13 @@ class Supplier extends Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {supplierList.map((row, index) => (
+                    {supplierList.map((supplier, index) => (
                       <TableRow key={`row-${index.toString()}`}>
-                        <TableCell>{row.supplier_id}</TableCell>
-                        <TableCell>{row.supplier_name}</TableCell>
-                        <TableCell>{row.tax_code}</TableCell>
-                        <TableCell>{row.phone_number}</TableCell>
-                        <TableCell>{row.description}</TableCell>
+                        <TableCell>{supplier.supplierID}</TableCell>
+                        <TableCell>{supplier.supplierName}</TableCell>
+                        <TableCell>{supplier.taxCode}</TableCell>
+                        <TableCell>{supplier.phoneNumber}</TableCell>
+                        <TableCell>{supplier.address}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

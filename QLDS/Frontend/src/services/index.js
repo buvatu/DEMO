@@ -97,10 +97,9 @@ export const insertUserInfo = (user) => {
   });
 };
 
-export const getMaterialList = (filterMaterialID, filterMaterialName, filterMaterialGroupID, filterMaterialTypeID) => {
+export const getMaterialList = () => {
   return request({
     url: '/material/list',
-    params: { filterMaterialID, filterMaterialName, filterMaterialGroupID, filterMaterialTypeID },
     method: GET,
   });
 };
@@ -113,86 +112,38 @@ export const getMaterialInfo = (materialID) => {
   });
 };
 
-export const deleteMaterial = (materialID) => {
+export const deleteMaterial = (id) => {
   return request({
     url: '/material',
-    params: { materialID },
+    params: { id },
     method: DELETE,
   });
 };
 
-export const insertMaterialInfo = (
-  materialID,
-  materialName,
-  unit,
-  productCode,
-  materialGroupID,
-  materialGroupName,
-  minimumQuantity,
-  materialTypeID,
-  materialTypeName,
-  techSpecID = '',
-  updatedUser
-) => {
+export const insertMaterialInfo = (material) => {
   return request({
     url: '/material',
-    params: {
-      materialID,
-      materialName,
-      unit,
-      productCode,
-      materialGroupID,
-      materialGroupName,
-      minimumQuantity,
-      materialTypeID,
-      materialTypeName,
-      techSpecID,
-      updatedUser,
-    },
+    data: material,
     method: POST,
   });
 };
 
-export const updateMaterialInfo = (
-  materialID,
-  materialName,
-  unit,
-  productCode,
-  materialGroupID,
-  materialGroupName,
-  minimumQuantity,
-  materialTypeID,
-  materialTypeName,
-  techSpecID = '',
-  updatedUser
-) => {
+export const updateMaterialInfo = (material) => {
   return request({
     url: '/material',
-    params: {
-      materialID,
-      materialName,
-      unit,
-      productCode,
-      materialGroupID,
-      materialGroupName,
-      minimumQuantity,
-      materialTypeID,
-      materialTypeName,
-      techSpecID,
-      updatedUser,
-    },
+    data: material,
     method: PUT,
   });
 };
 
-export const getTechStandards = () => {
+export const getStandardList = () => {
   return request({
     url: '/standard/list',
     method: GET,
   });
 };
 
-export const insertTechStandard = (standard) => {
+export const insertStandard = (standard) => {
   return request({
     url: '/standard',
     data: standard,
@@ -200,7 +151,7 @@ export const insertTechStandard = (standard) => {
   });
 };
 
-export const updateTechStandard = (standard) => {
+export const updateStandard = (standard) => {
   return request({
     url: '/standard',
     data: standard,
@@ -208,7 +159,7 @@ export const updateTechStandard = (standard) => {
   });
 };
 
-export const getTechSpecs = () => {
+export const getSpecList = () => {
   return request({
     url: '/spec/list',
     method: GET,
@@ -223,7 +174,7 @@ export const getTechSpec = (specID) => {
   });
 };
 
-export const getTechSpecStandards = (specID = '') => {
+export const getTechSpecStandards = (specID) => {
   return request({
     url: '/spec/standard/list',
     params: { specID },
@@ -231,28 +182,18 @@ export const getTechSpecStandards = (specID = '') => {
   });
 };
 
-export const deleteTechSpec = (specID) => {
+export const insertSpec = (techSpec) => {
   return request({
     url: '/spec',
-    params: { specID },
-    method: DELETE,
-  });
-};
-
-export const insertTechSpec = (specID, specName, standardList, updatedUser) => {
-  return request({
-    url: '/spec',
-    params: { specID, specName, updatedUser },
-    data: standardList,
+    data: techSpec,
     method: POST,
   });
 };
 
-export const updateTechSpec = (specID, specName, standardList, updatedUser) => {
+export const updateTechSpec = (techSpec) => {
   return request({
     url: '/spec',
-    params: { specID, specName, updatedUser },
-    data: standardList,
+    data: techSpec,
     method: PUT,
   });
 };
@@ -272,18 +213,18 @@ export const getEngineListByCompany = (companyID) => {
   });
 };
 
-export const insertEngine = (engineID, companyID, companyName, engineType, updatedUser) => {
+export const insertEngine = (engine) => {
   return request({
     url: '/engine',
-    params: { engineID, companyID, companyName, engineType, updatedUser },
+    data: engine,
     method: POST,
   });
 };
 
-export const updateEngine = (engineID, companyID, companyName, engineType, updatedUser) => {
+export const updateEngine = (engine) => {
   return request({
     url: '/engine',
-    params: { engineID, companyID, companyName, engineType, updatedUser },
+    data: engine,
     method: PUT,
   });
 };
@@ -295,26 +236,26 @@ export const getSupplierList = () => {
   });
 };
 
-export const insertSupplier = (supplierID, supplierName, taxCode = '', phoneNumber = '', description = '', updatedUser) => {
+export const insertSupplier = (supplier) => {
   return request({
     url: '/supplier',
-    params: { supplierID, supplierName, taxCode, phoneNumber, description, updatedUser },
+    data: supplier,
     method: POST,
   });
 };
 
-export const updateSupplier = (supplierID, supplierName, taxCode = '', phoneNumber = '', description = '', updatedUser) => {
+export const updateSupplier = (supplier) => {
   return request({
     url: '/supplier',
-    params: { supplierID, supplierName, taxCode, phoneNumber, description, updatedUser },
+    data: supplier,
     method: PUT,
   });
 };
 
-export const deleteSupplier = (supplierID) => {
+export const deleteSupplier = (id) => {
   return request({
     url: '/supplier',
-    params: { supplierID },
+    params: { id },
     method: DELETE,
   });
 };

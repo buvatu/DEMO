@@ -2,8 +2,8 @@ import { CloudUpload32 } from '@carbon/icons-react';
 import {
   Button,
   Checkbox,
+  ComboBox,
   ComposedModal,
-  Dropdown,
   InlineNotification,
   Loading,
   ModalBody,
@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { getTechSpecs, getTechStandards } from '../../services';
+import { getSpecList, getStandardList, insertSpec } from '../../services';
 
 class specAdd extends Component {
   constructor(props) {
@@ -32,10 +32,13 @@ class specAdd extends Component {
       specIDErrorMessage: '',
       specName: '',
       specNameErrorMessage: '',
+
       specStandardList: [],
-      standards: [],
-      selectedSpecStandards: [],
+      selectedSpecStandardList: [],
+
+      standardList: [],
       standardIDErrors: [],
+
       specList: [],
     };
   }
@@ -43,21 +46,18 @@ class specAdd extends Component {
   componentDidMount = async () => {
     const { setLoading } = this.props;
     setLoading(true);
-    const getTechStandardsResult = await getTechStandards();
-    const getSpecListResult = await getTechSpecs();
+    const getStandardListResult = await getStandardList();
+    const getSpecListResult = await getSpecList();
     setLoading(false);
     this.setState({
-      standardIDs: getTechStandardsResult.data.map((e) => {
-        return { id: e.standardID, label: e.standardID.concat(' - ').concat(e.standardName) };
-      }),
-      standards: getTechStandardsResult.data,
+      standardList: getStandardListResult.data,
       specList: getSpecListResult.data,
     });
   };
 
   save = async () => {
     const { specID, specName, specStandardList, standardIDErrors, specList } = this.state;
-    const { setErrorMessage, setLoading, setSubmitResult, auth } = this.props;
+    const { setErrorMessage, setLoading, setSubmitResult } = this.props;
     this.setState({
       specIDErrorMessage: '',
       specNameErrorMessage: '',
@@ -70,7 +70,7 @@ class specAdd extends Component {
       hasError = true;
       this.setState({ specIDErrorMessage: 'Mã thông số kĩ thuật không thể bỏ trống' });
     }
-    if (specList.find((e) => e.specID === specID) !== undefined) {
+    if (specID !== '' && specList.find((e) => e.specID === specID) !== undefined) {
       hasError = true;
       this.setState({ specIDErrorMessage: 'Mã thông số kĩ thuật đã tồn tại' });
     }
@@ -81,6 +81,7 @@ class specAdd extends Component {
     specStandardList.forEach((e, index) => {
       if (e.standardID === '') {
         standardIDErrors[index] = true;
+        hasError = true;
       }
     });
     this.setState({ standardIDErrors });
@@ -92,13 +93,19 @@ class specAdd extends Component {
       return;
     }
     setLoading(true);
-    const getInsertTechStandardsResult = await insertspec(specID, specName, specStandardList, auth.userID);
-    setLoading(false);
-    if (getInsertTechStandardsResult.data === 1) {
+    try {
+      await insertSpec({
+        spec: { specID, specName },
+        specStandardList: specStandardList.map((e) => {
+          e.specID = specID;
+          return e;
+        }),
+      });
       setSubmitResult('Thông số kĩ thuật được thêm thành công!');
-    } else {
-      setErrorMessage('Có lỗi khi thêm thông số kĩ thuật.');
+    } catch {
+      setErrorMessage('Có lỗi khi thêm thông số kĩ thuật. Vui lòng thử lại');
     }
+    setLoading(false);
   };
 
   render() {
@@ -107,8 +114,11 @@ class specAdd extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { specID, specIDErrorMessage, specName, specNameErrorMessage, specStandardList, standardIDs, standards, selectedTechStandards, standardIDErrors } =
-      this.state;
+    const { specID, specIDErrorMessage, specName, specNameErrorMessage, specStandardList, standardList, selectedSpecStandardList, standardIDErrors } = this.state;
+
+    const standardIDList = standardList.map((e) => {
+      return { id: e.standardID, label: e.standardID.concat(' - ').concat(e.standardName) };
+    });
 
     return (
       <div className="spec-add">
@@ -184,8 +194,12 @@ class specAdd extends Component {
                   specStandardList.push({
                     standardID: '',
                     standardName: '',
-                    techStandardValue: '',
                     unit: '',
+                    value: '',
+                    minValue: '',
+                    maxValue: '',
+                    defaultValue: '',
+                    status: 'A',
                   });
                   standardIDErrors.push(false);
                   this.setState({ specStandardList, standardIDErrors });
@@ -199,9 +213,9 @@ class specAdd extends Component {
               <Button
                 onClick={() => {
                   this.setState({
-                    specStandardList: specStandardList.filter((e, index) => !selectedTechStandards.includes(index)),
-                    standardIDErrors: standardIDErrors.filter((e, index) => !selectedTechStandards.includes(index)),
-                    selectedSpecStandards: [],
+                    specStandardList: specStandardList.filter((e, index) => !selectedSpecStandardList.includes(index)),
+                    standardIDErrors: standardIDErrors.filter((e, index) => !selectedSpecStandardList.includes(index)),
+                    selectedSpecStandardList: [],
                   });
                 }}
                 style={{ marginTop: '1rem' }}
@@ -232,41 +246,70 @@ class specAdd extends Component {
                       <TableHeader key="stt">STT</TableHeader>
                       <TableHeader key="techStandardID">Mã tiêu chuẩn kĩ thuật</TableHeader>
                       <TableHeader key="techStandardName">Tên tiêu chuẩn kĩ thuật</TableHeader>
-                      <TableHeader key="specValue">Giá trị thực tế</TableHeader>
                       <TableHeader key="specUnit">Đơn vị</TableHeader>
+                      <TableHeader key="specValue">Giá trị thực tế</TableHeader>
+                      <TableHeader key="minValue">Giá trị nhỏ nhất</TableHeader>
+                      <TableHeader key="maxValue">Giá trị lớn nhất</TableHeader>
+                      <TableHeader key="defaultValue">Giá trị mặc định</TableHeader>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {specStandardList.map((row, index) => (
-                      <TableRow key={row.id}>
+                      <TableRow key={`row-${index.toString()}`}>
                         <TableCell>
                           <Checkbox
-                            id={`techStandards-checkbox-${index}`}
+                            id={`standard-Checkbox-${index}`}
                             labelText=""
                             value={index}
-                            checked={selectedTechStandards.includes(index)}
+                            checked={selectedSpecStandardList.includes(index)}
                             onChange={(target) => {
                               if (target) {
-                                selectedTechStandards.push(index);
-                                this.setState({ selectedTechStandards });
+                                selectedSpecStandardList.push(index);
+                                this.setState({ selectedSpecStandardList });
                               } else {
-                                this.setState({ selectedTechStandards: selectedTechStandards.filter((e) => e !== index) });
+                                this.setState({ selectedSpecStandardList: selectedSpecStandardList.filter((e) => e !== index) });
                               }
                             }}
                           />
                         </TableCell>
                         <TableCell key={`stt-${index.toString()}`}>{index + 1}</TableCell>
-                        <TableCell key={`techStandardID-${index.toString()}`}>
-                          <Dropdown
-                            id={`standardID-Dropdown-${index}`}
+                        <TableCell key={`standardID-${index.toString()}`}>
+                          <ComboBox
+                            id={`standardID-ComboBox-${index}`}
                             titleText=""
                             label=""
-                            items={standardIDs}
-                            selectedItem={specStandardList[index].standardID === '' ? null : standardIDs.find((e) => e.id === specStandardList[index].standardID)}
+                            items={standardIDList}
+                            shouldFilterItem={({ item, inputValue }) => {
+                              if (!inputValue) return true;
+                              return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                            }}
+                            selectedItem={
+                              specStandardList[index].standardID === '' ? null : standardIDList.find((e) => e.id === specStandardList[index].standardID)
+                            }
                             onChange={(e) => {
-                              specStandardList[index].standardID = e.selectedItem.id;
-                              specStandardList[index].standardName = standards.find((item) => item.id === e.selectedItem.id).standardName;
-                              specStandardList[index].unit = standards.find((item) => item.id === e.selectedItem.id).unit;
+                              if (e.selectedItem == null) {
+                                specStandardList[index].standardID = '';
+                                specStandardList[index].standardName = '';
+                                specStandardList[index].unit = '';
+                                specStandardList[index].value = '';
+                                specStandardList[index].minValue = '';
+                                specStandardList[index].maxValue = '';
+                                specStandardList[index].defaultValue = '';
+                                standardIDErrors[index] = false;
+                                this.setState({
+                                  specStandardList,
+                                  standardIDErrors,
+                                });
+                                return;
+                              }
+                              const selectedStandard = standardList.find((standard) => standard.standardID === e.selectedItem.id);
+                              specStandardList[index].standardID = selectedStandard.standardID;
+                              specStandardList[index].standardName = selectedStandard.standardName;
+                              specStandardList[index].unit = selectedStandard.unit;
+                              specStandardList[index].value = '';
+                              specStandardList[index].minValue = selectedStandard.minValue;
+                              specStandardList[index].maxValue = selectedStandard.maxValue;
+                              specStandardList[index].defaultValue = selectedStandard.defaultValue;
                               standardIDErrors[index] = false;
                               this.setState({
                                 specStandardList,
@@ -277,26 +320,24 @@ class specAdd extends Component {
                             invalidText="Mã tiêu chuẩn không được bỏ trống"
                           />
                         </TableCell>
-                        <TableCell key={`techStandardName-${index.toString()}`}>{specStandardList[index].standardName}</TableCell>
-                        <TableCell key={`techStandardValue-${index.toString()}`}>
+                        <TableCell key={`standardName-${index.toString()}`}>{specStandardList[index].standardName}</TableCell>
+                        <TableCell key={`unit-${index.toString()}`}>{specStandardList[index].unit}</TableCell>
+                        <TableCell key={`standardValue-${index.toString()}`}>
                           <TextInput
-                            id={`techStandardValue-textinput-${index}`}
+                            id={`specStandardValue-TextInput-${index}`}
                             labelText=""
                             onChange={(e) => {
-                              specStandardList[index].techStandardValue = e.target.value;
+                              specStandardList[index].value = e.target.value;
                               this.setState({ specStandardList });
                             }}
-                            value={specStandardList[index].techStandardValue}
+                            value={specStandardList[index].value}
                           />
                         </TableCell>
-                        <TableCell key={`techStandardUnit-${index.toString()}`}>{specStandardList[index].unit}</TableCell>
+                        <TableCell key={`minValue-${index.toString()}`}>{specStandardList[index].minValue}</TableCell>
+                        <TableCell key={`maxValue-${index.toString()}`}>{specStandardList[index].maxValue}</TableCell>
+                        <TableCell key={`defaultValue-${index.toString()}`}>{specStandardList[index].defaultValue}</TableCell>
                       </TableRow>
                     ))}
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
                     <TableRow />
                     <TableRow />
                     <TableRow />

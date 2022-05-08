@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { getTechStandards, insertTechStandard, updateTechStandard } from '../../services';
+import { getStandardList, insertStandard, updateStandard } from '../../services';
 
 class TechStandard extends Component {
   constructor(props) {
@@ -56,12 +56,12 @@ class TechStandard extends Component {
   componentDidMount = async () => {
     const { setLoading } = this.props;
     setLoading(true);
-    const getTechStandardsResult = await getTechStandards();
+    const getStandardListResult = await getStandardList();
     setLoading(false);
     const { pageSize } = this.state;
     this.setState({
-      standardList: getTechStandardsResult.data,
-      standardListDisplay: getTechStandardsResult.data.slice(0, pageSize),
+      standardList: getStandardListResult.data,
+      standardListDisplay: getStandardListResult.data.slice(0, pageSize),
     });
   };
 
@@ -69,12 +69,12 @@ class TechStandard extends Component {
     const { setLoading, setSubmitResult } = this.props;
     setSubmitResult('');
     setLoading(true);
-    const getTechStandardsResult = await getTechStandards();
+    const getStandardListResult = await getStandardList();
     setLoading(false);
     const { pageSize } = this.state;
     this.setState({
-      standardList: getTechStandardsResult.data,
-      standardListDisplay: getTechStandardsResult.data.slice(0, pageSize),
+      standardList: getStandardListResult.data,
+      standardListDisplay: getStandardListResult.data.slice(0, pageSize),
       newStandardID: '',
       newStandardIDErrorMessage: '',
       newStandardName: '',
@@ -136,7 +136,7 @@ class TechStandard extends Component {
     }
     setLoading(true);
     try {
-      await insertTechStandard({
+      await insertStandard({
         standardID: newStandardID,
         standardName: newStandardName,
         unit: newStandardUnit,
@@ -172,7 +172,7 @@ class TechStandard extends Component {
     }
     setLoading(true);
     try {
-      await updateTechStandard({
+      await updateStandard({
         id,
         standardID: updatedStandardID,
         standardName: updatedStandardName,

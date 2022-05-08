@@ -73,13 +73,14 @@ create table qlds.spec_standard (
 
 drop table if exists qlds.material;
 create table qlds.material (
-	material_id varchar primary key,
+	id serial primary key,
+	material_id varchar unique not null,
 	material_name varchar not null,
 	unit varchar,
 	product_code varchar,
 	material_group_id varchar,
 	material_group_name varchar,
-	minimum_quantity varchar,
+	minimum_quantity integer,
 	material_type_id varchar,
 	material_type_name varchar,
 	spec_id varchar,
@@ -89,21 +90,23 @@ create table qlds.material (
 
 drop table if exists qlds.engine;
 create table qlds.engine (
-	engine_id varchar primary key,
-	company_id varchar,
+	id serial primary key,
+	engine_id varchar unique not null,
+	company_id varchar not null,
 	company_name varchar,
-	engine_type varchar,
+	engine_type varchar not null,
 	updated_timestamp timestamp,
     updated_user varchar
 );
 
 drop table if exists qlds.supplier;
 create table qlds.supplier (
-	supplier_id varchar primary key,
+	id serial primary key,
+	supplier_id varchar unique not null,
 	supplier_name varchar not null,
 	tax_code varchar,
 	phone_number varchar,
-	description varchar,
+	address varchar,
 	updated_timestamp timestamp,
     updated_user varchar
 );
@@ -232,6 +235,7 @@ create table qlds.vcf (
     updated_user varchar
 );
 
+select count(*) from qlds.material;
 select (amount/quantity) as price from qlds.stock;
 update order_details set quantity = (quantity + 10) where order_details_id = 1;
 

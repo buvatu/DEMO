@@ -1,6 +1,7 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
   Button,
+  ComboBox,
   ComposedModal,
   Dropdown,
   InlineNotification,
@@ -21,7 +22,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { getTechSpecs, getTechSpecStandards, insertMaterialInfo } from '../../services';
+import { getMaterialList, getSpecList, getTechSpecStandards, insertMaterialInfo } from '../../services';
 
 class MaterialAdd extends Component {
   constructor(props) {
@@ -45,16 +46,18 @@ class MaterialAdd extends Component {
       materialTypeIDErrorMessage: '',
       materialTypeName: '',
       materialTypes: [],
-      techSpecID: '',
+      specID: '',
       techSpecList: [],
-      techSpecStandardList: [],
+      specStandardList: [],
+      materialList: [],
     };
   }
 
   componentDidMount = async () => {
     const { setLoading } = this.props;
     setLoading(true);
-    const getTechSpecsResult = await getTechSpecs();
+    const getTechSpecListResult = await getSpecList();
+    const getMaterialListResult = await getMaterialList();
     setLoading(false);
     this.setState({
       materialGroups: [
@@ -74,9 +77,11 @@ class MaterialAdd extends Component {
         { id: '1529', label: 'Kho nhiên liệu tồn trên phương tiện' },
         { id: '1531', label: 'Kho công cụ dụng cụ' },
       ],
-      techSpecList: getTechSpecsResult.data.map((e) => {
-        return { id: e.spec_id, label: e.spec_name };
-      }),
+      techSpecList: [].concat({ id: '', label: '' }).concat(
+        getTechSpecListResult.data.map((e) => {
+          return { id: e.specID, label: e.specID.concat(' - ').concat(e.specName) };
+        })
+      ),
       unitList: [
         { id: 'bộ', label: 'bộ' },
         { id: 'cái', label: 'cái' },
@@ -101,6 +106,7 @@ class MaterialAdd extends Component {
         { id: 'viên', label: 'viên' },
         { id: 'quyển', label: 'quyển' },
       ],
+      materialList: getMaterialListResult.data,
     });
   };
 
@@ -113,15 +119,30 @@ class MaterialAdd extends Component {
       minimumQuantityErrorMessage: '',
       materialTypeIDErrorMessage: '',
     });
-    const { setErrorMessage, setLoading, setSubmitResult, auth } = this.props;
+    const { setErrorMessage, setLoading, setSubmitResult } = this.props;
     setErrorMessage('');
 
-    const { materialID, materialName, unit, productCode, materialGroupID, materialGroupName, minimumQuantity, materialTypeID, materialTypeName, techSpecID } =
-      this.state;
+    const {
+      materialID,
+      materialName,
+      unit,
+      productCode,
+      materialGroupID,
+      materialGroupName,
+      minimumQuantity,
+      materialTypeID,
+      materialTypeName,
+      specID,
+      materialList,
+    } = this.state;
     let hasError = false;
     if (materialID.trim() === '') {
       hasError = true;
       this.setState({ materialIDErrorMessage: 'Mã vật tư không thể bỏ trống' });
+    }
+    if (materialID !== '' && materialList.find((e) => e.materialID === materialID) !== undefined) {
+      hasError = true;
+      this.setState({ materialIDErrorMessage: 'Mã vật tư đã tồn tại.' });
     }
     if (materialName.trim() === '') {
       hasError = true;
@@ -143,38 +164,41 @@ class MaterialAdd extends Component {
       return;
     }
     setLoading(true);
-    const getAddMaterialResult = await insertMaterialInfo(
-      materialID,
-      materialName,
-      unit,
-      productCode,
-      materialGroupID,
-      materialGroupName,
-      minimumQuantity,
-      materialTypeID,
-      materialTypeName,
-      techSpecID,
-      auth.userID
-    );
-    setLoading(false);
-    if (getAddMaterialResult.data === 1) {
+    try {
+      await insertMaterialInfo({
+        materialID,
+        materialName,
+        unit,
+        productCode,
+        materialGroupID,
+        materialGroupName,
+        minimumQuantity,
+        materialTypeID,
+        materialTypeName,
+        specID,
+      });
       setSubmitResult('Thông tin vật tư được thêm thành công!');
-    } else {
+    } catch {
       setErrorMessage('Vật tư đã tồn tại. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
-  loadSpecStandardTable = async (techSpecID) => {
-    if (techSpecID === '') {
+  loadSpecStandardTable = async (specID) => {
+    if (specID === '') {
+      this.setState({
+        specStandardList: [],
+        specID,
+      });
       return;
     }
     const { setLoading } = this.props;
     setLoading(true);
-    const getTechSpecStandardResult = await getTechSpecStandards(techSpecID);
+    const getSpecStandardLitResult = await getTechSpecStandards(specID);
     setLoading(false);
     this.setState({
-      techSpecStandardList: getTechSpecStandardResult.data,
-      techSpecID,
+      specStandardList: getSpecStandardLitResult.data,
+      specID,
     });
   };
 
@@ -201,9 +225,9 @@ class MaterialAdd extends Component {
       materialTypeID,
       materialTypeIDErrorMessage,
       materialTypes,
-      techSpecID,
+      specID,
       techSpecList,
-      techSpecStandardList,
+      specStandardList,
     } = this.state;
 
     return (
@@ -262,7 +286,7 @@ class MaterialAdd extends Component {
                 labelText="Mã định danh vật tư"
                 helperText="Ví dụ: VT_000001"
                 value={materialID}
-                onChange={(e) => this.setState({ materialID: e.target.value })}
+                onChange={(e) => this.setState({ materialID: e.target.value, materialIDErrorMessage: '' })}
                 invalid={materialIDErrorMessage !== ''}
                 invalidText={materialIDErrorMessage}
               />
@@ -275,7 +299,7 @@ class MaterialAdd extends Component {
                 label=""
                 items={materialTypes}
                 selectedItem={materialTypes.find((e) => e.id === materialTypeID)}
-                onChange={(e) => this.setState({ materialTypeID: e.selectedItem.id, materialTypeName: e.selectedItem.label })}
+                onChange={(e) => this.setState({ materialTypeID: e.selectedItem.id, materialTypeName: e.selectedItem.label, materialTypeIDErrorMessage: '' })}
                 invalid={materialTypeIDErrorMessage !== ''}
                 invalidText={materialTypeIDErrorMessage}
               />
@@ -290,7 +314,7 @@ class MaterialAdd extends Component {
                 placeholder="Vui lòng nhập tên vật tư"
                 labelText="Tên vật tư"
                 value={materialName}
-                onChange={(e) => this.setState({ materialName: e.target.value })}
+                onChange={(e) => this.setState({ materialName: e.target.value, materialNameErrorMessage: '' })}
                 invalid={materialNameErrorMessage !== ''}
                 invalidText={materialNameErrorMessage}
               />
@@ -303,7 +327,7 @@ class MaterialAdd extends Component {
                 label=""
                 items={materialGroups}
                 selectedItem={materialGroups.find((e) => e.id === materialGroupID)}
-                onChange={(e) => this.setState({ materialGroupID: e.selectedItem.id, materialGroupName: e.selectedItem.label })}
+                onChange={(e) => this.setState({ materialGroupID: e.selectedItem.id, materialGroupName: e.selectedItem.label, materialGroupErrorMessage: '' })}
                 invalid={materialGroupErrorMessage !== ''}
                 invalidText={materialGroupErrorMessage}
               />
@@ -318,7 +342,7 @@ class MaterialAdd extends Component {
                 placeholder="Vui lòng nhập số lượng tồn tối thiểu"
                 labelText="Số lượng tồn tối thiểu"
                 value={minimumQuantity}
-                onChange={(e) => this.setState({ minimumQuantity: e.target.value })}
+                onChange={(e) => this.setState({ minimumQuantity: e.target.value, minimumQuantityErrorMessage: '' })}
                 invalid={minimumQuantityErrorMessage !== ''}
                 invalidText={minimumQuantityErrorMessage}
               />
@@ -331,7 +355,7 @@ class MaterialAdd extends Component {
                 label=""
                 items={unitList}
                 selectedItem={unit === '' ? null : unitList.find((e) => e.id === unit)}
-                onChange={(e) => this.setState({ unit: e.selectedItem.id })}
+                onChange={(e) => this.setState({ unit: e.selectedItem.id, unitErrorMessage: '' })}
                 invalid={unitErrorMessage !== ''}
                 invalidText={unitErrorMessage}
               />
@@ -341,13 +365,17 @@ class MaterialAdd extends Component {
           <div className="bx--row">
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-4">
-              <Dropdown
-                id="techSpecID-Dropdown"
+              <ComboBox
+                id="specID-ComboBox"
                 titleText="Mã thông số kĩ thuật"
                 label=""
                 items={techSpecList}
-                selectedItem={techSpecList.find((e) => e.id === techSpecID)}
-                onChange={async (e) => this.loadSpecStandardTable(e.selectedItem.id)}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+                selectedItem={specID === '' ? null : techSpecList.find((e) => e.id === specID)}
+                onChange={async (e) => this.loadSpecStandardTable(e.selectedItem == null ? '' : e.selectedItem.id)}
               />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
@@ -366,30 +394,30 @@ class MaterialAdd extends Component {
           <div className="bx--row">
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-12">
-              {techSpecID && (
+              {specID && (
                 <TableContainer title="Bảng thông số kĩ thuật tương ứng">
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableHeader>Mã tiêu chuẩn kĩ thuật</TableHeader>
-                        <TableHeader>Tên tiêu chuẩn kĩ thuật</TableHeader>
-                        <TableHeader>Đơn vị đo</TableHeader>
-                        <TableHeader>Giá trị nhỏ nhất</TableHeader>
-                        <TableHeader>Giá trị lớn nhất</TableHeader>
-                        <TableHeader>Giá trị mặc định</TableHeader>
-                        <TableHeader>Giá trị thực tế</TableHeader>
+                        <TableHeader key="standardID">Mã tiêu chuẩn kĩ thuật</TableHeader>
+                        <TableHeader key="standardName">Tên tiêu chuẩn kĩ thuật</TableHeader>
+                        <TableHeader key="unit">Đơn vị đo</TableHeader>
+                        <TableHeader key="minValue">Giá trị nhỏ nhất</TableHeader>
+                        <TableHeader key="maxValue">Giá trị lớn nhất</TableHeader>
+                        <TableHeader key="defaultValue">Giá trị mặc định</TableHeader>
+                        <TableHeader key="value">Giá trị thực tế</TableHeader>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {techSpecStandardList.map((techSpecStandard) => (
-                        <TableRow>
-                          <TableCell>{techSpecStandard.standard_id}</TableCell>
-                          <TableCell>{techSpecStandard.standard_name}</TableCell>
-                          <TableCell>{techSpecStandard.unit}</TableCell>
-                          <TableCell>{techSpecStandard.min_value}</TableCell>
-                          <TableCell>{techSpecStandard.max_value}</TableCell>
-                          <TableCell>{techSpecStandard.default_value}</TableCell>
-                          <TableCell>{techSpecStandard.value}</TableCell>
+                      {specStandardList.map((specStandard, index) => (
+                        <TableRow key={`row-${index.toString()}`}>
+                          <TableCell>{specStandard.standardID}</TableCell>
+                          <TableCell>{specStandard.standardName}</TableCell>
+                          <TableCell>{specStandard.unit}</TableCell>
+                          <TableCell>{specStandard.minValue}</TableCell>
+                          <TableCell>{specStandard.maxValue}</TableCell>
+                          <TableCell>{specStandard.defaultValue}</TableCell>
+                          <TableCell>{specStandard.value}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

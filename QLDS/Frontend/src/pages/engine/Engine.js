@@ -1,8 +1,8 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
   Button,
+  ComboBox,
   ComposedModal,
-  DataTable,
   Dropdown,
   InlineNotification,
   Loading,
@@ -16,7 +16,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableSelectRow,
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
@@ -38,6 +37,7 @@ class Engine extends Component {
       newEngineType: '',
       newEngineTypeErrorMessage: '',
 
+      id: '',
       updatedEngineID: '',
       updatedCompanyID: '',
       updatedCompanyName: '',
@@ -56,12 +56,9 @@ class Engine extends Component {
     setLoading(false);
     this.setState({
       companyList: getCompanyListResult.data.map((e) => {
-        return { id: e.company_id, label: e.company_name };
+        return { id: e.companyID, label: e.companyName };
       }),
-      engineList: getEngineListResult.data.map((e, index) => {
-        e.id = index.toString();
-        return e;
-      }),
+      engineList: getEngineListResult.data,
       engineTypes: [
         { id: 'Đầu máy Bỉ', label: 'Đầu máy Bỉ' },
         { id: 'Đầu máy Ấn Độ', label: 'Đầu máy Ấn Độ' },
@@ -78,10 +75,8 @@ class Engine extends Component {
     const getEngineListResult = await getEngineList();
     setLoading(false);
     this.setState({
-      engineList: getEngineListResult.data.map((e, index) => {
-        e.id = index.toString();
-        return e;
-      }),
+      engineList: getEngineListResult.data,
+
       newEngineID: '',
       newEngineIDErrorMessage: '',
       newCompanyID: '',
@@ -98,25 +93,19 @@ class Engine extends Component {
   };
 
   addNewEngine = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
     const { engineList, newEngineID, newCompanyID, newCompanyName, newEngineType } = this.state;
     let hasError = false;
     if (newEngineID.trim() === '') {
       this.setState({ newEngineIDErrorMessage: 'Số hiệu đầu máy không được bỏ trống' });
       hasError = true;
     }
-    if (
-      engineList
-        .map((e) => {
-          return e.engine_id;
-        })
-        .includes(newEngineID.trim())
-    ) {
+    if (newEngineID !== '' && engineList.find((e) => e.engineID === newEngineID) !== undefined) {
       this.setState({ newEngineIDErrorMessage: 'Số hiệu đầu máy đã tồn tại' });
       hasError = true;
     }
     if (newCompanyID.trim() === '') {
-      this.setState({ newCompanyIDErrorMessage: 'Tên đơn vị quản lý không được bỏ trống' });
+      this.setState({ newCompanyIDErrorMessage: 'Đơn vị quản lý không được bỏ trống' });
       hasError = true;
     }
     if (newEngineType.trim() === '') {
@@ -127,26 +116,26 @@ class Engine extends Component {
       return;
     }
     setLoading(true);
-    const getAddEngineResult = await insertEngine(newEngineID, newCompanyID, newCompanyName, newEngineType, auth.userID);
-    setLoading(false);
-    if (getAddEngineResult.data === 1) {
+    try {
+      await insertEngine({ engineID: newEngineID, companyID: newCompanyID, companyName: newCompanyName, engineType: newEngineType });
       setSubmitResult('Đầu máy mới được thêm thành công!');
-    } else {
-      setErrorMessage('Đầu máy mới đã tồn tại. Vui lòng kiểm tra lại.');
+    } catch {
+      setErrorMessage('Đầu máy mới đã tồn tại. Vui lòng thử lại.');
     }
+    setLoading(false);
   };
 
   updateEngine = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const { updatedEngineID, updatedCompanyID, updatedCompanyName, updatedEngineType } = this.state;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
+    const { id, updatedEngineID, updatedCompanyID, updatedCompanyName, updatedEngineType } = this.state;
     setLoading(true);
-    const getUpdatEngineResult = await updateEngine(updatedEngineID, updatedCompanyID, updatedCompanyName, updatedEngineType, auth.userID);
-    setLoading(false);
-    if (getUpdatEngineResult.data === 1) {
+    try {
+      await updateEngine({ id, engineID: updatedEngineID, companyID: updatedCompanyID, companyName: updatedCompanyName, engineType: updatedEngineType });
       setSubmitResult('Đầu máy được cập nhật thành công!');
-    } else {
+    } catch {
       setErrorMessage('Có lỗi khi cập nhật đầu máy. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   render() {
@@ -171,6 +160,10 @@ class Engine extends Component {
       companyList,
       engineTypes,
     } = this.state;
+
+    const engineIDList = engineList.map((e) => {
+      return { id: e.engineID, label: e.engineID };
+    });
 
     return (
       <div className="engine">
@@ -208,7 +201,7 @@ class Engine extends Component {
                 placeholder=""
                 labelText="Số hiệu đầu máy"
                 value={newEngineID}
-                onChange={(e) => this.setState({ newEngineID: e.target.value })}
+                onChange={(e) => this.setState({ newEngineID: e.target.value, newEngineIDErrorMessage: '' })}
                 invalid={newEngineIDErrorMessage !== ''}
                 invalidText={newEngineIDErrorMessage}
               />
@@ -221,7 +214,7 @@ class Engine extends Component {
                 label=""
                 items={companyList}
                 selectedItem={newCompanyID === '' ? null : companyList.find((e) => e.id === newCompanyID)}
-                onChange={(e) => this.setState({ newCompanyID: e.selectedItem.id, newCompanyName: e.selectedItem.label })}
+                onChange={(e) => this.setState({ newCompanyID: e.selectedItem.id, newCompanyName: e.selectedItem.label, newCompanyIDErrorMessage: '' })}
                 invalid={newCompanyIDErrorMessage !== ''}
                 invalidText={newCompanyIDErrorMessage}
               />
@@ -234,7 +227,7 @@ class Engine extends Component {
                 label=""
                 items={engineTypes}
                 selectedItem={newEngineType === '' ? null : engineTypes.find((e) => e.id === newEngineType)}
-                onChange={(e) => this.setState({ newEngineType: e.selectedItem.id })}
+                onChange={(e) => this.setState({ newEngineType: e.selectedItem.id, newEngineTypeErrorMessage: '' })}
                 invalid={newEngineTypeErrorMessage !== ''}
                 invalidText={newEngineTypeErrorMessage}
               />
@@ -251,7 +244,37 @@ class Engine extends Component {
           <br />
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="updatedEngineID-TextInput" placeholder="" labelText="Số hiệu đầu máy" disabled value={updatedEngineID} />
+              <ComboBox
+                id="updatedEngineID-ComboBox"
+                titleText="Số hiệu đầu máy"
+                label=""
+                items={engineIDList}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+                selectedItem={updatedEngineID === '' ? null : engineIDList.find((e) => e.id === updatedEngineID)}
+                onChange={(e) => {
+                  if (e.selectedItem == null) {
+                    this.setState({
+                      id: '',
+                      updatedEngineID: '',
+                      updatedCompanyID: '',
+                      updatedCompanyName: '',
+                      updatedEngineType: '',
+                    });
+                    return;
+                  }
+                  const selectedEngine = engineList.find((engine) => engine.engineID === e.selectedItem.id);
+                  this.setState({
+                    id: selectedEngine.id,
+                    updatedEngineID: selectedEngine.engineID,
+                    updatedCompanyID: selectedEngine.companyID,
+                    updatedCompanyName: selectedEngine.companyName,
+                    updatedEngineType: selectedEngine.engineType,
+                  });
+                }}
+              />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
@@ -287,53 +310,26 @@ class Engine extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
-              <DataTable
-                rows={engineList}
-                headers={[
-                  { header: 'Số hiệu đầu máy', key: 'engine_id' },
-                  { header: 'Đơn vị quản lý', key: 'company_name' },
-                  { header: 'Loại đầu máy', key: 'engine_type' },
-                ]}
-                radio
-                render={({ rows, headers, getSelectionProps, selectRow }) => (
-                  <div>
-                    <TableContainer title={`Có tất cả ${engineList.length} đầu máy.`}>
-                      <Table style={{ maxHeigh: '70vh' }}>
-                        <TableHead>
-                          <TableRow>
-                            <TableHeader />
-                            {headers.map((header) => (
-                              <TableHeader key={header.key}>{header.header}</TableHeader>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {rows.map((row) => (
-                            <TableRow key={row.id}>
-                              <TableSelectRow
-                                // eslint-disable-next-line react/jsx-props-no-spreading
-                                {...getSelectionProps({ row })}
-                                onSelect={() => {
-                                  selectRow(row.id);
-                                  this.setState({
-                                    updatedEngineID: row.cells[0].value,
-                                    updatedCompanyID: companyList.find((e) => e.label === row.cells[1].value).id,
-                                    updatedCompanyName: row.cells[1].value,
-                                    updatedEngineType: row.cells[2].value,
-                                  });
-                                }}
-                              />
-                              {row.cells.map((cell) => (
-                                <TableCell key={cell.id}>{cell.value}</TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </div>
-                )}
-              />
+              <TableContainer title={`Có tất cả ${engineList.length} đầu máy.`}>
+                <Table style={{ maxHeigh: '70vh' }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader key="engineID">Số hiệu đầu máy</TableHeader>
+                      <TableHeader key="companyName">Đơn vị quản lý</TableHeader>
+                      <TableHeader key="engineType">Loại đầu máy</TableHeader>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {engineList.map((engine, index) => (
+                      <TableRow key={`row-${index.toString()}`}>
+                        <TableCell key={`engineID-${index.toString()}`}>{engine.engineID}</TableCell>
+                        <TableCell key={`companyName-${index.toString()}`}>{engine.companyName}</TableCell>
+                        <TableCell key={`engineType-${index.toString()}`}>{engine.engineType}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />
           </div>
@@ -362,7 +358,6 @@ Engine.propTypes = {
     companyID: PropTypes.string,
     companyName: PropTypes.string,
   }).isRequired,
-  history: PropTypes.instanceOf(Object).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
     search: PropTypes.string,

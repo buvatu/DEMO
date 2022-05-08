@@ -1,9 +1,7 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
   Button,
-  ComboBox,
   ComposedModal,
-  DataTable,
   Dropdown,
   InlineNotification,
   Loading,
@@ -41,6 +39,7 @@ class MaterialList extends Component {
       materialTypes: [],
       materialList: [],
       materialListDisplay: [],
+      searchResult: [],
       page: 1,
       pageSize: 30,
       redirect: '',
@@ -49,14 +48,10 @@ class MaterialList extends Component {
 
   componentDidMount = async () => {
     const { setLoading } = this.props;
-    const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize } = this.state;
+    const { pageSize } = this.state;
     setLoading(true);
-    const getMaterialListResult = await getMaterialList(filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType);
+    const getMaterialListResult = await getMaterialList();
     setLoading(false);
-    const materialList = getMaterialListResult.data.map((e, index) => {
-      e.id = index.toString();
-      return e;
-    });
     this.setState({
       materialGroups: [
         { id: 'phutungmuamoi', label: 'Phụ tùng mua mới' },
@@ -75,34 +70,40 @@ class MaterialList extends Component {
         { id: '1529', label: 'Kho nhiên liệu tồn trên phương tiện' },
         { id: '1531', label: 'Kho công cụ dụng cụ' },
       ],
-      materialList,
-      materialListDisplay: materialList.slice(0, pageSize),
+      materialList: getMaterialListResult.data,
+      searchResult: getMaterialListResult.data,
+      materialListDisplay: getMaterialListResult.data.slice(0, pageSize),
     });
   };
 
   findMaterial = async () => {
-    const { setLoading } = this.props;
-    const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize } = this.state;
-    setLoading(true);
-    const getMaterialListResult = await getMaterialList(filterMaterialID, filterMatetrialName, filterMaterialGroup, filterMaterialType);
-    setLoading(false);
-    const materialList = getMaterialListResult.data.map((e, index) => {
-      e.id = index.toString();
-      return e;
-    });
+    const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize, materialList } = this.state;
+    let filterResult = JSON.parse(JSON.stringify(materialList));
+    if (filterMaterialID !== '') {
+      filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
+    }
+    if (filterMatetrialName !== '') {
+      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+    }
+    if (filterMaterialGroup !== '') {
+      filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
+    }
+    if (filterMaterialType !== '') {
+      filterResult = filterResult.filter((e) => e.materialTypeID === filterMaterialType);
+    }
     this.setState({
-      materialList,
-      materialListDisplay: materialList.slice(0, pageSize),
+      searchResult: filterResult,
+      materialListDisplay: filterResult.slice(0, pageSize),
     });
   };
 
-  removeMaterial = async (materialID) => {
+  removeMaterial = async (id) => {
     const { setLoading, setErrorMessage, setSubmitResult } = this.props;
     setLoading(true);
-    const getDeleteMaterialResult = await deleteMaterial(materialID);
-    if (getDeleteMaterialResult.data === 1) {
+    try {
+      await deleteMaterial(id);
       setSubmitResult('Danh mục vật tư được xoá thành công');
-    } else {
+    } catch {
       setErrorMessage('Có lỗi xảy ra khi xoá danh mục vật tư');
     }
     setLoading(false);
@@ -113,15 +114,12 @@ class MaterialList extends Component {
     const { pageSize } = this.state;
     setSubmitResult('');
     setLoading(true);
-    const getMaterialListResult = await getMaterialList('', '', '', '');
+    const getMaterialListResult = await getMaterialList();
     setLoading(false);
-    const materialList = getMaterialListResult.data.map((e, index) => {
-      e.id = index.toString();
-      return e;
-    });
     this.setState({
-      materialList,
-      materialListDisplay: materialList.slice(0, pageSize),
+      materialList: getMaterialListResult.data,
+      searchResult: getMaterialListResult.data,
+      materialListDisplay: getMaterialListResult.data.slice(0, pageSize),
       filterMaterialID: '',
       filterMaterialGroup: '',
       filterMatetrialName: '',
@@ -158,6 +156,7 @@ class MaterialList extends Component {
       materialTypes,
       materialList,
       materialListDisplay,
+      searchResult,
       page,
       pageSize,
       redirect,
@@ -197,54 +196,12 @@ class MaterialList extends Component {
         <div className="bx--grid">
           <div className="bx--row">
             <div className="bx--col-lg-4">
-              <ComboBox
-                id="materialID-ComboBox"
-                titleText="Loại vật tư"
-                placeholder=""
-                label=""
-                items={materialList
-                  .map((e) => {
-                    return {
-                      id: e.material_id,
-                      label: e.material_id.concat(' - ').concat(e.material_name),
-                    };
-                  })
-                  .sort((a, b) => a.label.split(' - ')[1].localeCompare(b.label.split(' - ')[1]))}
-                selectedItem={
-                  filterMaterialID === ''
-                    ? null
-                    : materialList
-                        .map((e) => {
-                          return {
-                            id: e.material_id,
-                            label: e.material_id.concat(' - ').concat(e.material_name),
-                          };
-                        })
-                        .find((e) => e.id === filterMaterialID)
-                }
-                shouldFilterItem={({ item, inputValue }) => {
-                  if (!inputValue) return true;
-                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
-                }}
-                onChange={(e) => {
-                  if (e.selectedItem == null) {
-                    this.setState({
-                      filterMaterialID: '',
-                      filterMatetrialName: '',
-                      filterMaterialGroup: '',
-                      filterMaterialType: '',
-                    });
-                  } else {
-                    const selectedMaterial = materialList.find((item) => item.material_id === e.selectedItem.id);
-                    this.setState({
-                      filterMaterialID: selectedMaterial.material_id,
-                      filterMatetrialName: selectedMaterial.material_name,
-                      filterMaterialGroup: selectedMaterial.material_group_id,
-                      filterMaterialType: selectedMaterial.material_type_id,
-                      materialListDisplay: materialList.filter((item) => item.material_id === e.selectedItem.id),
-                    });
-                  }
-                }}
+              <TextInput
+                id="filterMaterialID-TextInput"
+                placeholder="Vui lòng nhập một phần mã vật tư để tìm kiếm"
+                labelText="Mã vật tư"
+                value={filterMaterialID}
+                onChange={(e) => this.setState({ filterMaterialID: e.target.value })}
               />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
@@ -270,7 +227,7 @@ class MaterialList extends Component {
             <div className="bx--col-lg-4">
               <TextInput
                 id="filterMaterialName-TextInput"
-                placeholder="Vui lòng nhập tên vật tư"
+                placeholder="Vui lòng nhập một phần tên vật tư để tìm kiếm"
                 labelText="Tên vật tư"
                 value={filterMatetrialName}
                 onChange={(e) => this.setState({ filterMatetrialName: e.target.value })}
@@ -314,90 +271,66 @@ class MaterialList extends Component {
               <Button onClick={() => this.downloadMaterialList()}>Xuất báo cáo danh mục vật tư</Button>
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() =>
-                  this.setState({
-                    page: Math.ceil(materialList.length / pageSize),
-                    materialListDisplay: materialList.slice(
-                      (Math.ceil(materialList.length / pageSize) - 1) * pageSize,
-                      Math.ceil(materialList.length / pageSize) * pageSize
-                    ),
-                  })
-                }
-              >
-                Tới trang cuối
-              </Button>
-            </div>
           </div>
           <br />
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
-              <DataTable
-                rows={materialListDisplay}
-                headers={[
-                  { header: 'Mã vật tư', key: 'material_id' },
-                  { header: 'Tên vật tư', key: 'material_name' },
-                  { header: 'Loại vật tư', key: 'material_type_name' },
-                  { header: 'Nhóm vật tư', key: 'material_group_name' },
-                  { header: 'Đơn vị', key: 'unit' },
-                  { header: 'Mã nhà sản xuất', key: 'product_code' },
-                  { header: 'Lượng tồn tối thiểu', key: 'minimum_quantity' },
-                  { header: 'Mã thông số kĩ thuật', key: 'tech_spec_id' },
-                ]}
-                render={({ rows, headers }) => (
-                  <div>
-                    <TableContainer title={`Có tất cả ${materialList.length} mục vật tư.`}>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            {headers.map((header) => (
-                              <TableHeader key={header.key}>{header.header}</TableHeader>
-                            ))}
-                            <TableHeader />
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {rows.map((row) => (
-                            <TableRow key={row.id}>
-                              {row.cells.map((cell) => (
-                                <TableCell key={cell.id}>{cell.value}</TableCell>
-                              ))}
-                              <TableCell>
-                                <OverflowMenu>
-                                  <OverflowMenuItem
-                                    itemText="Sửa"
-                                    onClick={() => this.setState({ redirect: <Redirect to={`/material/update?materialID=${row.cells[0].value}`} /> })}
-                                  />
-                                  <OverflowMenuItem itemText="Xoá" onClick={() => this.removeMaterial(row.cells[0].value)} />
-                                </OverflowMenu>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                    <Pagination
-                      className="fixed-pagination"
-                      backwardText="Previous page"
-                      forwardText="Next page"
-                      itemsPerPageText="Items per page:"
-                      page={page}
-                      pageNumberText="Page Number"
-                      pageSize={pageSize}
-                      pageSizes={[30, 40, 50]}
-                      totalItems={materialList.length}
-                      onChange={(target) => {
-                        this.setState({
-                          materialListDisplay: materialList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
-                          page: target.page,
-                          pageSize: target.pageSize,
-                        });
-                      }}
-                    />
-                  </div>
-                )}
+              <TableContainer title={`Có tất cả ${materialList.length} mục vật tư.`}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader key="materialID">Mã vật tư</TableHeader>
+                      <TableHeader key="materialName">Tên vật tư</TableHeader>
+                      <TableHeader key="materialTypeName">Loại vật tư</TableHeader>
+                      <TableHeader key="materialGroupName">Nhóm vật tư</TableHeader>
+                      <TableHeader key="unit">Đơn vị tính</TableHeader>
+                      <TableHeader key="productCode">Mã nhà sản xuất</TableHeader>
+                      <TableHeader key="minimumQuantity">Lượng tồn tối thiểu</TableHeader>
+                      <TableHeader />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {materialListDisplay.map((material, index) => (
+                      <TableRow key={`row-${index.toString()}}`}>
+                        <TableCell key={`materialID-${index.toString()}`}>{material.materialID}</TableCell>
+                        <TableCell key={`materialName-${index.toString()}`}>{material.materialName}</TableCell>
+                        <TableCell key={`materialTypeName-${index.toString()}`}>{material.materialTypeName}</TableCell>
+                        <TableCell key={`materialGroupName-${index.toString()}`}>{material.materialGroupName}</TableCell>
+                        <TableCell key={`unit-${index.toString()}`}>{material.unit}</TableCell>
+                        <TableCell key={`productCode-${index.toString()}`}>{material.productCode}</TableCell>
+                        <TableCell key={`minimumQuantity-${index.toString()}`}>{material.minimumQuantity}</TableCell>
+                        <TableCell>
+                          <OverflowMenu>
+                            <OverflowMenuItem
+                              itemText="Sửa"
+                              onClick={() => this.setState({ redirect: <Redirect to={`/material/update?materialID=${material.materialID}`} /> })}
+                            />
+                            <OverflowMenuItem itemText="Xoá" onClick={() => this.removeMaterial(material.id)} />
+                          </OverflowMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[30, 40, 50]}
+                totalItems={searchResult.length}
+                onChange={(target) => {
+                  this.setState({
+                    materialListDisplay: searchResult.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />

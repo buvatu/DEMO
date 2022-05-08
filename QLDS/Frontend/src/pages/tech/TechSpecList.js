@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { getTechSpecs } from '../../services';
+import { getSpecList } from '../../services';
 
 class TechSpecList extends Component {
   constructor(props) {
@@ -40,11 +40,11 @@ class TechSpecList extends Component {
     const { setLoading } = this.props;
     const { pageSize } = this.state;
     setLoading(true);
-    const getTechSpecsResult = await getTechSpecs();
+    const getSpecListResult = await getSpecList();
     setLoading(false);
     this.setState({
-      techSpecList: getTechSpecsResult.data,
-      techSpecListDisplay: getTechSpecsResult.data.slice(0, pageSize),
+      techSpecList: getSpecListResult.data,
+      techSpecListDisplay: getSpecListResult.data.slice(0, pageSize),
     });
   };
 
@@ -53,11 +53,11 @@ class TechSpecList extends Component {
     const { pageSize } = this.state;
     setSubmitResult('');
     setLoading(true);
-    const getTechSpecsResult = await getTechSpecs();
+    const getSpecListResult = await getSpecList();
     setLoading(false);
     this.setState({
-      techSpecList: getTechSpecsResult.data,
-      techSpecListDisplay: getTechSpecsResult.data.slice(0, pageSize),
+      techSpecList: getSpecListResult.data,
+      techSpecListDisplay: getSpecListResult.data.slice(0, pageSize),
     });
   };
 
