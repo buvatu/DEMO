@@ -32,6 +32,11 @@ public class MaterialController {
         return ResponseEntity.ok().body(materialRepository.findAllByOrderByMaterialIDAsc());
     }
 
+    @GetMapping(value="/material/scrap/list")
+    public ResponseEntity<?> getScrapMaterialList() {
+        return ResponseEntity.ok().body(materialRepository.findAllScrapMaterialList());
+    }
+
     @GetMapping(value="/material")
     public ResponseEntity<?> getMaterialInfo(@RequestParam String materialID) {
         Optional<Material> materialOptional = materialRepository.findByMaterialID(materialID);

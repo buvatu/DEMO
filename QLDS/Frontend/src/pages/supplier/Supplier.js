@@ -8,6 +8,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -28,6 +29,9 @@ class Supplier extends Component {
     super(props);
     this.state = {
       supplierList: [],
+      supplierListDisplay: [],
+      page: 1,
+      pageSize: 10,
 
       newSupplierID: '',
       newSupplierIDErrorMessage: '',
@@ -52,7 +56,11 @@ class Supplier extends Component {
     setLoading(true);
     const getSupplierListResult = await getSupplierList();
     setLoading(false);
-    this.setState({ supplierList: getSupplierListResult.data.sort((a, b) => a.supplierName.localeCompare(b.supplierName)) });
+    const supplierList = getSupplierListResult.data.sort((a, b) => a.supplierName.localeCompare(b.supplierName));
+    this.setState({
+      supplierList,
+      supplierListDisplay: supplierList.slice(0, 10),
+    });
   };
 
   reload = async () => {
@@ -61,8 +69,12 @@ class Supplier extends Component {
     setLoading(true);
     const getSupplierListResult = await getSupplierList();
     setLoading(false);
+    const supplierList = getSupplierListResult.data.sort((a, b) => a.supplierName.localeCompare(b.supplierName));
     this.setState({
-      supplierList: getSupplierListResult.data.sort((a, b) => a.supplierName.localeCompare(b.supplierName)),
+      supplierList,
+      page: 1,
+      pageSize: 10,
+      supplierListDisplay: supplierList.slice(0, 10),
       newSupplierID: '',
       newSupplierIDErrorMessage: '',
       newSupplierName: '',
@@ -159,6 +171,9 @@ class Supplier extends Component {
     // Then state
     const {
       supplierList,
+      supplierListDisplay,
+      page,
+      pageSize,
 
       newSupplierID,
       newSupplierIDErrorMessage,
@@ -370,7 +385,7 @@ class Supplier extends Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {supplierList.map((supplier, index) => (
+                    {supplierListDisplay.map((supplier, index) => (
                       <TableRow key={`row-${index.toString()}`}>
                         <TableCell>{supplier.supplierID}</TableCell>
                         <TableCell>{supplier.supplierName}</TableCell>
@@ -382,6 +397,24 @@ class Supplier extends Component {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[10, 20, 30, 40, 50]}
+                totalItems={supplierList.length}
+                onChange={(target) => {
+                  this.setState({
+                    supplierListDisplay: supplierList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
+              />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />
           </div>

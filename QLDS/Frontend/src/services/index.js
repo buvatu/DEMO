@@ -97,6 +97,13 @@ export const insertUserInfo = (user) => {
   });
 };
 
+export const getScrapMaterialList = () => {
+  return request({
+    url: '/material/scrap/list',
+    method: GET,
+  });
+};
+
 export const getMaterialList = () => {
   return request({
     url: '/material/list',
@@ -267,33 +274,33 @@ export const getScrapList = () => {
   });
 };
 
-export const insertScrap = (materialID, materialName, copperVolume, aluminumVolume, castIronVolume, steelVolume, otherVolume, updatedUser) => {
+export const insertScrap = (scrap) => {
   return request({
     url: '/scrap',
-    params: { materialID, materialName, copperVolume, aluminumVolume, castIronVolume, steelVolume, otherVolume, updatedUser },
+    data: scrap,
     method: POST,
   });
 };
 
-export const updateScrap = (materialID, materialName, copperVolume, aluminumVolume, castIronVolume, steelVolume, otherVolume, updatedUser) => {
+export const updateScrap = (scrap) => {
   return request({
     url: '/scrap',
-    params: { materialID, materialName, copperVolume, aluminumVolume, castIronVolume, steelVolume, otherVolume, updatedUser },
+    data: scrap,
     method: PUT,
   });
 };
 
-export const deleteScrap = (materialID) => {
+export const deleteScrap = (id) => {
   return request({
     url: '/scrap',
-    params: { materialID },
+    params: { id },
     method: DELETE,
   });
 };
 
 export const getScrapPriceList = (companyID) => {
   return request({
-    url: '/scrap-price/list',
+    url: '/scrap/price/list',
     params: { companyID },
     method: GET,
   });
@@ -301,7 +308,7 @@ export const getScrapPriceList = (companyID) => {
 
 export const adjustScrapPrice = (copperPrice, aluminumPrice, castIronPrice, steelPrice, otherPrice, companyID, updatedUser) => {
   return request({
-    url: '/scrap-price',
+    url: '/scrap/price/adjust',
     params: { copperPrice, aluminumPrice, castIronPrice, steelPrice, otherPrice, companyID, updatedUser },
     method: POST,
   });

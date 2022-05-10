@@ -8,6 +8,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -21,13 +22,17 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { deleteScrap, getMaterialList, getScrapList, insertScrap, updateScrap } from '../../services';
+import { deleteScrap, getScrapList, getScrapMaterialList, insertScrap, updateScrap } from '../../services';
 
 class Scrap extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      scrapMaterialList: [],
       scrapList: [],
+      scrapListDisplay: [],
+      page: 1,
+      pageSize: 30,
 
       newMaterialID: '',
       newMaterialIDErrorMessage: '',
@@ -38,14 +43,14 @@ class Scrap extends Component {
       newSteelVolume: '',
       newOtherVolume: '',
 
+      id: '',
       updatedMaterialID: '',
+      updatedMaterialName: '',
       updatedCopperVolume: '',
       updatedAluminumVolume: '',
       updatedCastIronVolume: '',
       updatedSteelVolume: '',
       updatedOtherVolume: '',
-
-      materialList: [],
     };
   }
 
@@ -53,46 +58,39 @@ class Scrap extends Component {
     const { setLoading } = this.props;
     setLoading(true);
     const getScrapListResult = await getScrapList();
-    const getMaterialListResult = await getMaterialList('', '', '', '');
-    const scrapList = getScrapListResult.data
-      .map((e, index) => {
-        e.id = index.toString();
-        return e;
-      })
-      .sort((a, b) => a.material_name.localeCompare(b.material_name));
-    const materialList = getMaterialListResult.data
-      .filter((e) => scrapList.find((item) => item.material_id === e.material_id) == null)
-      .sort((a, b) => a.material_name.localeCompare(b.material_name))
-      .map((e) => {
-        return {
-          id: e.material_id,
-          label: e.material_id.concat(' - ').concat(e.material_name),
-        };
-      });
+    const getScrapMaterialListResult = await getScrapMaterialList();
+    const scrapList = getScrapListResult.data;
+    const scrapMaterialIDList = getScrapListResult.data.map((e) => {
+      return e.materialID;
+    });
+    const scrapMaterialList = getScrapMaterialListResult.data.filter((e) => !scrapMaterialIDList.includes(e.materialID));
     setLoading(false);
     this.setState({
-      materialList,
+      scrapMaterialList,
       scrapList,
+      scrapListDisplay: scrapList.slice(0, 30),
     });
   };
 
   reload = async () => {
     const { setLoading, setSubmitResult } = this.props;
-    const { materialList } = this.state;
+    const { scrapMaterialList } = this.state;
     setSubmitResult('');
     setLoading(true);
     const getScrapListResult = await getScrapList();
-    const scrapList = getScrapListResult.data
-      .map((e, index) => {
-        e.id = index.toString();
-        return e;
-      })
-      .sort((a, b) => a.material_name.localeCompare(b.material_name));
+    const scrapList = getScrapListResult.data;
+    const scrapMaterialIDList = getScrapListResult.data.map((e) => {
+      return e.materialID;
+    });
 
     setLoading(false);
     this.setState({
-      materialList: materialList.filter((e) => scrapList.find((item) => item.material_id === e.id) == null),
+      scrapMaterialList: scrapMaterialList.filter((e) => !scrapMaterialIDList.includes(e.materialID)),
       scrapList,
+      scrapListDisplay: scrapList.slice(0, 30),
+      page: 1,
+      pageSize: 30,
+
       newMaterialID: '',
       newMaterialIDErrorMessage: '',
       newCopperVolume: '',
@@ -101,7 +99,9 @@ class Scrap extends Component {
       newSteelVolume: '',
       newOtherVolume: '',
 
+      id: '',
       updatedMaterialID: '',
+      updatedMaterialName: '',
       updatedCopperVolume: '',
       updatedAluminumVolume: '',
       updatedCastIronVolume: '',
@@ -111,88 +111,74 @@ class Scrap extends Component {
   };
 
   addNewScrap = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const {
-      scrapList,
-      newMaterialID,
-
-      newMaterialName,
-      newCopperVolume,
-      newAluminumVolume,
-      newCastIronVolume,
-      newSteelVolume,
-      newOtherVolume,
-    } = this.state;
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
+    const { newMaterialID, newMaterialName, newCopperVolume, newAluminumVolume, newCastIronVolume, newSteelVolume, newOtherVolume } = this.state;
     this.setState({ newMaterialIDErrorMessage: '' });
-    let hasError = false;
     if (newMaterialID.trim() === '') {
       this.setState({ newMaterialIDErrorMessage: 'Mã vật tư không được bỏ trống' });
-      hasError = true;
-    }
-    if (
-      scrapList
-        .map((e) => {
-          return e.material_id;
-        })
-        .includes(newMaterialID.trim())
-    ) {
-      this.setState({ newMaterialIDErrorMessage: 'Mã vật tư đã tồn tại' });
-      hasError = true;
-    }
-    if (hasError) {
       return;
     }
+
     setLoading(true);
-    const getAdScrapResult = await insertScrap(
-      newMaterialID,
-      newMaterialName,
-      newCopperVolume,
-      newAluminumVolume,
-      newCastIronVolume,
-      newSteelVolume,
-      newOtherVolume,
-      auth.userID
-    );
-    setLoading(false);
-    if (getAdScrapResult.data === 1) {
+    try {
+      await insertScrap({
+        materialID: newMaterialID,
+        materialName: newMaterialName,
+        copperVolume: newCopperVolume,
+        aluminumVolume: newAluminumVolume,
+        castIronVolume: newCastIronVolume,
+        steelVolume: newSteelVolume,
+        otherVolume: newOtherVolume,
+      });
       setSubmitResult('Vật tư phế liệu mới thêm thành công!');
-    } else {
+    } catch {
       setErrorMessage('Phế liệu mới đã tồn tại. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   updateScrap = async () => {
-    const { setLoading, setSubmitResult, setErrorMessage, auth } = this.props;
-    const { updatedMaterialID, updatedCopperVolume, updatedAluminumVolume, updatedCastIronVolume, updatedSteelVolume, updatedOtherVolume } = this.state;
-    setLoading(true);
-    const getUpdatEngineResult = await updateScrap(
+    const { setLoading, setSubmitResult, setErrorMessage } = this.props;
+    const {
+      id,
       updatedMaterialID,
+      updatedMaterialName,
       updatedCopperVolume,
       updatedAluminumVolume,
       updatedCastIronVolume,
       updatedSteelVolume,
       updatedOtherVolume,
-      auth.userID
-    );
-    setLoading(false);
-    if (getUpdatEngineResult.data === 1) {
+    } = this.state;
+    setLoading(true);
+    try {
+      await updateScrap({
+        id,
+        materialID: updatedMaterialID,
+        materialName: updatedMaterialName,
+        copperVolume: updatedCopperVolume,
+        aluminumVolume: updatedAluminumVolume,
+        castIronVolume: updatedCastIronVolume,
+        steelVolume: updatedSteelVolume,
+        otherVolume: updatedOtherVolume,
+      });
       setSubmitResult('Vật tư phế liệu được cập nhật thành công!');
-    } else {
+    } catch {
       setErrorMessage('Có lỗi khi cập nhật vật tư phế liệu. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   deleteScrap = async () => {
     const { setLoading, setSubmitResult, setErrorMessage } = this.props;
-    const { updatedMaterialID } = this.state;
+    const { id } = this.state;
     setLoading(true);
-    const getDeleteScrapResult = await deleteScrap(updatedMaterialID);
-    setLoading(false);
-    if (getDeleteScrapResult.data === 1) {
+    try {
+      await deleteScrap(id);
       setSubmitResult('Vật tư phế liệu được xoá thành công!');
-    } else {
+    } catch {
       setErrorMessage('Có lỗi khi xoá vật tư phế liệu. Vui lòng kiểm tra lại.');
     }
+    setLoading(false);
   };
 
   render() {
@@ -203,6 +189,10 @@ class Scrap extends Component {
     // Then state
     const {
       scrapList,
+      scrapListDisplay,
+      page,
+      pageSize,
+      scrapMaterialList,
 
       newMaterialID,
       newMaterialIDErrorMessage,
@@ -218,9 +208,11 @@ class Scrap extends Component {
       updatedCastIronVolume,
       updatedSteelVolume,
       updatedOtherVolume,
-
-      materialList,
     } = this.state;
+
+    const scrapMaterialIDList = scrapMaterialList.map((e) => {
+      return { id: e.materialID, label: e.materialID.concat(' - ').concat(e.materialName) };
+    });
 
     return (
       <div className="scrap">
@@ -258,7 +250,7 @@ class Scrap extends Component {
                 titleText="Loại vật tư"
                 placeholder=""
                 label=""
-                items={materialList}
+                items={scrapMaterialIDList}
                 shouldFilterItem={({ item, inputValue }) => {
                   if (!inputValue) return true;
                   return item.label.toLowerCase().includes(inputValue.toLowerCase());
@@ -266,10 +258,11 @@ class Scrap extends Component {
                 onChange={(e) =>
                   this.setState({
                     newMaterialID: e.selectedItem == null ? '' : e.selectedItem.id,
-                    newMaterialName: e.selectedItem == null ? '' : e.selectedItem.label.split(' - ').slice(1).join(''),
+                    newMaterialName: e.selectedItem == null ? '' : scrapMaterialList.find((material) => material.materialID === e.selectedItem.id).materialName,
+                    newMaterialIDErrorMessage: '',
                   })
                 }
-                selectedItem={newMaterialID === '' ? null : materialList.find((e) => e.material_id === newMaterialID)}
+                selectedItem={newMaterialID === '' ? null : scrapMaterialIDList.find((e) => e.materialID === newMaterialID)}
                 invalid={newMaterialIDErrorMessage !== ''}
                 invalidText={newMaterialIDErrorMessage}
               />
@@ -344,8 +337,8 @@ class Scrap extends Component {
                 label=""
                 items={scrapList.map((e) => {
                   return {
-                    id: e.material_id,
-                    label: e.material_id.concat(' - ').concat(e.material_name),
+                    id: e.materialID,
+                    label: e.materialID.concat(' - ').concat(e.materialName),
                   };
                 })}
                 shouldFilterItem={({ item, inputValue }) => {
@@ -358,8 +351,8 @@ class Scrap extends Component {
                     : scrapList
                         .map((e) => {
                           return {
-                            id: e.material_id,
-                            label: e.material_id.concat(' - ').concat(e.material_name),
+                            id: e.materialID,
+                            label: e.materialID.concat(' - ').concat(e.materialName),
                           };
                         })
                         .find((e) => e.id === updatedMaterialID)
@@ -367,7 +360,9 @@ class Scrap extends Component {
                 onChange={(e) => {
                   if (e.selectedItem == null) {
                     this.setState({
+                      id: '',
                       updatedMaterialID: '',
+                      updatedMaterialName: '',
                       updatedCopperVolume: '',
                       updatedAluminumVolume: '',
                       updatedCastIronVolume: '',
@@ -375,14 +370,16 @@ class Scrap extends Component {
                       updatedOtherVolume: '',
                     });
                   } else {
-                    const selectedMaterial = scrapList.find((item) => item.material_id === e.selectedItem.id);
+                    const selectedScrap = scrapList.find((item) => item.materialID === e.selectedItem.id);
                     this.setState({
-                      updatedMaterialID: selectedMaterial.material_id,
-                      updatedCopperVolume: selectedMaterial.copper_volume,
-                      updatedAluminumVolume: selectedMaterial.aluminum_volume,
-                      updatedCastIronVolume: selectedMaterial.cast_iron_volume,
-                      updatedSteelVolume: selectedMaterial.steel_volume,
-                      updatedOtherVolume: selectedMaterial.other_volume,
+                      id: selectedScrap.id,
+                      updatedMaterialID: selectedScrap.materialID,
+                      updatedMaterialName: selectedScrap.materialName,
+                      updatedCopperVolume: selectedScrap.copperVolume,
+                      updatedAluminumVolume: selectedScrap.aluminumVolume,
+                      updatedCastIronVolume: selectedScrap.castIronVolume,
+                      updatedSteelVolume: selectedScrap.steelVolume,
+                      updatedOtherVolume: selectedScrap.otherVolume,
                     });
                   }
                 }}
@@ -458,30 +455,62 @@ class Scrap extends Component {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeader style={{ width: '15%' }}>Mã vật tư</TableHeader>
-                      <TableHeader style={{ width: '35%' }}>Tên vật tư</TableHeader>
-                      <TableHeader style={{ width: '10%' }}>Khối lượng Đồng</TableHeader>
-                      <TableHeader style={{ width: '10%' }}>Khối lượng Nhôm</TableHeader>
-                      <TableHeader style={{ width: '10%' }}>Khối lượng Gang</TableHeader>
-                      <TableHeader style={{ width: '10%' }}>Khối lượng Sắt</TableHeader>
-                      <TableHeader style={{ width: '10%' }}>Vật liệu khác</TableHeader>
+                      <TableHeader style={{ width: '15%' }} key="materialID">
+                        Mã vật tư
+                      </TableHeader>
+                      <TableHeader style={{ width: '35%' }} key="materialName">
+                        Tên vật tư
+                      </TableHeader>
+                      <TableHeader style={{ width: '10%' }} key="copperVolume">
+                        Khối lượng Đồng
+                      </TableHeader>
+                      <TableHeader style={{ width: '10%' }} key="aluminumVolume">
+                        Khối lượng Nhôm
+                      </TableHeader>
+                      <TableHeader style={{ width: '10%' }} key="castIronVolume">
+                        Khối lượng Gang
+                      </TableHeader>
+                      <TableHeader style={{ width: '10%' }} key="steelVolume">
+                        Khối lượng Sắt
+                      </TableHeader>
+                      <TableHeader style={{ width: '10%' }} key="otherVolume">
+                        Vật liệu khác
+                      </TableHeader>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {scrapList.map((row, index) => (
+                    {scrapListDisplay.map((row, index) => (
                       <TableRow key={`row-${index.toString()}`}>
-                        <TableCell>{row.material_id}</TableCell>
-                        <TableCell>{row.material_name}</TableCell>
-                        <TableCell>{row.copper_volume}</TableCell>
-                        <TableCell>{row.aluminum_volume}</TableCell>
-                        <TableCell>{row.cast_iron_volume}</TableCell>
-                        <TableCell>{row.steel_volume}</TableCell>
-                        <TableCell>{row.other_volume}</TableCell>
+                        <TableCell key={`materialID-${index.toString()}`}>{row.materialID}</TableCell>
+                        <TableCell key={`materialName-${index.toString()}`}>{row.materialName}</TableCell>
+                        <TableCell key={`copperVolume-${index.toString()}`}>{row.copperVolume}</TableCell>
+                        <TableCell key={`aluminumVolume-${index.toString()}`}>{row.aluminumVolume}</TableCell>
+                        <TableCell key={`castIronVolume-${index.toString()}`}>{row.castIronVolume}</TableCell>
+                        <TableCell key={`steelVolume-${index.toString()}`}>{row.steelVolume}</TableCell>
+                        <TableCell key={`otherVolume-${index.toString()}`}>{row.otherVolume}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[10, 20, 30, 40, 50]}
+                totalItems={scrapList.length}
+                onChange={(target) => {
+                  this.setState({
+                    scrapListDisplay: scrapList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
+              />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />
           </div>

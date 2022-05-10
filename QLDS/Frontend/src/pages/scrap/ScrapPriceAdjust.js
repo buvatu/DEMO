@@ -98,7 +98,7 @@ class ScrapPriceAdjust extends Component {
     setLoading(true);
     const getAdjustScrapResult = await adjustScrapPrice(copperPrice, aluminumPrice, castIronPrice, steelPrice, otherPrice, auth.companyID, auth.userID);
     setLoading(false);
-    if (getAdjustScrapResult.data === 1) {
+    if (getAdjustScrapResult.data === 'ok') {
       setSubmitResult('Giá phế liệu đã được điều chỉnh thành công!');
     } else {
       setErrorMessage('Chưa cập nhật được giá phế liệu mới. Vui lòng kiểm tra lại.');

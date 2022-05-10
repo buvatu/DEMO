@@ -9,6 +9,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -29,6 +30,10 @@ class Engine extends Component {
     super(props);
     this.state = {
       engineList: [],
+      engineListDisplay: [],
+      page: 1,
+      pageSize: 10,
+
       newEngineID: '',
       newEngineIDErrorMessage: '',
       newCompanyID: '',
@@ -59,6 +64,7 @@ class Engine extends Component {
         return { id: e.companyID, label: e.companyName };
       }),
       engineList: getEngineListResult.data,
+      engineListDisplay: getEngineListResult.data.slice(0, 10),
       engineTypes: [
         { id: 'Đầu máy Bỉ', label: 'Đầu máy Bỉ' },
         { id: 'Đầu máy Ấn Độ', label: 'Đầu máy Ấn Độ' },
@@ -76,6 +82,9 @@ class Engine extends Component {
     setLoading(false);
     this.setState({
       engineList: getEngineListResult.data,
+      engineListDisplay: getEngineListResult.data.slice(0, 10),
+      page: 1,
+      pageSize: 10,
 
       newEngineID: '',
       newEngineIDErrorMessage: '',
@@ -146,6 +155,10 @@ class Engine extends Component {
     // Then state
     const {
       engineList,
+      engineListDisplay,
+      page,
+      pageSize,
+
       newEngineID,
       newCompanyID,
       newEngineType,
@@ -320,7 +333,7 @@ class Engine extends Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {engineList.map((engine, index) => (
+                    {engineListDisplay.map((engine, index) => (
                       <TableRow key={`row-${index.toString()}`}>
                         <TableCell key={`engineID-${index.toString()}`}>{engine.engineID}</TableCell>
                         <TableCell key={`companyName-${index.toString()}`}>{engine.companyName}</TableCell>
@@ -330,6 +343,24 @@ class Engine extends Component {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[10, 20, 30, 40, 50]}
+                totalItems={engineList.length}
+                onChange={(target) => {
+                  this.setState({
+                    engineListDisplay: engineList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
+              />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />
           </div>
