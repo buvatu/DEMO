@@ -34,6 +34,7 @@ import OrderDetails from './pages/order/OrderDetails';
 import OrderList from './pages/order/OrderList';
 import StockInOrder from './pages/order/StockInOrder';
 import StockInOrderApprove from './pages/order/StockInOrderApprove';
+import StockInOrderDetail from './pages/order/StockInOrderDetail';
 import StockInOrderTest from './pages/order/StockInOrderTest';
 import StockOutOrder from './pages/order/StockOutOrder';
 import OrderReport from './pages/report/OrderReport';
@@ -234,6 +235,7 @@ class App extends Component {
             <Route exact path="/order/stock-out" component={isAuthenticated && role === 'phongkehoachvattu' ? StockOutOrder : Home} />
             <Route exact path="/order/stock-in/test" component={isAuthenticated && role === 'phongkythuat' ? StockInOrderTest : Home} />
             <Route exact path="/order/stock-in/approve" component={isAuthenticated && role === 'phongketoantaichinh' ? StockInOrderApprove : Home} />
+            <Route exact path="/order/stock-in/detail" component={isAuthenticated ? StockInOrderDetail : Home} />
             <Route exact path="/order/list" component={isAuthenticated ? OrderList : Home} />
             <Route exact path="/order/details" component={isAuthenticated ? OrderDetails : Home} />
 

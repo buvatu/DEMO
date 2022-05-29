@@ -50,7 +50,7 @@ public class OrderController {
     public ResponseEntity<?> getOrder(@RequestParam Long orderID) {
         Optional<OrderInfo> orderOptional = orderInfoRepository.findById(orderID);
         if (!orderOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no stock-in order with this id");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no order with this id");
         }
         Optional<TestRecipe> testRecipeOptional = testRecipeRepository.findByOrderID(orderID);
         TestRecipe testRecipe = testRecipeOptional.isPresent() ? testRecipeOptional.get() : new TestRecipe(null, orderID, "", "", "", "", "", "", "", "", "", "", null, "");
@@ -67,7 +67,6 @@ public class OrderController {
 
     @PutMapping(value="/order/accept") @Transactional
     public ResponseEntity<?> inspectOrder(@RequestBody Order order) {
-        order.getOrderInfo().setStatus("tested");
         orderInfoRepository.save(order.getOrderInfo());
         testRecipeRepository.save(order.getTestRecipe());
         orderDetailRepository.saveAll(order.getOrderDetailList());

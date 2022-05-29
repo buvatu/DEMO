@@ -29,7 +29,6 @@ import { cancelOrder, getCategoryList, getMaterialListWithStockQuantity, getOrde
 class StockInOrderDetail extends Component {
   constructor(props) {
     super(props);
-    const { auth } = this.props;
     this.state = {
       orderInfo: {
         id: '',
@@ -38,7 +37,7 @@ class StockInOrderDetail extends Component {
         requestor: '',
         requestNote: '',
         requestDate: '',
-        tester: auth.userID,
+        tester: '',
         testNote: '',
         testDate: '',
         approver: '',
@@ -54,9 +53,10 @@ class StockInOrderDetail extends Component {
         stockName: '',
         address: '',
         category: '',
-        companyID: auth.companyID,
+        companyID: '',
       },
       orderDetailList: [],
+      changedOrderDetailList: [],
       testRecipe: {
         id: '',
         orderID: '',
@@ -71,7 +71,6 @@ class StockInOrderDetail extends Component {
         secondCommissionerRepresentation: '',
         comment: '',
       },
-      testNoteErrorMessage: '',
       testerList: [],
       approverList: [],
       supplierList: [],
@@ -91,8 +90,8 @@ class StockInOrderDetail extends Component {
     try {
       const getStockInOrderInfoResult = await getOrder(stockInOrderID);
       if (
-        getStockInOrderInfoResult.data.orderInfo.requestor !== auth.userID ||
-        getStockInOrderInfoResult.data.orderInfo.tester !== auth.userID ||
+        getStockInOrderInfoResult.data.orderInfo.requestor !== auth.userID &&
+        getStockInOrderInfoResult.data.orderInfo.tester !== auth.userID &&
         getStockInOrderInfoResult.data.orderInfo.approver !== auth.userID
       ) {
         setErrorMessage('Bạn không có quyền truy cập');
@@ -104,6 +103,52 @@ class StockInOrderDetail extends Component {
       const getSupplierListResult = await getSupplierList();
       const getCategoryListResult = await getCategoryList();
       const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+      const orderDetailList = getStockInOrderInfoResult.data.orderDetailList.map((e) => {
+        const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
+        e.materialName = selectedMaterial.materialName;
+        e.unit = selectedMaterial.unit;
+        e.materialGroupName = selectedMaterial.materialGroupName;
+        e.materialTypeName = selectedMaterial.materialTypeName;
+        if (getStockInOrderInfoResult.data.orderInfo.status === 'created') {
+          e.quantity = e.requestQuantity;
+          e.amount = e.requestAmount;
+        }
+        if (getStockInOrderInfoResult.data.orderInfo.status === 'tested') {
+          e.quantity = e.testQuantity;
+          e.amount = e.testAmount;
+        }
+        if (getStockInOrderInfoResult.data.orderInfo.status === 'completed') {
+          e.quantity = e.approveQuantity;
+          e.amount = e.approveAmount;
+        }
+        if (getStockInOrderInfoResult.data.orderInfo.status === 'canceled') {
+          // eslint-disable-next-line no-nested-ternary
+          e.quantity = e.approveQuantity !== '' ? e.approveQuantity : e.testQuantity !== '' ? e.testQuantity : e.requestQuantity;
+          // eslint-disable-next-line no-nested-ternary
+          e.amount = e.approveAmount !== '' ? e.approveAmount : e.testAmount !== '' ? e.testAmount : e.requestAmount;
+        }
+        return e;
+      });
+      const { status } = getStockInOrderInfoResult.data.orderInfo;
+      const changedOrderDetailList = orderDetailList.filter((e) => {
+        if (status === 'canceled' || status === 'created') {
+          return false;
+        }
+        if (status === 'tested') {
+          return e.testQuantity !== e.requestQuantity || e.testAmount !== e.requestAmount;
+        }
+        if (status === 'completed') {
+          return (
+            e.approveQuantity !== e.testQuantity ||
+            e.approveQuantity !== e.requestQuantity ||
+            e.testQuantity !== e.requestQuantity ||
+            e.approveAmount !== e.testAmount ||
+            e.approveAmount !== e.requestAmount ||
+            e.testAmount !== e.requestAmount
+          );
+        }
+        return false;
+      });
       this.setState({
         testerList: getTesterListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
@@ -123,32 +168,8 @@ class StockInOrderDetail extends Component {
           }),
         ],
         orderInfo: getStockInOrderInfoResult.data.orderInfo,
-        orderDetailList: getStockInOrderInfoResult.data.orderDetailList.map((e) => {
-          const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
-          e.materialName = selectedMaterial.materialName;
-          e.unit = selectedMaterial.unit;
-          e.materialGroupName = selectedMaterial.materialGroupName;
-          e.materialTypeName = selectedMaterial.materialTypeName;
-          if (getStockInOrderInfoResult.data.orderInfo.status === 'created') {
-            e.quantity = e.requestQuantity;
-            e.amount = e.requestAmount;
-          }
-          if (getStockInOrderInfoResult.data.orderInfo.status === 'tested') {
-            e.quantity = e.testQuantity;
-            e.amount = e.testAmount;
-          }
-          if (getStockInOrderInfoResult.data.orderInfo.status === 'completed') {
-            e.quantity = e.approveQuantity;
-            e.amount = e.approveAmount;
-          }
-          if (getStockInOrderInfoResult.data.orderInfo.status === 'canceled') {
-            // eslint-disable-next-line no-nested-ternary
-            e.quantity = e.approveQuantity !== '' ? e.approveQuantity : e.testQuantity !== '' ? e.testQuantity : e.requestQuantity;
-            // eslint-disable-next-line no-nested-ternary
-            e.amount = e.approveAmount !== '' ? e.approveAmount : e.testAmount !== '' ? e.testAmount : e.requestAmount;
-          }
-          return e;
-        }),
+        orderDetailList,
+        changedOrderDetailList,
         testRecipe: getStockInOrderInfoResult.data.testRecipe,
       });
       this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, testDate: this.formatDate(new Date()) } }));
@@ -161,10 +182,6 @@ class StockInOrderDetail extends Component {
   cancelOrder = async () => {
     const { setErrorMessage, setLoading, setSubmitResult } = this.props;
     const { orderInfo } = this.state;
-    if (orderInfo.testNote.trim() === '') {
-      this.setState({ testNoteErrorMessage: 'Nội dung điều chỉnh không thể bỏ trống' });
-      return;
-    }
     orderInfo.status = 'canceled';
     setLoading(true);
     try {
@@ -183,24 +200,30 @@ class StockInOrderDetail extends Component {
     return `${dd}/${mm}/${yyyy}`;
   };
 
+  getOrderStatusInVN = () => {
+    const { orderInfo } = this.state;
+    if (orderInfo.status === 'canceled') {
+      return 'Đã bị huỷ';
+    }
+    if (orderInfo.status === 'created') {
+      return 'Chờ nghiệm thu';
+    }
+    if (orderInfo.status === 'tested') {
+      return 'Chờ phê duyệt';
+    }
+    if (orderInfo.status === 'completed') {
+      return 'Đã hoàn thành';
+    }
+    return '';
+  };
+
   render() {
     // Props first
-    const { setErrorMessage, setSubmitResult, history, common } = this.props;
+    const { setErrorMessage, setSubmitResult, history, common, auth } = this.props;
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const {
-      orderInfo,
-      testerList,
-      approverList,
-      orderDetailList,
-      quantityErrorMessages,
-      amountErrorMessages,
-      supplierList,
-      categoryList,
-      testRecipe,
-      testNoteErrorMessage,
-    } = this.state;
+    const { orderInfo, testerList, approverList, orderDetailList, supplierList, categoryList, testRecipe, changedOrderDetailList } = this.state;
 
     return (
       <div className="stock-in">
@@ -359,6 +382,15 @@ class StockInOrderDetail extends Component {
                 disabled
               />
             </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Button
+                onClick={() => this.cancelOrder()}
+                style={{ marginTop: '1rem', backgroundColor: '#da1e28' }}
+                disabled={orderInfo.status === 'completed' || orderInfo.status === 'canceled' || orderInfo.requestor !== auth.userID}
+              >
+                Huỷ yêu cầu
+              </Button>
+            </div>
           </div>
           <br />
           <hr className="LeftNav-module--divider--1Z49I" />
@@ -461,6 +493,12 @@ class StockInOrderDetail extends Component {
             <div className="bx--col-lg-2 bx--col-md-2">
               <TextInput id="testNo-TextInput" placeholder="" labelText="Số" value={testRecipe.testNo} disabled />
             </div>
+          </div>
+          <br />
+          <div className="bx--row">
+            <div className="bx--col-lg-4">
+              <TextInput id="testNote-TextInput" placeholder="" labelText="Nội dung điều chỉnh từ phòng kỹ thuật" value={orderInfo.testNote} disabled />
+            </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <DatePicker
                 datePickerType="single"
@@ -473,37 +511,71 @@ class StockInOrderDetail extends Component {
             </div>
           </div>
           <br />
+          <hr className="LeftNav-module--divider--1Z49I" />
+          <br />
           <div className="bx--row">
             <div className="bx--col-lg-4">
               <TextInput
-                id="testNote-TextInput"
+                id="approveNote-TextInput"
                 placeholder=""
-                labelText="Nội dung điều chỉnh"
-                value={orderInfo.testNote}
-                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, testNote: e.target.value }, testNoteErrorMessage: '' }))}
-                invalid={testNoteErrorMessage !== ''}
-                invalidText={testNoteErrorMessage}
+                labelText="Nội dung điều chỉnh từ phòng tài chính kế toán"
+                value={orderInfo.approveNote}
+                disabled
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
-              <Button onClick={() => this.acceptOrder()} style={{ marginTop: '1rem' }} disabled={orderInfo.status !== 'created'}>
-                Nghiệm thu
-              </Button>
+              <DatePicker datePickerType="single" dateFormat="d/m/Y" value={orderInfo.approveDate}>
+                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày phê duyệt" id="approveDate-datepicker" disabled />
+              </DatePicker>
             </div>
+            <div className="bx--col-lg-1 bx--col-md-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
-              <Button onClick={() => this.cancelOrder()} style={{ marginTop: '1rem', backgroundColor: '#da1e28' }} disabled={orderInfo.status !== 'created'}>
-                Huỷ yêu cầu
-              </Button>
-            </div>
-            <div className="bx--col-lg-4" style={{ marginTop: '1rem' }}>
-              <strong>Chú ý:</strong>
-              <br />
-              <ul>
-                <li> - Nếu cần điều chỉnh, vui lòng nhập lý do điều chỉnh.</li>
-                <li> - Nếu phải huỷ bỏ yêu cầu, vui lòng nhập lý do trong phần điều chỉnh.</li>
-              </ul>
+              <TextInput id="status-TextInput" placeholder="" labelText="Trạng thái yêu cầu" value={this.getOrderStatusInVN()} disabled />
             </div>
           </div>
+          <br />
+          <hr className="LeftNav-module--divider--1Z49I" />
+          <br />
+          {changedOrderDetailList.length > 0 && (
+            <div className="bx--row">
+              <div className="bx--col-lg-2 bx--col-md-2" />
+              <div className="bx--col-lg-12">
+                <TableContainer title="Chi tiết thay đổi">
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableHeader key="stt">STT</TableHeader>
+                        <TableHeader key="materialID">Mã vật tư</TableHeader>
+                        <TableHeader key="materialName">Tên vật tư</TableHeader>
+                        <TableHeader key="requestQuantity">Số lượng</TableHeader>
+                        <TableHeader key="requestAmount">Thành tiền</TableHeader>
+                        <TableHeader key="testQuantity">Số lượng nghiệm thu</TableHeader>
+                        <TableHeader key="testAmount">Thành tiền nghiệm thu</TableHeader>
+                        <TableHeader key="approveQuantity">Số lượng phê duyệt</TableHeader>
+                        <TableHeader key="approveAmount">Thành tiền phê duyệt</TableHeader>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {changedOrderDetailList.map((e, index) => (
+                        <TableRow key={`row-${index.toString()}`}>
+                          <TableCell key={`stt-${index.toString()}`}>{index + 1}</TableCell>
+                          <TableCell key={`materialID-${index.toString()}`}>{e.materialID}</TableCell>
+                          <TableCell key={`materialName-${index.toString()}`}>{e.materialName}</TableCell>
+                          <TableCell key={`requestQuantity-${index.toString()}`}>{e.requestQuantity}</TableCell>
+                          <TableCell key={`requestAmount-${index.toString()}`}>{e.requestAmount}</TableCell>
+                          <TableCell key={`testQuantity-${index.toString()}`}>{e.testQuantity}</TableCell>
+                          <TableCell key={`testAmount-${index.toString()}`}>{e.testAmount}</TableCell>
+                          <TableCell key={`approveQuantity-${index.toString()}`}>{e.approveQuantity}</TableCell>
+                          <TableCell key={`approveAmount-${index.toString()}`}>{e.approveAmount}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+              <div className="bx--col-lg-2 bx--col-md-2" />
+            </div>
+          )}
         </div>
         <br />
         <br />
@@ -536,34 +608,8 @@ class StockInOrderDetail extends Component {
                         <TableCell key={`unit-${index.toString()}`}>{orderDetailList[index].unit}</TableCell>
                         <TableCell key={`materialTypeName-${index.toString()}`}>{orderDetailList[index].materialTypeName}</TableCell>
                         <TableCell key={`materialGroupName-${index.toString()}`}>{orderDetailList[index].materialGroupName}</TableCell>
-                        <TableCell key={`quantity-${index.toString()}`}>
-                          <TextInput
-                            id={`quantity-textinput-${index}`}
-                            labelText=""
-                            onChange={(e) => {
-                              orderDetailList[index].testQuantity = e.target.value;
-                              quantityErrorMessages[index] = '';
-                              this.setState({ orderDetailList, quantityErrorMessages });
-                            }}
-                            value={orderDetailList[index].testQuantity}
-                            invalid={quantityErrorMessages[index] !== ''}
-                            invalidText={quantityErrorMessages[index]}
-                          />
-                        </TableCell>
-                        <TableCell key={`amount-${index.toString()}`}>
-                          <TextInput
-                            id={`amount-textinput-${index}`}
-                            labelText=""
-                            onChange={(e) => {
-                              orderDetailList[index].testAmount = e.target.value;
-                              amountErrorMessages[index] = '';
-                              this.setState({ orderDetailList, amountErrorMessages });
-                            }}
-                            value={orderDetailList[index].testAmount}
-                            invalid={amountErrorMessages[index] !== ''}
-                            invalidText={amountErrorMessages[index]}
-                          />
-                        </TableCell>
+                        <TableCell key={`quantity-${index.toString()}`}>{orderDetailList[index].quantity}</TableCell>
+                        <TableCell key={`amount-${index.toString()}`}>{orderDetailList[index].amount}</TableCell>
                       </TableRow>
                     ))}
                     <TableRow />
