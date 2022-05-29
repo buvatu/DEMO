@@ -330,48 +330,10 @@ export const getOrderInfo = (orderID) => {
   });
 };
 
-export const addOrderInfo = (
-  orderType,
-  orderName,
-  status,
-  consumer,
-  requestor,
-  requestNote,
-  tester = '',
-  approver,
-  companyID,
-  supplier = '',
-  no = '',
-  co = '',
-  recipeNo = '',
-  deliver = '',
-  requestDate = '',
-  attachedDocument = '',
-  stockNo = '',
-  address = ''
-) => {
+export const addOrder = (order) => {
   return request({
     url: '/order',
-    params: {
-      orderType,
-      orderName,
-      status,
-      consumer,
-      requestor,
-      requestNote,
-      tester,
-      approver,
-      companyID,
-      supplier,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address,
-    },
+    data: order,
     method: POST,
   });
 };
@@ -700,5 +662,52 @@ export const exportFuelReport = (fromDate, toDate, companyID, updatedUser) => {
     params: { fromDate, toDate, companyID, updatedUser },
     method: GET,
     responseType: 'blob', // important
+  });
+};
+
+export const getCategoryList = () => {
+  return request({
+    url: '/category/list',
+    method: GET,
+  });
+};
+
+export const getOrder = (orderID) => {
+  return request({
+    url: '/order',
+    params: { orderID },
+    method: GET,
+  });
+};
+
+export const getMaterialListWithStockQuantity = (companyID) => {
+  return request({
+    url: '/material/stock/list',
+    params: { companyID },
+    method: GET,
+  });
+};
+
+export const acceptOrder = (order) => {
+  return request({
+    url: '/order/accept',
+    data: order,
+    method: PUT,
+  });
+};
+
+export const approveOrder = (order) => {
+  return request({
+    url: '/order/approve',
+    data: order,
+    method: PUT,
+  });
+};
+
+export const cancelOrder = (orderInfo) => {
+  return request({
+    url: '/order/cancel',
+    data: orderInfo,
+    method: PUT,
   });
 };

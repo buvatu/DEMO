@@ -1,7 +1,8 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
+  Accordion,
+  AccordionItem,
   Button,
-  Checkbox,
   ComboBox,
   ComposedModal,
   DatePicker,
@@ -12,6 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -25,143 +27,167 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { addOrderDetails, addOrderInfo, getMaterialList, getSupplierList, getUserList } from '../../services';
+import { addOrder, getCategoryList, getMaterialListWithStockQuantity, getSupplierList, getUserList } from '../../services';
 
 class StockInOrder extends Component {
   constructor(props) {
     super(props);
+    const { auth } = this.props;
     this.state = {
-      reason: '',
-      reasonErrorMessage: '',
-      tester: '',
+      orderInfo: {
+        orderName: '',
+        orderType: 'I',
+        status: 'created',
+        requestor: auth.userID,
+        requestNote: '',
+        requestDate: this.formatDate(new Date()),
+        tester: '',
+        testNote: '',
+        testDate: '',
+        approver: '',
+        approveNote: '',
+        approveDate: '',
+        supplier: '',
+        no: '',
+        co: '',
+        recipeNo: '',
+        recipeDate: this.formatDate(new Date()),
+        deliver: '',
+        attachedDocument: '',
+        stockName: '',
+        address: '',
+        category: '',
+        companyID: auth.companyID,
+      },
+      orderNameErrorMessage: '',
+      requestNoteErrorMessage: '',
       testerErrorMessage: '',
-      approver: '',
-      approverErrorMessage: '',
       testerList: [],
+      approverErrorMessage: '',
       approverList: [],
-      materialList: [],
-      orderDetails: [],
-      selectedLines: [],
-      materialIDErrorMessages: [],
+      supplierErrorMessage: '',
+      supplierList: [],
+      orderDetailList: [],
       quantityErrorMessages: [],
       amountErrorMessages: [],
-      supplier: '',
-      supplierList: [],
-      no: '',
-      co: '',
-      recipeNo: '',
-      deliver: '',
-      requestDate: '',
-      attachedDocument: '',
-      stockNo: '',
-      address: '',
+      categoryList: [],
+      materialList: [],
+      searchResult: [],
+      materialListDisplay: [],
+      page: 1,
+      pageSize: 5,
+      filterMaterialID: '',
+      filterMaterialGroup: '',
+      filterMatetrialName: '',
+      filterMaterialType: '',
     };
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth } = this.props;
+    const { setLoading, auth, setErrorMessage } = this.props;
     setLoading(true);
-    const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
-    const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoan');
-    const getMaterialListResult = await getMaterialList('', '', '', '');
-    const getSupplierListResult = await getSupplierList();
-    setLoading(false);
-    this.setState({
-      testerList: getTesterListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      approverList: getApproverListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      materialList: getMaterialListResult.data,
-      supplierList: getSupplierListResult.data
-        .sort((a, b) => a.supplier_name.localeCompare(b.supplier_name))
-        .map((e) => {
-          return { id: e.supplier_id, label: e.supplier_id.concat(' - ').concat(e.supplier_name) };
+    try {
+      const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
+      const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
+      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+      const getSupplierListResult = await getSupplierList();
+      const getCategoryListResult = await getCategoryList();
+      this.setState({
+        testerList: getTesterListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
         }),
-      requestDate: this.formatDate(new Date()),
-    });
+        approverList: getApproverListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
+        materialList: getMaterialListResult.data,
+        searchResult: getMaterialListResult.data,
+        materialListDisplay: getMaterialListResult.data.slice(0, 5),
+        supplierList: getSupplierListResult.data
+          .sort((a, b) => a.supplierName.localeCompare(b.supplierName))
+          .map((e) => {
+            return { id: e.supplierID, label: e.supplierID.concat(' - ').concat(e.supplierName) };
+          }),
+        categoryList: [
+          { id: '', label: '' },
+          ...getCategoryListResult.data.map((e) => {
+            return { id: e.categoryID, label: e.categoryName };
+          }),
+        ],
+      });
+    } catch {
+      setErrorMessage('Không thể tải trang. Vui lòng thử lại.');
+    }
+    setLoading(false);
   };
 
   save = async () => {
-    const { setErrorMessage, setLoading, setSubmitResult, auth } = this.props;
-    const {
-      reason,
-      tester,
-      approver,
-      orderDetails,
-      materialIDErrorMessages,
-      quantityErrorMessages,
-      amountErrorMessages,
-      supplier,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address,
-    } = this.state;
+    const { setErrorMessage, setLoading, setSubmitResult } = this.props;
+    const { orderInfo, orderDetailList, quantityErrorMessages, amountErrorMessages } = this.state;
 
     this.setState({
-      reasonErrorMessage: '',
+      orderNameErrorMessage: '',
+      requestNoteErrorMessage: '',
       testerErrorMessage: '',
       approverErrorMessage: '',
-      materialIDErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
-      quantityErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
-      amountErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
+      quantityErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
+      amountErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
     });
     setErrorMessage('');
 
     let hasError = false;
-    if (reason.trim() === '') {
+    if (orderInfo.orderName.trim() === '') {
       hasError = true;
-      this.setState({ reasonErrorMessage: 'Lý do không thể bỏ trống' });
+      this.setState({ orderNameErrorMessage: 'Tên yêu cầu không thể bỏ trống' });
     }
-    if (tester.trim() === '') {
+    if (orderInfo.requestNote.trim() === '') {
+      hasError = true;
+      this.setState({ requestNoteErrorMessage: 'Lý do không thể bỏ trống' });
+    }
+    if (orderInfo.tester === '') {
       hasError = true;
       this.setState({ testerErrorMessage: 'Người nghiệm thu không thể bỏ trống' });
     }
-    if (approver.trim() === '') {
+    if (orderInfo.approver === '') {
       hasError = true;
       this.setState({ approverErrorMessage: 'Người phê duyệt không thể bỏ trống' });
     }
-    orderDetails.forEach((e, index) => {
-      if (e.material_id === '') {
-        hasError = true;
-        materialIDErrorMessages[index] = 'Mã vật tư không thể bỏ trống';
-      }
-      if (e.quantity === '') {
-        hasError = true;
-        quantityErrorMessages[index] = 'Cần nhập vào số lượng';
-      }
-      if ((e.quantity !== '' && !e.quantity.toString().match(/^\d+$/)) || Number(e.quantity) < 1) {
-        hasError = true;
-        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
-      }
-      if (e.amount === '') {
-        hasError = true;
-        amountErrorMessages[index] = 'Cần nhập vào thành tiền';
-      }
-      if ((e.amount !== '' && !e.amount.toString().match(/^\d+$/)) || Number(e.amount) < 1) {
-        hasError = true;
-        amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
-      }
-    });
-    this.setState({ materialIDErrorMessages, quantityErrorMessages, amountErrorMessages });
-    if (orderDetails.length === 0) {
+    if (orderInfo.supplier === '') {
+      hasError = true;
+      this.setState({ supplierErrorMessage: 'Nhà cung cấp không thể bỏ trống' });
+    }
+
+    if (orderDetailList.length === 0) {
       hasError = true;
       setErrorMessage('Mỗi yêu cầu cần ít nhất 1 danh mục vật tư');
     }
 
+    orderDetailList.forEach((e, index) => {
+      if (e.requestQuantity === '') {
+        hasError = true;
+        quantityErrorMessages[index] = 'Cần nhập vào số lượng';
+      }
+      if ((e.requestQuantity !== '' && !e.requestQuantity.match(/^\d+$/)) || Number(e.requestQuantity) < 1) {
+        hasError = true;
+        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
+      }
+      if (e.requestAmount === '') {
+        hasError = true;
+        amountErrorMessages[index] = 'Cần nhập vào thành tiền';
+      }
+      if ((e.requestAmount !== '' && !e.requestAmount.match(/^\d+$/)) || Number(e.requestAmount) < 1) {
+        hasError = true;
+        amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
+      }
+    });
+    this.setState({ quantityErrorMessages, amountErrorMessages });
+
     if (
-      orderDetails.length > 0 &&
+      orderDetailList.length > 0 &&
       new Set(
-        orderDetails.map((e) => {
-          return `${e.material_id}-${e.quality}`;
+        orderDetailList.map((e) => {
+          return e.materialID;
         })
-      ).size !== orderDetails.length
+      ).size !== orderDetailList.length
     ) {
       hasError = true;
       setErrorMessage('Có mã vật tư bị trùng. Vui lòng kiểm tra lại');
@@ -169,36 +195,15 @@ class StockInOrder extends Component {
     if (hasError) {
       return;
     }
+
     setLoading(true);
-    const getAddOrderResult = await addOrderInfo(
-      'I',
-      'Yêu cầu nhập kho',
-      'need test',
-      '',
-      auth.userID,
-      reason,
-      tester,
-      approver,
-      auth.companyID,
-      supplier,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address
-    );
-    setLoading(false);
-    if (getAddOrderResult.data === 'null') {
-      setErrorMessage('Có lỗi khi thêm yêu cầu.');
-      return;
+    try {
+      await addOrder({ orderInfo, orderDetailList });
+    } catch {
+      setErrorMessage('Có lỗi khi thêm yêu cầu. Vui lòng thử lại.');
     }
-    setLoading(true);
-    await addOrderDetails(getAddOrderResult.data, auth.userID, orderDetails);
-    setLoading(false);
     setSubmitResult('Yêu cầu được thêm thành công');
+    setLoading(false);
   };
 
   formatDate = (inputDate) => {
@@ -208,6 +213,27 @@ class StockInOrder extends Component {
     return `${dd}/${mm}/${yyyy}`;
   };
 
+  findMaterial = () => {
+    const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize, materialList } = this.state;
+    let filterResult = JSON.parse(JSON.stringify(materialList));
+    if (filterMaterialID !== '') {
+      filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
+    }
+    if (filterMatetrialName !== '') {
+      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+    }
+    if (filterMaterialGroup !== '') {
+      filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
+    }
+    if (filterMaterialType !== '') {
+      filterResult = filterResult.filter((e) => e.materialTypeID === filterMaterialType);
+    }
+    this.setState({
+      searchResult: filterResult,
+      materialListDisplay: filterResult.slice(0, pageSize),
+    });
+  };
+
   render() {
     // Props first
     const { setErrorMessage, setSubmitResult, history, common } = this.props;
@@ -215,43 +241,47 @@ class StockInOrder extends Component {
 
     // Then state
     const {
-      reason,
-      reasonErrorMessage,
-      tester,
-      approver,
+      orderInfo,
+      orderNameErrorMessage,
+      requestNoteErrorMessage,
       testerList,
       approverList,
-      materialList,
-      orderDetails,
-      selectedLines,
+      orderDetailList,
       testerErrorMessage,
       approverErrorMessage,
-      materialIDErrorMessages,
       quantityErrorMessages,
       amountErrorMessages,
-      supplier,
       supplierList,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address,
+      supplierErrorMessage,
+      categoryList,
+      filterMaterialID,
+      filterMaterialGroup,
+      filterMatetrialName,
+      filterMaterialType,
+      materialListDisplay,
+      searchResult,
+      page,
+      pageSize,
     } = this.state;
 
-    const materialIDs = materialList
-      .map((e) => {
-        return { id: e.material_id, label: e.material_id.concat(' - ').concat(e.material_name) };
-      })
-      .sort((a, b) => a.label.split(' - ')[1].localeCompare(b.label.split(' - ')[1]));
-
-    const qualityList = [
-      { id: 'Mới', label: 'Mới' },
-      { id: 'Loại I', label: 'Loại I' },
-      { id: 'Loại II', label: 'Loại II' },
-      { id: 'Phế liệu', label: 'Phế liệu' },
+    const materialGroups = [
+      { id: '', label: '' },
+      { id: 'phutungmuamoi', label: 'Phụ tùng mua mới' },
+      { id: 'phutunggiacongcokhi', label: 'Phụ tùng gia công cơ khí' },
+      { id: 'phutungkhoiphuc', label: 'Phụ tùng khôi phục' },
+    ];
+    const materialTypes = [
+      { id: '', label: '' },
+      { id: '1521', label: 'Kho nguyên vật liệu chính' },
+      { id: '1522', label: 'Kho vật liệu xây dựng cơ bản' },
+      { id: '1523', label: 'Kho dầu mỡ bôi trơn' },
+      { id: '1524', label: 'Kho phụ tùng' },
+      { id: '1525', label: 'Kho nhiên liệu' },
+      { id: '1526', label: 'Kho nguyên vật liệu phụ' },
+      { id: '1527', label: 'Kho phế liệu' },
+      { id: '1528', label: 'Kho phụ tùng gia công cơ khí' },
+      { id: '1529', label: 'Kho nhiên liệu tồn trên phương tiện' },
+      { id: '1531', label: 'Kho công cụ dụng cụ' },
     ];
 
     return (
@@ -299,48 +329,95 @@ class StockInOrder extends Component {
         {/* Content page */}
         <div className="bx--grid">
           <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-4">
               <TextInput
-                id="reason-TextInput"
-                placeholder="Vui lòng nhập lý do lập bảng"
-                labelText="Lý do"
-                value={reason}
-                onChange={(e) => this.setState({ reason: e.target.value })}
-                invalid={reasonErrorMessage !== ''}
-                invalidText={reasonErrorMessage}
+                id="orderName-TextInput"
+                placeholder="Vui lòng nhập tên yêu cầu"
+                labelText="Tên yêu cầu"
+                value={orderInfo.orderName}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, orderName: e.target.value } }))}
+                invalid={orderNameErrorMessage !== ''}
+                invalidText={orderNameErrorMessage}
               />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+            <div className="bx--col-lg-4">
+              <TextInput
+                id="requestNote-TextInput"
+                placeholder="Vui lòng nhập lý do lập bảng"
+                labelText="Lý do"
+                value={orderInfo.requestNote}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, requestNote: e.target.value } }))}
+                invalid={requestNoteErrorMessage !== ''}
+                invalidText={requestNoteErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <DatePicker
+                datePickerType="single"
+                dateFormat="d/m/Y"
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, requestDate: this.formatDate(e[0]) } }))}
+                value={orderInfo.requestDate}
+              >
+                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày tạo yêu cầu" id="requestDate-datepicker" />
+              </DatePicker>
+            </div>
+          </div>
+          <br />
+          <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
                 id="tester-Dropdown"
                 titleText="Người nghiệm thu"
                 label=""
                 items={testerList}
-                selectedItem={tester === '' ? null : testerList.find((e) => e.id === tester)}
-                onChange={(e) => this.setState({ tester: e.selectedItem.id })}
+                selectedItem={orderInfo.tester === '' ? null : testerList.find((e) => e.id === orderInfo.tester)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, tester: e.selectedItem.id } }))}
                 invalid={testerErrorMessage !== ''}
                 invalidText={testerErrorMessage}
               />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
                 id="approver-Dropdown"
                 titleText="Người phê duyệt"
                 label=""
                 items={approverList}
-                selectedItem={approver === '' ? null : approverList.find((e) => e.id === approver)}
-                onChange={(e) => this.setState({ approver: e.selectedItem.id })}
+                selectedItem={orderInfo.approver === '' ? null : approverList.find((e) => e.id === orderInfo.approver)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, approver: e.selectedItem.id } }))}
                 invalid={approverErrorMessage !== ''}
                 invalidText={approverErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="deliver-TextInput"
+                placeholder=""
+                labelText="Người giao hàng"
+                value={orderInfo.deliver}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, deliver: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="stockName-TextInput"
+                placeholder=""
+                labelText="Nhập vào kho"
+                value={orderInfo.stockName}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, stockName: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="address-TextInput"
+                placeholder=""
+                labelText="Địa chỉ kho"
+                value={orderInfo.address}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, address: e.target.value } }))}
               />
             </div>
           </div>
           <br />
           <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-4">
               <ComboBox
                 id="supplier-Dropdown"
@@ -348,133 +425,246 @@ class StockInOrder extends Component {
                 placeholder="Nhà cung cấp"
                 label=""
                 items={supplierList}
-                selectedItem={supplier === '' ? null : supplierList.find((e) => e.id === supplier)}
-                onChange={(e) => this.setState({ supplier: e.selectedItem == null ? '' : e.selectedItem.id })}
+                selectedItem={orderInfo.supplier === '' ? null : supplierList.find((e) => e.id === orderInfo.supplier)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, supplier: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                }
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+                invalid={supplierErrorMessage !== ''}
+                invalidText={supplierErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="recipeNo-TextInput"
+                placeholder=""
+                labelText="Số hoá đơn"
+                value={orderInfo.recipeNo}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, recipeNo: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="attachedDocument-TextInput"
+                placeholder=""
+                labelText="Số chứng từ gốc kèm theo"
+                value={orderInfo.attachedDocument}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, attachedDocument: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <DatePicker
+                datePickerType="single"
+                dateFormat="d/m/Y"
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, recipeDate: this.formatDate(e[0]) } }))}
+                value={orderInfo.recipeDate}
+              >
+                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày trên hoá đơn" id="recipeDate-datepicker" />
+              </DatePicker>
+            </div>
+          </div>
+          <br />
+          <div className="bx--row">
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="no-ComboBox"
+                titleText="Nợ"
+                placeholder=""
+                label=""
+                items={categoryList}
+                selectedItem={orderInfo.no === '' ? null : categoryList.find((e) => e.id === orderInfo.no)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, no: e.selectedItem == null ? '' : e.selectedItem.id } }))}
                 shouldFilterItem={({ item, inputValue }) => {
                   if (!inputValue) return true;
                   return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
               />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="no-TextInput" placeholder="" labelText="Nợ" value={no} onChange={(e) => this.setState({ no: e.target.value })} />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="co-TextInput" placeholder="" labelText="Có" value={co} onChange={(e) => this.setState({ co: e.target.value })} />
-            </div>
-          </div>
-          <br />
-          <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-4">
-              <TextInput
-                id="recipeNo-TextInput"
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="co-ComboBox"
+                titleText="Có"
                 placeholder=""
-                labelText="Số hoá đơn"
-                value={recipeNo}
-                onChange={(e) => this.setState({ recipeNo: e.target.value })}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="deliver-TextInput"
-                placeholder=""
-                labelText="Người giao hàng"
-                value={deliver}
-                onChange={(e) => this.setState({ deliver: e.target.value })}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <DatePicker datePickerType="single" dateFormat="d/m/Y" onChange={(e) => this.setState({ requestDate: this.formatDate(e[0]) })} value={requestDate}>
-                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày tạo yêu cầu" id="requestDate-datepicker" />
-              </DatePicker>
-            </div>
-          </div>
-          <br />
-          <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-4">
-              <TextInput
-                id="attachedDocument-TextInput"
-                placeholder=""
-                labelText="Số chứng từ gốc kèm theo"
-                value={attachedDocument}
-                onChange={(e) => this.setState({ attachedDocument: e.target.value })}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="stockNo-TextInput"
-                placeholder=""
-                labelText="Nhập vào kho"
-                value={stockNo}
-                onChange={(e) => this.setState({ stockNo: e.target.value })}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="address-TextInput"
-                placeholder=""
-                labelText="Địa điểm"
-                value={address}
-                onChange={(e) => this.setState({ address: e.target.value })}
-              />
-            </div>
-          </div>
-          <br />
-          <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() => {
-                  orderDetails.push({
-                    material_id: '',
-                    material_name: '',
-                    unit: '',
-                    quality: 'Mới',
-                    quantity: '',
-                    amount: '',
-                  });
-                  materialIDErrorMessages.push('');
-                  quantityErrorMessages.push('');
-                  amountErrorMessages.push('');
-                  this.setState({ orderDetails, materialIDErrorMessages, quantityErrorMessages, amountErrorMessages });
+                label=""
+                items={categoryList}
+                selectedItem={orderInfo.co === '' ? null : categoryList.find((e) => e.id === orderInfo.co)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, co: e.selectedItem == null ? '' : e.selectedItem.id } }))}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
-                style={{ marginTop: '1rem' }}
-              >
-                Thêm vật tư
-              </Button>
+              />
             </div>
-            <span style={{ maxLength: '3rem' }} />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() => {
-                  this.setState({
-                    orderDetails: orderDetails.filter((e, index) => !selectedLines.includes(index)),
-                    materialIDErrorMessages: materialIDErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    quantityErrorMessages: quantityErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    amountErrorMessages: amountErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    selectedLines: [],
-                  });
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="category-ComboBox"
+                titleText="Khoản mục"
+                placeholder=""
+                label=""
+                items={categoryList}
+                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                }
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
-                style={{ marginTop: '1rem' }}
-              >
-                Xoá vật tư
-              </Button>
+              />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <Button onClick={() => this.save()} style={{ marginTop: '1rem' }}>
                 Lưu thông tin
               </Button>
             </div>
           </div>
+          <br />
+          <hr className="LeftNav-module--divider--1Z49I" />
+        </div>
+        <div className="bx--grid">
+          <Accordion>
+            <AccordionItem title={<strong>Tìm kiếm nhanh vật tư</strong>}>
+              <div className="bx--row">
+                <div className="bx--col-lg-4">
+                  <TextInput
+                    id="filterMaterialID-TextInput"
+                    placeholder="Vui lòng nhập một phần mã vật tư để tìm kiếm"
+                    labelText="Mã vật tư"
+                    value={filterMaterialID}
+                    onChange={(e) => this.setState({ filterMaterialID: e.target.value })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-4">
+                  <Dropdown
+                    id="filterMaterialGroup-Dropdown"
+                    titleText="Nhóm vật tư"
+                    label=""
+                    items={materialGroups}
+                    selectedItem={filterMaterialGroup === '' ? null : materialGroups.find((e) => e.id === filterMaterialGroup)}
+                    onChange={(e) => this.setState({ filterMaterialGroup: e.selectedItem.id })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-2 bx--col-md-2">
+                  <Button onClick={() => this.findMaterial()} style={{ marginTop: '1rem' }}>
+                    Tìm
+                  </Button>
+                </div>
+              </div>
+              <br />
+              <div className="bx--row">
+                <div className="bx--col-lg-4">
+                  <TextInput
+                    id="filterMaterialName-TextInput"
+                    placeholder="Vui lòng nhập một phần tên vật tư để tìm kiếm"
+                    labelText="Tên vật tư"
+                    value={filterMatetrialName}
+                    onChange={(e) => this.setState({ filterMatetrialName: e.target.value })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-4">
+                  <Dropdown
+                    id="filterMaterialType-Dropdown"
+                    titleText="Loại vật tư (tài khoản kho)"
+                    label=""
+                    items={materialTypes}
+                    selectedItem={filterMaterialType === '' ? null : materialTypes.find((e) => e.id === filterMaterialType)}
+                    onChange={(e) => this.setState({ filterMaterialType: e.selectedItem.id })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-2 bx--col-md-2">
+                  <Button
+                    style={{ marginTop: '1rem' }}
+                    onClick={() => this.setState({ filterMaterialID: '', filterMaterialGroup: '', filterMatetrialName: '', filterMaterialType: '' })}
+                  >
+                    Xoá bộ lọc
+                  </Button>
+                </div>
+              </div>
+              <br />
+              <hr className="LeftNav-module--divider--1Z49I" />
+              <div className="bx--row">
+                <div className="bx--col-lg-2 bx--col-md-2" />
+                <div className="bx--col-lg-12">
+                  <TableContainer title={`Kết quả tìm kiếm cho ra ${searchResult.length} mục vật tư tương ứng.`}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader key="materialID">Mã vật tư</TableHeader>
+                          <TableHeader key="materialName">Tên vật tư</TableHeader>
+                          <TableHeader key="materialTypeName">Loại vật tư</TableHeader>
+                          <TableHeader key="materialGroupName">Nhóm vật tư</TableHeader>
+                          <TableHeader key="unit">Đơn vị tính</TableHeader>
+                          <TableHeader key="minimumQuantity">Lượng tồn tối thiểu</TableHeader>
+                          <TableHeader key="stockQuantity">Lượng tồn trong kho</TableHeader>
+                          <TableHeader />
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {materialListDisplay.map((material, index) => (
+                          <TableRow key={`row-${index.toString()}}`}>
+                            <TableCell key={`materialID-${index.toString()}`}>{material.materialID}</TableCell>
+                            <TableCell key={`materialName-${index.toString()}`}>{material.materialName}</TableCell>
+                            <TableCell key={`materialTypeName-${index.toString()}`}>{material.materialTypeName}</TableCell>
+                            <TableCell key={`materialGroupName-${index.toString()}`}>{material.materialGroupName}</TableCell>
+                            <TableCell key={`unit-${index.toString()}`}>{material.unit}</TableCell>
+                            <TableCell key={`minimumQuantity-${index.toString()}`}>{material.minimumQuantity}</TableCell>
+                            <TableCell key={`stockQuantity-${index.toString()}`}>{material.stockQuantity}</TableCell>
+                            <TableCell>
+                              <Button
+                                disabled={orderDetailList.find((e) => e.materialID === material.materialID)}
+                                onClick={() => {
+                                  orderDetailList.push({
+                                    materialID: material.materialID,
+                                    materialName: material.materialName,
+                                    materialTypeName: material.materialTypeName,
+                                    materialGroupName: material.materialGroupName,
+                                    unit: material.unit,
+                                    requestQuantity: '',
+                                    requestAmount: '',
+                                  });
+                                  quantityErrorMessages.push('');
+                                  amountErrorMessages.push('');
+                                  this.setState({ orderDetailList, quantityErrorMessages, amountErrorMessages });
+                                }}
+                              >
+                                Thêm
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Pagination
+                    className="fixed-pagination"
+                    backwardText="Previous page"
+                    forwardText="Next page"
+                    itemsPerPageText="Items per page:"
+                    page={page}
+                    pageNumberText="Page Number"
+                    pageSize={pageSize}
+                    pageSizes={[5, 10, 15]}
+                    totalItems={searchResult.length}
+                    onChange={(target) => {
+                      this.setState({
+                        materialListDisplay: searchResult.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                        page: target.page,
+                        pageSize: target.pageSize,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+              <br />
+            </AccordionItem>
+          </Accordion>
         </div>
         <br />
         <br />
@@ -488,92 +678,36 @@ class StockInOrder extends Component {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeader />
                       <TableHeader key="stt">STT</TableHeader>
-                      <TableHeader key="materialID" style={{ minWidth: '35%' }}>
-                        Mã vật tư - Tên vật tư
-                      </TableHeader>
+                      <TableHeader key="materialID">Mã vật tư</TableHeader>
+                      <TableHeader key="materialName">Tên vật tư</TableHeader>
                       <TableHeader key="unit">Đơn vị</TableHeader>
-                      <TableHeader key="quality">Chất lượng</TableHeader>
+                      <TableHeader key="materialTypeName">Thuộc kho</TableHeader>
+                      <TableHeader key="materialGroupName">Loại vật tư</TableHeader>
                       <TableHeader key="quantity">Số lượng</TableHeader>
                       <TableHeader key="amount">Thành tiền</TableHeader>
+                      <TableHeader />
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {orderDetails.map((row, index) => (
-                      <TableRow key={row.id}>
-                        <TableCell>
-                          <Checkbox
-                            id={`materialID-checkbox-${index}`}
-                            labelText=""
-                            value={index}
-                            checked={selectedLines.includes(index)}
-                            onChange={(target) => {
-                              if (target) {
-                                selectedLines.push(index);
-                                this.setState({ selectedLines });
-                              } else {
-                                this.setState({ selectedLines: selectedLines.filter((e) => e !== index) });
-                              }
-                            }}
-                          />
-                        </TableCell>
+                    {orderDetailList.map((row, index) => (
+                      <TableRow key={`row-${index.toString()}`}>
                         <TableCell key={`stt-${index.toString()}`}>{index + 1}</TableCell>
-                        <TableCell key={`material-${index.toString()}`}>
-                          <ComboBox
-                            id={`materialID-Dropdown-${index}`}
-                            titleText=""
-                            placeholder="Mã vật tư"
-                            label=""
-                            items={materialIDs}
-                            selectedItem={orderDetails[index].material_id === '' ? null : materialIDs.find((e) => e.id === orderDetails[index].material_id)}
-                            shouldFilterItem={({ item, inputValue }) => {
-                              if (!inputValue) return true;
-                              return item.label.toLowerCase().includes(inputValue.toLowerCase());
-                            }}
-                            onChange={(e) => {
-                              const selectedItemID = e.selectedItem === null ? '' : e.selectedItem.id;
-                              orderDetails[index].material_id = selectedItemID;
-                              orderDetails[index].material_name =
-                                selectedItemID === '' ? '' : materialList.find((item) => item.material_id === selectedItemID).material_name;
-                              orderDetails[index].unit = selectedItemID === '' ? '' : materialList.find((item) => item.material_id === selectedItemID).unit;
-                              materialIDErrorMessages[index] = '';
-                              quantityErrorMessages[index] = '';
-                              amountErrorMessages[index] = '';
-                              this.setState({
-                                orderDetails,
-                                materialIDErrorMessages,
-                                quantityErrorMessages,
-                                amountErrorMessages,
-                              });
-                            }}
-                            invalid={materialIDErrorMessages[index] !== ''}
-                            invalidText={materialIDErrorMessages[index]}
-                          />
-                        </TableCell>
-                        <TableCell key={`unit-${index.toString()}`}>{orderDetails[index].unit}</TableCell>
-                        <TableCell key={`quality-${index.toString()}`}>
-                          <Dropdown
-                            id={`quality-Dropdown-${index}`}
-                            titleText=""
-                            label=""
-                            items={qualityList}
-                            selectedItem={orderDetails[index].quality === '' ? null : qualityList.find((e) => e.id === orderDetails[index].quality)}
-                            onChange={(e) => {
-                              orderDetails[index].quality = e.selectedItem.id;
-                              this.setState({ orderDetails });
-                            }}
-                          />
-                        </TableCell>
+                        <TableCell key={`materialID-${index.toString()}`}>{orderDetailList[index].materialID}</TableCell>
+                        <TableCell key={`materialName-${index.toString()}`}>{orderDetailList[index].materialName}</TableCell>
+                        <TableCell key={`unit-${index.toString()}`}>{orderDetailList[index].unit}</TableCell>
+                        <TableCell key={`materialTypeName-${index.toString()}`}>{orderDetailList[index].materialTypeName}</TableCell>
+                        <TableCell key={`materialGroupName-${index.toString()}`}>{orderDetailList[index].materialGroupName}</TableCell>
                         <TableCell key={`quantity-${index.toString()}`}>
                           <TextInput
                             id={`quantity-textinput-${index}`}
                             labelText=""
                             onChange={(e) => {
-                              orderDetails[index].quantity = Number(e.target.value);
-                              this.setState({ orderDetails });
+                              orderDetailList[index].requestQuantity = e.target.value;
+                              quantityErrorMessages[index] = '';
+                              this.setState({ orderDetailList, quantityErrorMessages });
                             }}
-                            value={orderDetails[index].quantity}
+                            value={orderDetailList[index].requestQuantity}
                             invalid={quantityErrorMessages[index] !== ''}
                             invalidText={quantityErrorMessages[index]}
                           />
@@ -583,13 +717,25 @@ class StockInOrder extends Component {
                             id={`amount-textinput-${index}`}
                             labelText=""
                             onChange={(e) => {
-                              orderDetails[index].amount = Number(e.target.value);
-                              this.setState({ orderDetails });
+                              orderDetailList[index].requestAmount = e.target.value;
+                              amountErrorMessages[index] = '';
+                              this.setState({ orderDetailList, amountErrorMessages });
                             }}
-                            value={orderDetails[index].amount}
+                            value={orderDetailList[index].requestAmount}
                             invalid={amountErrorMessages[index] !== ''}
                             invalidText={amountErrorMessages[index]}
                           />
+                        </TableCell>
+                        <TableCell key={`remove-button-${index.toString()}`}>
+                          <Button
+                            onClick={() => {
+                              this.setState({
+                                orderDetailList: orderDetailList.filter((e) => e.materialID !== row.materialID),
+                              });
+                            }}
+                          >
+                            Xoá
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}

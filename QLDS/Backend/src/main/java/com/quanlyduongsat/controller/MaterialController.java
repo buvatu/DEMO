@@ -32,6 +32,11 @@ public class MaterialController {
         return ResponseEntity.ok().body(materialRepository.findAllByOrderByMaterialIDAsc());
     }
 
+    @GetMapping(value="/material/stock/list")
+    public ResponseEntity<?> getMaterialListWithStockQuantity(@RequestParam String companyID) {
+        return ResponseEntity.ok().body(materialRepository.getMaterialListWithStockQuantity(companyID));
+    }
+
     @GetMapping(value="/material/scrap/list")
     public ResponseEntity<?> getScrapMaterialList() {
         return ResponseEntity.ok().body(materialRepository.findAllScrapMaterialList());

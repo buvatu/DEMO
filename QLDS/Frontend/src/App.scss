@@ -31,6 +31,10 @@ $carbon--theme: $carbon--theme--g10;
   padding-top: 4.5rem;
 }
 
+.bx--accordion__content {
+  padding-right: 0%;
+}
+
 @import './mixins.scss';
 @import './overrides.scss';
 

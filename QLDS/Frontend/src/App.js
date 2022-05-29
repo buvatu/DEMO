@@ -33,6 +33,8 @@ import MaterialUpdate from './pages/material/MaterialUpdate';
 import OrderDetails from './pages/order/OrderDetails';
 import OrderList from './pages/order/OrderList';
 import StockInOrder from './pages/order/StockInOrder';
+import StockInOrderApprove from './pages/order/StockInOrderApprove';
+import StockInOrderTest from './pages/order/StockInOrderTest';
 import StockOutOrder from './pages/order/StockOutOrder';
 import OrderReport from './pages/report/OrderReport';
 import StockInOrderReport from './pages/report/StockInOrderReport';
@@ -136,12 +138,12 @@ class App extends Component {
                     </SideNavMenu>
                     <SideNavDivider />
                     <SideNavMenu title="Quản lý vật tư" isActive>
-                      {role === 'phongkehoach' && (
+                      {role === 'phongkehoachvattu' && (
                         <SideNavMenuItem element={Link} to="/order/stock-in">
                           Yêu cầu nhập kho
                         </SideNavMenuItem>
                       )}
-                      {role === 'phongkehoach' && (
+                      {role === 'phongkehoachvattu' && (
                         <SideNavMenuItem element={Link} to="/order/stock-out">
                           Yêu cầu xuất kho
                         </SideNavMenuItem>
@@ -228,8 +230,10 @@ class App extends Component {
             <Route exact path="/scrap" component={isAuthenticated ? Scrap : Login} />
             <Route exact path="/scrap-price" component={isAuthenticated ? ScrapPriceAdjust : Login} />
 
-            <Route exact path="/order/stock-in" component={isAuthenticated && role === 'phongkehoach' ? StockInOrder : Home} />
-            <Route exact path="/order/stock-out" component={isAuthenticated && role === 'phongkehoach' ? StockOutOrder : Home} />
+            <Route exact path="/order/stock-in" component={isAuthenticated && role === 'phongkehoachvattu' ? StockInOrder : Home} />
+            <Route exact path="/order/stock-out" component={isAuthenticated && role === 'phongkehoachvattu' ? StockOutOrder : Home} />
+            <Route exact path="/order/stock-in/test" component={isAuthenticated && role === 'phongkythuat' ? StockInOrderTest : Home} />
+            <Route exact path="/order/stock-in/approve" component={isAuthenticated && role === 'phongketoantaichinh' ? StockInOrderApprove : Home} />
             <Route exact path="/order/list" component={isAuthenticated ? OrderList : Home} />
             <Route exact path="/order/details" component={isAuthenticated ? OrderDetails : Home} />
 

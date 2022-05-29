@@ -28,7 +28,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
 import { CurrencyFormatter } from '../../constants';
-import { addOrderDetails, addOrderInfo, getEngineListByCompany, getStockList, getUserList } from '../../services';
+import { addOrder, addOrderDetails, getEngineListByCompany, getStockList, getUserList } from '../../services';
 
 class StockOutOrder extends Component {
   constructor(props) {
@@ -226,7 +226,7 @@ class StockOutOrder extends Component {
       return;
     }
     setLoading(true);
-    const getAddOrderResult = await addOrderInfo(
+    const getAddOrderResult = await addOrder(
       'O',
       'Yêu cầu xuất kho',
       'need test',
