@@ -113,7 +113,8 @@ create table qlds.supplier (
 
 drop table if exists qlds.scrap;
 create table qlds.scrap (
-	material_id varchar primary key,
+	id serial primary key,
+	material_id varchar unique not null,
 	material_name varchar not null,
 	copper_volume varchar,
 	aluminum_volume varchar,
@@ -140,6 +141,103 @@ create table qlds.scrap_price (
 
 drop table if exists qlds.order_info;
 create table qlds.order_info (
+	id serial primary key,
+	order_name varchar,
+	order_type varchar(1),
+	status varchar,
+	requestor varchar,
+	request_note varchar,	
+	request_date date,
+	tester varchar,
+	test_note varchar,
+	test_date date,
+	approver varchar,
+	approve_note varchar,
+	approve_date date,
+	supplier varchar,
+	no varchar,
+	co varchar,
+	recipe_no varchar,
+	recipe_date date,
+	deliver varchar,
+	attached_document varchar,
+	stock_name varchar,
+	address varchar,
+	category varchar,
+	consumer varchar,
+	repair_level varchar,
+	repair_group varchar,
+	company_id varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.order_detail;
+create table qlds.order_detail (
+	id serial primary key,
+	order_id integer,
+	material_id varchar,
+	request_quantity integer,
+	test_quantity integer,
+	approve_quantity integer,
+	request_amount decimal,
+	test_amount decimal,
+	approve_amount decimal,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.test_recipe;
+create table qlds.test_recipe (
+	id serial primary key,
+	order_id integer,
+	leader varchar,
+	leader_position varchar,
+	leader_representation varchar,
+	first_commissioner varchar,
+	first_commissioner_position varchar,
+	first_commissioner_representation varchar,
+	second_commissioner varchar,
+	second_commissioner_position varchar,
+	second_commissioner_representation varchar,
+	comment varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.category;
+create table qlds.category (
+	id serial primary key,
+	category_id varchar,
+	category_name varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.other_consumer;
+create table qlds.other_consumer (
+	id serial primary key,
+	consumer_id varchar,
+	consumer_name varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.stock;
+create table qlds.stock (
+	id serial primary key,
+	company_id varchar,
+	material_id varchar,
+	quantity integer,
+	amount decimal,
+	status varchar(1),
+	updated_timestamp timestamp,
+    updated_user varchar,
+    unique (company_id, material_id)
+);
+
+drop table if exists qlds.order_info;
+create table qlds.order_info (
 	order_id varchar primary key,
 	company_id varchar,
 	order_type varchar(1),
@@ -158,112 +256,4 @@ create table qlds.order_info (
 	address varchar,
 	stock_no varchar,
 	attached_document varchar
-);
-
-drop table if exists qlds.order_details;
-create table qlds.order_details (
-	order_details_id serial primary key,
-	order_id varchar,
-	material_id varchar,
-	material_name varchar,
-	unit varchar,
-	quality varchar,
-	quantity integer,
-	amount decimal,
-	updated_timestamp timestamp,
-    updated_user varchar
-);
-
-drop table if exists qlds.order_change_history;
-create table qlds.order_change_history (
-	order_change_id serial primary key,
-	order_details_id varchar,
-	changed_field varchar,
-	old_value varchar,
-	new_value varchar,
-	updated_timestamp timestamp,
-    updated_user varchar
-);
-
-drop table if exists qlds.stock;
-create table qlds.stock (
-	stock_id serial primary key,
-	company_id varchar,
-	material_id varchar,
-	quality varchar,
-	quantity integer,
-	amount decimal,
-	updated_timestamp timestamp,
-    updated_user varchar,
-    unique (company_id, material_id, quality)
-);
-
-drop table if exists qlds.engine_analysis_info;
-create table qlds.engine_analysis_info (
-	engine_analysis_id varchar primary key,
-	engine_analysis_name varchar,
-	company_id varchar,
-	engine_id varchar,
-	engine_type varchar,
-	repair_date date,
-	repair_level varchar,
-	updated_timestamp timestamp,
-    updated_user varchar
-);
-
-drop table if exists qlds.component;
-create table qlds.component (
-	component_id serial primary key,
-	engine_analysis_id varchar,
-	repair_part varchar,
-	material_id varchar,
-	material_name varchar,
-	unit varchar,
-	quantity integer,
-	status varchar,
-	measure varchar,
-	updated_timestamp timestamp,
-    updated_user varchar
-);
-
-drop table if exists qlds.vcf;
-create table qlds.vcf (
-	vcf_key varchar primary key,
-	vcf varchar,
-	company_id varchar,
-	updated_timestamp timestamp,
-    updated_user varchar
-);
-
-select count(*) from qlds.material;
-select (amount/quantity) as price from qlds.stock;
-update order_details set quantity = (quantity + 10) where order_details_id = 1;
-
-drop table if exists qlds.fuel_stock;
-create table qlds.fuel_stock (
-	fuel_material_id varchar,
-	real_fuel_quantity decimal,
-	standard_fuel_quantity decimal,
-	company_id varchar,
-	updated_timestamp timestamp,
-    updated_user varchar
-);
-ALTER TABLE qlds.fuel_stock ADD CONSTRAINT material_company_key UNIQUE (fuel_material_id, company_id);
-
-drop table if exists qlds.fuel_order;
-create table qlds.fuel_order (
-	fuel_order_id varchar primary key,
-	fuel_order_type varchar(1),
-	fuel_material_id varchar,
-	fuel_material_name varchar,
-	fuel_order_note varchar,
-	real_fuel_quantity decimal,
-	standard_fuel_quantity decimal,
-	request_date date,
-	recipe_no varchar,
-	supplier varchar,
-	consumer varchar,
-	company_id varchar,
-	updated_timestamp timestamp,
-    updated_user varchar
 );
