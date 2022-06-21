@@ -80,6 +80,12 @@ public class OrderInfo {
     private String address;
     private String category;
 
+    private String consumer;
+    @Column(name = "repair_level")
+    private String repairLevel;
+    @Column(name = "repair_group")
+    private String repairGroup;
+
     @Column(name = "company_id")
     private String companyID;
 

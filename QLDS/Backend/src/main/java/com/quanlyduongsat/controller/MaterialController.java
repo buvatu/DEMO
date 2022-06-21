@@ -37,6 +37,11 @@ public class MaterialController {
         return ResponseEntity.ok().body(materialRepository.getMaterialListWithStockQuantity(companyID));
     }
 
+    @GetMapping(value="/material/in-stock/list")
+    public ResponseEntity<?> getMaterialListInStock(@RequestParam String companyID) {
+        return ResponseEntity.ok().body(materialRepository.getMaterialListInStock(companyID));
+    }
+
     @GetMapping(value="/material/scrap/list")
     public ResponseEntity<?> getScrapMaterialList() {
         return ResponseEntity.ok().body(materialRepository.findAllScrapMaterialList());
