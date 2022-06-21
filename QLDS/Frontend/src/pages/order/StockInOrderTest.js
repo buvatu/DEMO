@@ -21,7 +21,7 @@ import {
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
 import { acceptOrder, cancelOrder, getCategoryList, getMaterialListWithStockQuantity, getOrder, getSupplierList, getUserList } from '../../services';
@@ -42,8 +42,6 @@ class StockInOrderTest extends Component {
         testNote: '',
         testDate: '',
         approver: '',
-        approveNote: '',
-        approveDate: '',
         supplier: '',
         no: '',
         co: '',
@@ -88,17 +86,17 @@ class StockInOrderTest extends Component {
       setErrorMessage('Không có mã yêu cầu nhập kho!!!');
       return;
     }
-    const stockInOrderID = params.get('stockInOrderID');
+    const orderID = params.get('orderID');
     setLoading(true);
     try {
-      const getStockInOrderInfoResult = await getOrder(stockInOrderID);
+      const getStockInOrderInfoResult = await getOrder(orderID);
       if (getStockInOrderInfoResult.data.orderInfo.tester !== auth.userID) {
         setErrorMessage('Bạn không có quyền truy cập ');
         setLoading(false);
         return;
       }
       if (getStockInOrderInfoResult.data.orderInfo.status !== 'created') {
-        setErrorMessage('Trạng thái yêu cầu đã bị thay đổi. Vui lòng thử lại.');
+        setErrorMessage('Yêu cầu đã bị huỷ hoặc đã hoàn thành. Vui lòng thử lại.');
         setLoading(false);
         return;
       }
@@ -256,7 +254,7 @@ class StockInOrderTest extends Component {
     } = this.state;
 
     return (
-      <div className="stock-in">
+      <div className="stock-in-test">
         {/* Loading */}
         {isLoading && <Loading description="Loading data. Please wait..." withOverlay />}
         {/* Success Modal */}
@@ -521,15 +519,6 @@ class StockInOrderTest extends Component {
                 labelText="Ý kiến ban kiểm nghiệm"
                 value={testRecipe.comment}
                 onChange={(e) => this.setState((prevState) => ({ testRecipe: { ...prevState.testRecipe, comment: e.target.value } }))}
-              />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="testNo-TextInput"
-                placeholder=""
-                labelText="Số"
-                value={testRecipe.testNo}
-                onChange={(e) => this.setState((prevState) => ({ testRecipe: { ...prevState.testRecipe, testNo: e.target.value } }))}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">

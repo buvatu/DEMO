@@ -314,10 +314,10 @@ export const adjustScrapPrice = (copperPrice, aluminumPrice, castIronPrice, stee
   });
 };
 
-export const getOrderList = (requestor, tester, approver, status = '', requestDate = '') => {
+export const getOrderList = (role, userID) => {
   return request({
     url: '/order/list',
-    params: { requestor, tester, approver, status, requestDate },
+    params: { role, userID },
     method: GET,
   });
 };
@@ -672,6 +672,13 @@ export const getCategoryList = () => {
   });
 };
 
+export const getOtherConsumerList = () => {
+  return request({
+    url: '/other-consumer/list',
+    method: GET,
+  });
+};
+
 export const getOrder = (orderID) => {
   return request({
     url: '/order',
@@ -683,6 +690,14 @@ export const getOrder = (orderID) => {
 export const getMaterialListWithStockQuantity = (companyID) => {
   return request({
     url: '/material/stock/list',
+    params: { companyID },
+    method: GET,
+  });
+};
+
+export const getMaterialListInStock = (companyID) => {
+  return request({
+    url: '/material/in-stock/list',
     params: { companyID },
     method: GET,
   });

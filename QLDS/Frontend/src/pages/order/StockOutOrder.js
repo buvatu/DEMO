@@ -1,7 +1,8 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
+  Accordion,
+  AccordionItem,
   Button,
-  Checkbox,
   ComboBox,
   ComposedModal,
   DatePicker,
@@ -12,8 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Select,
-  SelectItem,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -24,187 +24,205 @@ import {
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { CurrencyFormatter } from '../../constants';
-import { addOrder, addOrderDetails, getEngineListByCompany, getStockList, getUserList } from '../../services';
+import { addOrder, getCategoryList, getEngineListByCompany, getMaterialListInStock, getOtherConsumerList, getUserList } from '../../services';
 
 class StockOutOrder extends Component {
   constructor(props) {
     super(props);
+    const { auth } = this.props;
     this.state = {
-      reason: '',
-      reasonErrorMessage: '',
-      engineID: '',
-      engineList: [],
-      consumer: '',
-      consumerErrorMessage: '',
-      tester: '',
+      orderInfo: {
+        orderName: '',
+        orderType: 'O',
+        status: 'created',
+        requestor: auth.userID,
+        requestNote: '',
+        requestDate: this.formatDate(new Date()),
+        tester: '',
+        testNote: '',
+        approver: '',
+        approveNote: '',
+
+        consumer: '',
+        repairGroup: '',
+        repairLevel: '',
+
+        no: '',
+        co: '',
+        attachedDocument: '',
+        stockName: '',
+        address: '',
+        category: '',
+
+        companyID: auth.companyID,
+      },
+      orderNameErrorMessage: '',
+      requestNoteErrorMessage: '',
       testerErrorMessage: '',
-      approver: '',
-      approverErrorMessage: '',
       testerList: [],
+      approverErrorMessage: '',
       approverList: [],
-      materialList: [],
-      orderDetails: [],
-      selectedLines: [],
-      materialIDErrorMessages: [],
-      qualityErrorMessages: [],
+      orderDetailList: [],
       quantityErrorMessages: [],
       amountErrorMessages: [],
-      supplier: '',
-      supplierList: [],
-      no: '',
-      co: '',
-      recipeNo: '',
-      deliver: '',
-      requestDate: '',
-      attachedDocument: '',
-      stockNo: '',
-      address: '',
+      categoryList: [],
+      engineList: [],
+      otherConsumerList: [],
+      engineID: '',
+      otherConsumer: '',
+      engineIDErrorMessage: '',
+      otherConsumerErrorMessage: '',
+      repairLevelErrorMessage: '',
+      repairGroupErrorMessage: '',
+
+      materialList: [],
+      searchResult: [],
+      materialListDisplay: [],
+      page: 1,
+      pageSize: 5,
+      filterMaterialID: '',
+      filterMaterialGroup: '',
+      filterMatetrialName: '',
+      filterMaterialType: '',
     };
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth } = this.props;
+    const { setLoading, auth, setErrorMessage } = this.props;
     setLoading(true);
-    const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
-    const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoan');
-    const getEngineListResult = await getEngineListByCompany(auth.companyID);
-    const getMaterialListResult = await getStockList(auth.companyID);
+    try {
+      const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
+      const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
+      const getMaterialListResult = await getMaterialListInStock(auth.companyID);
+      const getCategoryListResult = await getCategoryList();
+      const getOtherConsumerListResult = await getOtherConsumerList();
+      const getEngineListResult = await getEngineListByCompany(auth.companyID);
+      this.setState({
+        testerList: getTesterListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
+        approverList: getApproverListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
+        materialList: getMaterialListResult.data,
+        searchResult: getMaterialListResult.data,
+        materialListDisplay: getMaterialListResult.data.slice(0, 5),
+        categoryList: [
+          { id: '', label: '' },
+          ...getCategoryListResult.data.map((e) => {
+            return { id: e.categoryID, label: e.categoryName };
+          }),
+        ],
+        otherConsumerList: [
+          ...getOtherConsumerListResult.data.map((e) => {
+            return { id: e.consumerID, label: e.consumerName };
+          }),
+        ],
+        engineList: [
+          ...getEngineListResult.data.map((e) => {
+            return { id: e.engineID, label: e.engineID };
+          }),
+          { id: 'other', label: 'Đối tượng tiêu thụ khác' },
+        ],
+      });
+    } catch {
+      setErrorMessage('Không thể tải trang. Vui lòng thử lại.');
+    }
     setLoading(false);
-    const engineList = getEngineListResult.data.map((e) => {
-      return { id: e.engine_id, label: e.engine_id };
-    });
-    engineList.push({ id: 'other', label: 'Đối tượng khác' });
-    this.setState({
-      testerList: getTesterListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      approverList: getApproverListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      engineList,
-      materialList: getMaterialListResult.data,
-      supplierList: [
-        { id: 'Tổ Điện', label: 'Tổ Điện' },
-        { id: 'Tổ Khung Gầm', label: 'Tổ Khung Gầm' },
-        { id: 'Tổ Động cơ', label: 'Tổ Động cơ' },
-        { id: 'Tổ Hãm', label: 'Tổ Hãm' },
-        { id: 'Tổ Cơ khí', label: 'Tổ Cơ khí' },
-        { id: 'Tổ Truyền động', label: 'Tổ Truyền động' },
-      ],
-      requestDate: this.formatDate(new Date()),
-    });
   };
 
   save = async () => {
-    const { setErrorMessage, setLoading, setSubmitResult, auth } = this.props;
-    const {
-      reason,
-      tester,
-      approver,
-      orderDetails,
-      materialIDErrorMessages,
-      quantityErrorMessages,
-      amountErrorMessages,
-      qualityErrorMessages,
-      engineID,
-      consumer,
-      materialList,
-      supplier,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address,
-    } = this.state;
+    const { setErrorMessage, setLoading, setSubmitResult } = this.props;
+    const { orderInfo, orderDetailList, quantityErrorMessages, amountErrorMessages, engineID, otherConsumer, materialList } = this.state;
 
-    let hasError = false;
     this.setState({
-      reasonErrorMessage: '',
+      orderNameErrorMessage: '',
+      requestNoteErrorMessage: '',
       testerErrorMessage: '',
       approverErrorMessage: '',
-      consumerErrorMessage: '',
-      materialIDErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
-      qualityErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
-      quantityErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
-      amountErrorMessages: Array(orderDetails.length).fill('', 0, orderDetails.length),
+      engineIDErrorMessage: '',
+      otherConsumerErrorMessage: '',
+      repairLevelErrorMessage: '',
+      repairGroupErrorMessage: '',
+      quantityErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
+      amountErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
     });
     setErrorMessage('');
 
-    if (reason.trim() === '') {
+    let hasError = false;
+    if (orderInfo.orderName.trim() === '') {
       hasError = true;
-      this.setState({ reasonErrorMessage: 'Lý do không thể bỏ trống' });
+      this.setState({ orderNameErrorMessage: 'Tên yêu cầu không thể bỏ trống' });
     }
-    if (tester.trim() === '') {
+    if (orderInfo.requestNote.trim() === '') {
+      hasError = true;
+      this.setState({ requestNoteErrorMessage: 'Lý do không thể bỏ trống' });
+    }
+    if (orderInfo.tester === '') {
       hasError = true;
       this.setState({ testerErrorMessage: 'Người nghiệm thu không thể bỏ trống' });
     }
-    if (approver.trim() === '') {
+    if (orderInfo.approver === '') {
       hasError = true;
       this.setState({ approverErrorMessage: 'Người phê duyệt không thể bỏ trống' });
     }
-    if (engineID.trim() === '') {
+    if (orderInfo.repairGroup === '') {
       hasError = true;
-      this.setState({ consumerErrorMessage: 'Đầu máy không thể bỏ trống' });
+      this.setState({ repairGroupErrorMessage: 'Tổ sửa chữa không thể bỏ trống' });
     }
-    if (engineID === 'other' && consumer === '') {
+    if (orderInfo.repairLevel === '') {
       hasError = true;
-      this.setState({ consumerErrorMessage: 'Cần chọn đối tượng tiêu thụ khác' });
+      this.setState({ repairLevelErrorMessage: 'Cấp sửa chữa không thể bỏ trống' });
     }
-    orderDetails.forEach((e, index) => {
-      if (e.material_id === '') {
-        hasError = true;
-        materialIDErrorMessages[index] = 'Mã vật tư không thể bỏ trống';
-      }
-      if (e.quality === '') {
-        hasError = true;
-        qualityErrorMessages[index] = 'Cần chọn chất lượng sản phẩm';
-      }
-      if (e.quantity === '') {
-        hasError = true;
-        quantityErrorMessages[index] = 'Cần nhập vào số lượng';
-      }
-      if (!e.quantity.toString().match(/^\d+$/) || Number(e.quantity) < 1) {
-        hasError = true;
-        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
-      }
-      if (e.quantity > e.stock_quantity - e.minimum_quantity) {
-        hasError = true;
-        quantityErrorMessages[index] = 'Số lượng vượt quá cho phép';
-      }
-      if (e.amount === '') {
-        hasError = true;
-        amountErrorMessages[index] = 'Cần nhập vào thành tiền';
-      }
-      // eslint-disable-next-line no-restricted-globals
-      if (isNaN(e.amount) || Number(e.amount) < 1) {
-        hasError = true;
-        amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
-      }
-      const stockRecord = materialList.find((item) => item.material_id === e.material_id && item.quality === e.quality);
-      if (stockRecord == null) {
-        hasError = true;
-        materialIDErrorMessages[index] = 'Trong kho không có loại vật tư tương ứng';
-      }
-    });
-    this.setState({ materialIDErrorMessages, qualityErrorMessages, quantityErrorMessages, amountErrorMessages });
-    if (orderDetails.length === 0) {
+    if (engineID === '') {
+      hasError = true;
+      this.setState({ engineIDErrorMessage: 'Đầu máy tiêu thụ không thể bỏ trống' });
+    }
+    if (engineID === 'other' && otherConsumer === '') {
+      hasError = true;
+      this.setState({ otherConsumerErrorMessage: 'Đối tượng tiêu thụ không thể bỏ trống' });
+    }
+
+    if (orderDetailList.length === 0) {
       hasError = true;
       setErrorMessage('Mỗi yêu cầu cần ít nhất 1 danh mục vật tư');
     }
 
+    orderDetailList.forEach((e, index) => {
+      if (e.requestQuantity === '') {
+        hasError = true;
+        quantityErrorMessages[index] = 'Cần nhập vào số lượng';
+      }
+      if ((e.requestQuantity !== '' && !e.requestQuantity.match(/^\d+$/)) || Number(e.requestQuantity) < 1) {
+        hasError = true;
+        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
+      }
+      const material = materialList.find((item) => item.materialID === e.materialID);
+      if (Number(e.requestQuantity) > material.stockQuantity) {
+        hasError = true;
+        quantityErrorMessages[index] = 'Số lượng vượt quá lượng tồn trong kho';
+      }
+      if (material.minimumQuantity != null && material.stockQuantity - Number(e.requestQuantity) < material.minimumQuantity) {
+        hasError = true;
+        quantityErrorMessages[index] = 'Số lượng xuất vượt quá lượng tồn tối thiểu';
+      }
+      if (e.requestAmount !== '' && !e.requestAmount.match(/^\d+$/)) {
+        hasError = true;
+        amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
+      }
+    });
+    this.setState({ quantityErrorMessages, amountErrorMessages });
+
     if (
+      orderDetailList.length > 0 &&
       new Set(
-        orderDetails.map((e) => {
-          return `${e.material_id}-${e.quality}`;
+        orderDetailList.map((e) => {
+          return e.materialID;
         })
-      ).size !== orderDetails.length
+      ).size !== orderDetailList.length
     ) {
       hasError = true;
       setErrorMessage('Có mã vật tư bị trùng. Vui lòng kiểm tra lại');
@@ -212,49 +230,20 @@ class StockOutOrder extends Component {
     if (hasError) {
       return;
     }
-    setLoading(true);
-    const getCurrentStockResult = await getStockList(auth.companyID);
-    setLoading(false);
-    orderDetails.forEach((e) => {
-      const currentRecord = getCurrentStockResult.data.find((item) => item.material_id === e.material_id && item.quality === e.quality);
-      if (currentRecord == null || e.quantity > currentRecord.stock_quantity - currentRecord.minimum_quantity) {
-        hasError = true;
-        setErrorMessage('Dữ liệu kho đã bị thay đổi. Vui lòng tải lại trang để có giá trị mới nhất.');
-      }
-    });
-    if (hasError) {
-      return;
+
+    if (engineID !== 'other') {
+      orderInfo.consumer = engineID;
+    } else {
+      orderInfo.consumer = otherConsumer;
     }
     setLoading(true);
-    const getAddOrderResult = await addOrder(
-      'O',
-      'Yêu cầu xuất kho',
-      'need test',
-      engineID === 'other' ? consumer : engineID,
-      auth.userID,
-      reason,
-      tester,
-      approver,
-      auth.companyID,
-      supplier,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address
-    );
-    setLoading(false);
-    if (getAddOrderResult.data === 'null') {
-      setErrorMessage('Có lỗi khi thêm yêu cầu.');
-      return;
+    try {
+      await addOrder({ orderInfo, orderDetailList });
+    } catch {
+      setErrorMessage('Có lỗi khi thêm yêu cầu. Vui lòng thử lại.');
     }
-    setLoading(true);
-    await addOrderDetails(getAddOrderResult.data, auth.userID, orderDetails);
-    setLoading(false);
     setSubmitResult('Yêu cầu được thêm thành công');
+    setLoading(false);
   };
 
   formatDate = (inputDate) => {
@@ -264,6 +253,27 @@ class StockOutOrder extends Component {
     return `${dd}/${mm}/${yyyy}`;
   };
 
+  findMaterial = () => {
+    const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize, materialList } = this.state;
+    let filterResult = JSON.parse(JSON.stringify(materialList));
+    if (filterMaterialID !== '') {
+      filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
+    }
+    if (filterMatetrialName !== '') {
+      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+    }
+    if (filterMaterialGroup !== '') {
+      filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
+    }
+    if (filterMaterialType !== '') {
+      filterResult = filterResult.filter((e) => e.materialTypeID === filterMaterialType);
+    }
+    this.setState({
+      searchResult: filterResult,
+      materialListDisplay: filterResult.slice(0, pageSize),
+    });
+  };
+
   render() {
     // Props first
     const { setErrorMessage, setSubmitResult, history, common } = this.props;
@@ -271,60 +281,70 @@ class StockOutOrder extends Component {
 
     // Then state
     const {
-      reason,
-      reasonErrorMessage,
-      engineID,
-      engineList,
-      consumer,
-      consumerErrorMessage,
-      tester,
-      approver,
+      orderInfo,
+      orderNameErrorMessage,
+      requestNoteErrorMessage,
       testerList,
       approverList,
-      materialList,
-      orderDetails,
-      selectedLines,
+      orderDetailList,
       testerErrorMessage,
       approverErrorMessage,
-      materialIDErrorMessages,
       quantityErrorMessages,
       amountErrorMessages,
-      qualityErrorMessages,
-      supplier,
-      supplierList,
-      no,
-      co,
-      recipeNo,
-      deliver,
-      requestDate,
-      attachedDocument,
-      stockNo,
-      address,
+      categoryList,
+      filterMaterialID,
+      filterMaterialGroup,
+      filterMatetrialName,
+      filterMaterialType,
+      materialListDisplay,
+      searchResult,
+      page,
+      pageSize,
+      engineList,
+      otherConsumerList,
+      engineID,
+      otherConsumer,
+      engineIDErrorMessage,
+      otherConsumerErrorMessage,
+      repairLevelErrorMessage,
+      repairGroupErrorMessage,
     } = this.state;
 
-    const materialIDs = [
-      ...new Set(
-        materialList
-          .map((e) => {
-            return { id: e.material_id, label: e.material_id.concat(' - ').concat(e.material_name) };
-          })
-          .sort((a, b) => a.label.split(' - ')[1].localeCompare(b.label.split(' - ')[1]))
-      ),
+    const materialGroups = [
+      { id: '', label: '' },
+      { id: 'phutungmuamoi', label: 'Phụ tùng mua mới' },
+      { id: 'phutunggiacongcokhi', label: 'Phụ tùng gia công cơ khí' },
+      { id: 'phutungkhoiphuc', label: 'Phụ tùng khôi phục' },
+    ];
+    const materialTypes = [
+      { id: '', label: '' },
+      { id: '1521', label: 'Kho nguyên vật liệu chính' },
+      { id: '1522', label: 'Kho vật liệu xây dựng cơ bản' },
+      { id: '1523', label: 'Kho dầu mỡ bôi trơn' },
+      { id: '1524', label: 'Kho phụ tùng' },
+      { id: '1525', label: 'Kho nhiên liệu' },
+      { id: '1526', label: 'Kho nguyên vật liệu phụ' },
+      { id: '1527', label: 'Kho phế liệu' },
+      { id: '1528', label: 'Kho phụ tùng gia công cơ khí' },
+      { id: '1529', label: 'Kho nhiên liệu tồn trên phương tiện' },
+      { id: '1531', label: 'Kho công cụ dụng cụ' },
     ];
 
-    const qualityList = [
-      { id: 'Mới', label: 'Mới' },
-      { id: 'Loại I', label: 'Loại I' },
-      { id: 'Loại II', label: 'Loại II' },
-      { id: 'Phế liệu', label: 'Phế liệu' },
+    const repairGroupList = [
+      { id: 'Tổ Điện', label: 'Tổ Điện' },
+      { id: 'Tổ Khung Gầm', label: 'Tổ Khung Gầm' },
+      { id: 'Tổ Động cơ', label: 'Tổ Động cơ' },
+      { id: 'Tổ Hãm', label: 'Tổ Hãm' },
+      { id: 'Tổ Cơ khí', label: 'Tổ Cơ khí' },
+      { id: 'Tổ Truyền động', label: 'Tổ Truyền động' },
     ];
 
-    const deliverList = [
+    const repairLevelList = [
       { id: 'Đột xuất', label: 'Đột xuất' },
       { id: 'Ro', label: 'Ro' },
-      { id: 'Rt', label: 'Rt' },
       { id: 'R1', label: 'R1' },
       { id: 'R2', label: 'R2' },
+      { id: 'Rt', label: 'Rt' },
       { id: 'Đại tu', label: 'Đại tu' },
     ];
 
@@ -373,48 +393,95 @@ class StockOutOrder extends Component {
         {/* Content page */}
         <div className="bx--grid">
           <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-4">
               <TextInput
-                id="reason-TextInput"
-                placeholder="Vui lòng nhập lý do lập bảng"
-                labelText="Lý do"
-                value={reason}
-                onChange={(e) => this.setState({ reason: e.target.value })}
-                invalid={reasonErrorMessage !== ''}
-                invalidText={reasonErrorMessage}
+                id="orderName-TextInput"
+                placeholder="Vui lòng nhập tên yêu cầu"
+                labelText="Tên yêu cầu"
+                value={orderInfo.orderName}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, orderName: e.target.value } }))}
+                invalid={orderNameErrorMessage !== ''}
+                invalidText={orderNameErrorMessage}
               />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+            <div className="bx--col-lg-4">
+              <TextInput
+                id="requestNote-TextInput"
+                placeholder="Vui lòng nhập lý do lập bảng"
+                labelText="Lý do"
+                value={orderInfo.requestNote}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, requestNote: e.target.value } }))}
+                invalid={requestNoteErrorMessage !== ''}
+                invalidText={requestNoteErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <DatePicker
+                datePickerType="single"
+                dateFormat="d/m/Y"
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, requestDate: this.formatDate(e[0]) } }))}
+                value={orderInfo.requestDate}
+              >
+                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày tạo yêu cầu" id="requestDate-datepicker" />
+              </DatePicker>
+            </div>
+          </div>
+          <br />
+          <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
                 id="tester-Dropdown"
                 titleText="Người nghiệm thu"
                 label=""
                 items={testerList}
-                selectedItem={tester === '' ? null : testerList.find((e) => e.id === tester)}
-                onChange={(e) => this.setState({ tester: e.selectedItem.id })}
+                selectedItem={orderInfo.tester === '' ? null : testerList.find((e) => e.id === orderInfo.tester)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, tester: e.selectedItem.id } }))}
                 invalid={testerErrorMessage !== ''}
                 invalidText={testerErrorMessage}
               />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
                 id="approver-Dropdown"
                 titleText="Người phê duyệt"
                 label=""
                 items={approverList}
-                selectedItem={approver === '' ? null : approverList.find((e) => e.id === approver)}
-                onChange={(e) => this.setState({ approver: e.selectedItem.id })}
+                selectedItem={orderInfo.approver === '' ? null : approverList.find((e) => e.id === orderInfo.approver)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, approver: e.selectedItem.id } }))}
                 invalid={approverErrorMessage !== ''}
                 invalidText={approverErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="stockName-TextInput"
+                placeholder=""
+                labelText="Xuất tại kho (ngăn lô)"
+                value={orderInfo.stockName}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, stockName: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="address-TextInput"
+                placeholder=""
+                labelText="Địa chỉ kho"
+                value={orderInfo.address}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, address: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="attachedDocument-TextInput"
+                placeholder=""
+                labelText="Số chứng từ gốc kèm theo"
+                value={orderInfo.attachedDocument}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, attachedDocument: e.target.value } }))}
               />
             </div>
           </div>
           <br />
           <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
                 id="engineID-Dropdown"
@@ -422,210 +489,257 @@ class StockOutOrder extends Component {
                 label=""
                 items={engineList}
                 selectedItem={engineID === '' ? null : engineList.find((e) => e.id === engineID)}
-                onChange={(e) => this.setState({ engineID: e.selectedItem.id, consumer: '', consumerErrorMessage: '' })}
-                invalid={consumerErrorMessage !== '' && engineID === ''}
-                invalidText={consumerErrorMessage}
+                onChange={(e) => this.setState({ engineID: e.selectedItem.id, engineIDErrorMessage: '' })}
+                invalid={engineIDErrorMessage !== ''}
+                invalidText={engineIDErrorMessage}
               />
             </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="consumer-TextInput"
-                labelText="Đối tượng tiêu thụ khác"
-                value={consumer}
-                onChange={(e) => this.setState({ consumer: e.target.value })}
-                disabled={engineID !== 'other'}
-                invalid={consumerErrorMessage !== '' && engineID === 'other'}
-                invalidText={consumerErrorMessage}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Dropdown
-                id="supplier-Dropdown"
-                titleText="Tổ"
+            <div className="bx--col-lg-4">
+              <ComboBox
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
+                placeholder=""
                 label=""
-                items={supplierList}
-                selectedItem={supplier === '' ? null : supplierList.find((e) => e.id === supplier)}
-                onChange={(e) => this.setState({ supplier: e.selectedItem.id })}
+                items={otherConsumerList}
+                selectedItem={otherConsumer === '' ? null : otherConsumerList.find((e) => e.id === otherConsumer)}
+                onChange={(e) => this.setState({ otherConsumer: e.selectedItem.id, otherConsumerErrorMessage: '' })}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+                disabled={engineID !== 'other'}
+                invalid={otherConsumerErrorMessage !== ''}
+                invalidText={otherConsumerErrorMessage}
               />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="deliver-Dropdown"
+                id="repairLevel-Dropdown"
                 titleText="Cấp sửa chữa"
                 label=""
-                items={deliverList}
-                selectedItem={deliver === '' ? null : deliverList.find((e) => e.id === deliver)}
-                onChange={(e) => this.setState({ deliver: e.selectedItem.id })}
+                items={repairLevelList}
+                selectedItem={orderInfo.repairLevel === '' ? null : repairLevelList.find((e) => e.id === orderInfo.repairLevel)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, repairLevel: e.selectedItem.id }, repairLevelErrorMessage: '' }))
+                }
+                invalid={repairLevelErrorMessage !== ''}
+                invalidText={repairLevelErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="repairGroup-Dropdown"
+                titleText="Tổ sửa chữa"
+                label=""
+                items={repairGroupList}
+                selectedItem={orderInfo.repairGroup === '' ? null : repairGroupList.find((e) => e.id === orderInfo.repairGroup)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, repairGroup: e.selectedItem.id }, repairGroupErrorMessage: '' }))
+                }
+                invalid={repairGroupErrorMessage !== ''}
+                invalidText={repairGroupErrorMessage}
               />
             </div>
           </div>
           <br />
           <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="no-TextInput" placeholder="" labelText="Nợ" value={no} onChange={(e) => this.setState({ no: e.target.value })} />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="co-TextInput" placeholder="" labelText="Có" value={co} onChange={(e) => this.setState({ co: e.target.value })} />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-3 bx--col-md-3">
-              <Select id="recipeNo-select" labelText="Khoản mục" onChange={(e) => this.setState({ recipeNo: e.target.value })} defaultValue={recipeNo}>
-                <SelectItem value="" text="" />
-                <SelectItem value="Công tác đón gửi tàu ở ga" text="Công tác đón gửi tàu ở ga" />
-                <SelectItem value="Công tác dồn tàu ở ga" text="Công tác dồn tàu ở ga" />
-                <SelectItem value="Công tác hàng hóa ở ga" text="Công tác hàng hóa ở ga" />
-                <SelectItem value="Công tác HK,HL ở ga" text="Công tác HK,HL ở ga" />
-                <SelectItem value="Công tác tiếp thị - phát triển thị trường" text="Công tác tiếp thị - phát triển thị trường" />
-                <SelectItem value="Công tác kiểm tra kỹ thuật chỉnh bị toa xe khách" text="Công tác kiểm tra kỹ thuật chỉnh bị toa xe khách" />
-                <SelectItem value="Công tác kiểm tra kỹ thuật chỉnh bị toa xe khách" text="Công tác kiểm tra kỹ thuật chỉnh bị toa xe khách" />
-                <SelectItem value="Công tác kiểm tra và tu bổ toa xe hàng" text="Công tác kiểm tra và tu bổ toa xe hàng" />
-                <SelectItem value="Công tác làm dầu, bơm mỡ, khám và sửa bộ phận hãm" text="Công tác làm dầu, bơm mỡ, khám và sửa bộ phận hãm" />
-                <SelectItem value="Công tác cấp nước bổ xung lên tàu" text="Công tác cấp nước bổ xung lên tàu" />
-                <SelectItem value="Công tác chạy máy phát điện trên tàu" text="Công tác chạy máy phát điện trên tàu" />
-                <SelectItem value="Công tác phục vụ chạy tàu hàng, tàu khách" text="Công tác phục vụ chạy tàu hàng, tàu khách" />
-                <SelectItem value="Phục vụ ăn, uống trên tàu khách" text="Phục vụ ăn, uống trên tàu khách" />
-                <SelectItem value="Công tác cứu viện" text="Công tác cứu viện" />
-                <SelectItem value="Sửa chữa nhỏ toa xe" text="Sửa chữa nhỏ toa xe" />
-                <SelectItem
-                  value="Công tác chuẩn bị kiểm tra giữa kỳ, cấp nhiên liệu, nước ĐM"
-                  text="Công tác chuẩn bị kiểm tra giữa kỳ, cấp nhiên liệu, nước ĐM"
-                />
-                <SelectItem value="Công tác lái máy" text="Công tác lái máy" />
-                <SelectItem value="Nhiên liệu chạy tàu" text="Nhiên liệu chạy tàu" />
-                <SelectItem value="Nhiên liệu phụ của đầu máy" text="Nhiên liệu phụ của đầu máy" />
-                <SelectItem value="Công tác bảo dưỡng, sửa chữa dưới cấp 3" text="Công tác bảo dưỡng, sửa chữa dưới cấp 3" />
-                <SelectItem value="Công tác sửa chữa cấp 3" text="Công tác sửa chữa cấp 3" />
-                <SelectItem value="Công tác sửa chữa cấp KY đầu máy" text="Công tác sửa chữa cấp KY đầu máy" />
-                <SelectItem value="Chi phí phát sinh khác - Phần A" text="Chi phí phát sinh khác - Phần A" />
-                <SelectItem value="Duy tu MMTB, nhà xưởng, công trình kiến trúc" text="Duy tu MMTB, nhà xưởng, công trình kiến trúc" />
-                <SelectItem value="Phương tiện vận chuyển nội bộ" text="Phương tiện vận chuyển nội bộ" />
-                <SelectItem value="Nhiên liệu phục vụ sản xuất" text="Nhiên liệu phục vụ sản xuất" />
-                <SelectItem value="Điện phục vụ sản xuất" text="Điện phục vụ sản xuất" />
-                <SelectItem value="Bổ trợ và phục vụ sản xuất" text="Bổ trợ và phục vụ sản xuất" />
-                <SelectItem value="Gián tiếp của công nhân trực tiếp" text="Gián tiếp của công nhân trực tiếp" />
-                <SelectItem value="Công tác quản lý sản xuất" text="Công tác quản lý sản xuất" />
-                <SelectItem value="Công tác y tế" text="Công tác y tế" />
-                <SelectItem value="Bảo hiểm y tế" text="Bảo hiểm y tế" />
-                <SelectItem value="Bảo hiểm xã hội" text="Bảo hiểm xã hội" />
-                <SelectItem value="Kinh phí công đoàn" text="Kinh phí công đoàn" />
-                <SelectItem value="Chi chế độ cho CBCNV" text="Chi chế độ cho CBCNV" />
-                <SelectItem value="Đào tạo,BD N/vụ, tuyển dụng và quân sự" text="Đào tạo,BD N/vụ, tuyển dụng và quân sự" />
-                <SelectItem value="Thông tin tuyên truyền, quảng cáo" text="Thông tin tuyên truyền, quảng cáo" />
-                <SelectItem value="Phòng bão, lũ và hỏa hoạn" text="Phòng bão, lũ và hỏa hoạn" />
-                <SelectItem value="Cải thiện điều kiện làm việc cho CBCNV" text="Cải thiện điều kiện làm việc cho CBCNV" />
-                <SelectItem value="Sáng kiến cải tiến, chế thử và NC KHKT" text="Sáng kiến cải tiến, chế thử và NC KHKT" />
-                <SelectItem value="Thuê trông coi, bảo quản ĐMTX" text="Thuê trông coi, bảo quản ĐMTX" />
-                <SelectItem value="Chi trả sử dụng đầu máy, toa xe LVQT" text="Chi trả sử dụng đầu máy, toa xe LVQT" />
-                <SelectItem value="Chi trả sử dụng đầu máy" text="Chi trả sử dụng đầu máy" />
-                <SelectItem value="Chi trả công tác đón gửi" text="Chi trả công tác đón gửi" />
-                <SelectItem value="Chi trả tác nghiệp đầu cuối" text="Chi trả tác nghiệp đầu cuối" />
-                <SelectItem value="Chi trả kiểm tra, cấp nước xe khách" text="Chi trả kiểm tra, cấp nước xe khách" />
-                <SelectItem value="Chi trả sử dụng toa xe khách" text="Chi trả sử dụng toa xe khách" />
-                <SelectItem value="Sửa chữa lớn TSCĐ" text="Sửa chữa lớn TSCĐ" />
-                <SelectItem value="Khấu hao cơ bản TSCĐ" text="Khấu hao cơ bản TSCĐ" />
-                <SelectItem value="Lệ phí cơ sở hạ tầng" text="Lệ phí cơ sở hạ tầng" />
-                <SelectItem value="Chi trả sử dụng vốn vay dự án đầu tư tập trung" text="Chi trả sử dụng vốn vay dự án đầu tư tập trung" />
-                <SelectItem value="Chi trả tiền lãi vay tín dụng" text="Chi trả tiền lãi vay tín dụng" />
-                <SelectItem value="Chi trả sử dụng đất" text="Chi trả sử dụng đất" />
-                <SelectItem value="Đền bù tai nạn, phạt hợp đồng" text="Đền bù tai nạn, phạt hợp đồng" />
-                <SelectItem value="Chi hoạt động công tác đoàn thể" text="Chi hoạt động công tác đoàn thể" />
-                <SelectItem value="Chi phí giao dịch, hội nghị, tiếp khách" text="Chi phí giao dịch, hội nghị, tiếp khách" />
-                <SelectItem value="Chi phí phát sinh khác - Phần B" text="Chi phí phát sinh khác - Phần B" />
-                <SelectItem value="Dịch vụ ngoài vận tải" text="Dịch vụ ngoài vận tải" />
-              </Select>
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <DatePicker datePickerType="single" dateFormat="d/m/Y" onChange={(e) => this.setState({ requestDate: this.formatDate(e[0]) })} value={requestDate}>
-                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày tạo yêu cầu" id="requestDate-datepicker" />
-              </DatePicker>
-            </div>
-          </div>
-          <br />
-          <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-4">
-              <TextInput
-                id="attachedDocument-TextInput"
+              <ComboBox
+                id="no-ComboBox"
+                titleText="Nợ"
                 placeholder=""
-                labelText="Số chứng từ gốc kèm theo"
-                value={attachedDocument}
-                onChange={(e) => this.setState({ attachedDocument: e.target.value })}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="stockNo-TextInput"
-                placeholder=""
-                labelText="Xuất tại kho (ngăn lô)"
-                value={stockNo}
-                onChange={(e) => this.setState({ stockNo: e.target.value })}
-              />
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput
-                id="address-TextInput"
-                placeholder=""
-                labelText="Địa điểm"
-                value={address}
-                onChange={(e) => this.setState({ address: e.target.value })}
-              />
-            </div>
-          </div>
-          <br />
-          <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() => {
-                  orderDetails.push({
-                    material_id: '',
-                    material_name: '',
-                    unit: '',
-                    quality: '',
-                    quantity: '',
-                    minimum_quantity: '',
-                    amount: '',
-                  });
-                  materialIDErrorMessages.push('');
-                  qualityErrorMessages.push('');
-                  quantityErrorMessages.push('');
-                  amountErrorMessages.push('');
-                  this.setState({ orderDetails, materialIDErrorMessages, quantityErrorMessages, amountErrorMessages });
+                label=""
+                items={categoryList}
+                selectedItem={orderInfo.no === '' ? null : categoryList.find((e) => e.id === orderInfo.no)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, no: e.selectedItem == null ? '' : e.selectedItem.id } }))}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
-                style={{ marginTop: '1rem' }}
-              >
-                Thêm vật tư
-              </Button>
+              />
             </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() => {
-                  this.setState({
-                    orderDetails: orderDetails.filter((e, index) => !selectedLines.includes(index)),
-                    materialIDErrorMessages: materialIDErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    qualityErrorMessages: qualityErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    quantityErrorMessages: quantityErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    amountErrorMessages: amountErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    selectedLines: [],
-                  });
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="co-ComboBox"
+                titleText="Có"
+                placeholder=""
+                label=""
+                items={categoryList}
+                selectedItem={orderInfo.co === '' ? null : categoryList.find((e) => e.id === orderInfo.co)}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, co: e.selectedItem == null ? '' : e.selectedItem.id } }))}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
-                style={{ marginTop: '1rem' }}
-              >
-                Xoá vật tư
-              </Button>
+              />
             </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="category-ComboBox"
+                titleText="Khoản mục"
+                placeholder=""
+                label=""
+                items={categoryList}
+                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                }
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+              />
+            </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <Button onClick={() => this.save()} style={{ marginTop: '1rem' }}>
                 Lưu thông tin
               </Button>
             </div>
           </div>
+          <br />
+          <hr className="LeftNav-module--divider--1Z49I" />
+        </div>
+        <div className="bx--grid">
+          <Accordion>
+            <AccordionItem title={<strong>Tìm kiếm nhanh vật tư</strong>}>
+              <div className="bx--row">
+                <div className="bx--col-lg-4">
+                  <TextInput
+                    id="filterMaterialID-TextInput"
+                    placeholder="Vui lòng nhập một phần mã vật tư để tìm kiếm"
+                    labelText="Mã vật tư"
+                    value={filterMaterialID}
+                    onChange={(e) => this.setState({ filterMaterialID: e.target.value })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-4">
+                  <Dropdown
+                    id="filterMaterialGroup-Dropdown"
+                    titleText="Nhóm vật tư"
+                    label=""
+                    items={materialGroups}
+                    selectedItem={filterMaterialGroup === '' ? null : materialGroups.find((e) => e.id === filterMaterialGroup)}
+                    onChange={(e) => this.setState({ filterMaterialGroup: e.selectedItem.id })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-2 bx--col-md-2">
+                  <Button onClick={() => this.findMaterial()} style={{ marginTop: '1rem' }}>
+                    Tìm
+                  </Button>
+                </div>
+              </div>
+              <br />
+              <div className="bx--row">
+                <div className="bx--col-lg-4">
+                  <TextInput
+                    id="filterMaterialName-TextInput"
+                    placeholder="Vui lòng nhập một phần tên vật tư để tìm kiếm"
+                    labelText="Tên vật tư"
+                    value={filterMatetrialName}
+                    onChange={(e) => this.setState({ filterMatetrialName: e.target.value })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-4">
+                  <Dropdown
+                    id="filterMaterialType-Dropdown"
+                    titleText="Loại vật tư (tài khoản kho)"
+                    label=""
+                    items={materialTypes}
+                    selectedItem={filterMaterialType === '' ? null : materialTypes.find((e) => e.id === filterMaterialType)}
+                    onChange={(e) => this.setState({ filterMaterialType: e.selectedItem.id })}
+                  />
+                </div>
+                <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+                <div className="bx--col-lg-2 bx--col-md-2">
+                  <Button
+                    style={{ marginTop: '1rem' }}
+                    onClick={() => this.setState({ filterMaterialID: '', filterMaterialGroup: '', filterMatetrialName: '', filterMaterialType: '' })}
+                  >
+                    Xoá bộ lọc
+                  </Button>
+                </div>
+              </div>
+              <br />
+              <hr className="LeftNav-module--divider--1Z49I" />
+              <div className="bx--row">
+                <div className="bx--col-lg-2 bx--col-md-2" />
+                <div className="bx--col-lg-12">
+                  <TableContainer title={`Kết quả tìm kiếm cho ra ${searchResult.length} mục vật tư tương ứng.`}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader key="materialID">Mã vật tư</TableHeader>
+                          <TableHeader key="materialName">Tên vật tư</TableHeader>
+                          <TableHeader key="materialTypeName">Loại vật tư</TableHeader>
+                          <TableHeader key="materialGroupName">Nhóm vật tư</TableHeader>
+                          <TableHeader key="unit">Đơn vị tính</TableHeader>
+                          <TableHeader key="minimumQuantity">Lượng tồn tối thiểu</TableHeader>
+                          <TableHeader key="stockQuantity">Lượng tồn trong kho</TableHeader>
+                          <TableHeader />
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {materialListDisplay.map((material, index) => (
+                          <TableRow key={`row-${index.toString()}}`}>
+                            <TableCell key={`materialID-${index.toString()}`}>{material.materialID}</TableCell>
+                            <TableCell key={`materialName-${index.toString()}`}>{material.materialName}</TableCell>
+                            <TableCell key={`materialTypeName-${index.toString()}`}>{material.materialTypeName}</TableCell>
+                            <TableCell key={`materialGroupName-${index.toString()}`}>{material.materialGroupName}</TableCell>
+                            <TableCell key={`unit-${index.toString()}`}>{material.unit}</TableCell>
+                            <TableCell key={`minimumQuantity-${index.toString()}`}>{material.minimumQuantity}</TableCell>
+                            <TableCell key={`stockQuantity-${index.toString()}`}>{material.stockQuantity}</TableCell>
+                            <TableCell>
+                              <Button
+                                disabled={orderDetailList.find((e) => e.materialID === material.materialID)}
+                                onClick={() => {
+                                  orderDetailList.push({
+                                    materialID: material.materialID,
+                                    materialName: material.materialName,
+                                    materialTypeName: material.materialTypeName,
+                                    materialGroupName: material.materialGroupName,
+                                    unit: material.unit,
+                                    requestQuantity: '',
+                                    requestAmount: '',
+                                  });
+                                  quantityErrorMessages.push('');
+                                  amountErrorMessages.push('');
+                                  this.setState({ orderDetailList, quantityErrorMessages, amountErrorMessages });
+                                }}
+                              >
+                                Thêm
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Pagination
+                    className="fixed-pagination"
+                    backwardText="Previous page"
+                    forwardText="Next page"
+                    itemsPerPageText="Items per page:"
+                    page={page}
+                    pageNumberText="Page Number"
+                    pageSize={pageSize}
+                    pageSizes={[5, 10, 15]}
+                    totalItems={searchResult.length}
+                    onChange={(target) => {
+                      this.setState({
+                        materialListDisplay: searchResult.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                        page: target.page,
+                        pageSize: target.pageSize,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+              <br />
+            </AccordionItem>
+          </Accordion>
         </div>
         <br />
         <br />
@@ -635,212 +749,73 @@ class StockOutOrder extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
-              <TableContainer title="Chi tiết danh mục xuất kho">
+              <TableContainer
+                title="Chi tiết danh mục nhập kho"
+                description="(*) Thành tiền không bắt buộc phải nhập. Nếu nhập thành tiền thì sẽ được coi là đơn giá thủ công"
+              >
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeader />
                       <TableHeader key="stt">STT</TableHeader>
-                      <TableHeader key="materialID" style={{ minWidth: '25%' }}>
-                        Mã vật tư - Tên vật tư
-                      </TableHeader>
-                      <TableHeader key="unit" style={{ width: '5rem' }}>
-                        Đơn vị
-                      </TableHeader>
-                      <TableHeader key="quality" style={{ width: '10rem' }}>
-                        Chất lượng
-                      </TableHeader>
-                      <TableHeader key="quantity" style={{ width: '10rem' }}>
-                        Số lượng
-                      </TableHeader>
-                      <TableHeader key="stock_quantity">Lượng tồn trong kho</TableHeader>
-                      <TableHeader key="minimum_quantity">Lượng tồn tối thiểu</TableHeader>
-                      <TableHeader key="price" style={{ width: '7rem' }}>
-                        Đơn giá
-                      </TableHeader>
+                      <TableHeader key="materialID">Mã vật tư</TableHeader>
+                      <TableHeader key="materialName">Tên vật tư</TableHeader>
+                      <TableHeader key="unit">Đơn vị</TableHeader>
+                      <TableHeader key="materialTypeName">Thuộc kho</TableHeader>
+                      <TableHeader key="materialGroupName">Loại vật tư</TableHeader>
+                      <TableHeader key="quantity">Số lượng</TableHeader>
                       <TableHeader key="amount">Thành tiền</TableHeader>
+                      <TableHeader />
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {orderDetails.map((row, index) => (
-                      <TableRow key={row.id}>
-                        <TableCell>
-                          <Checkbox
-                            id={`materialID-checkbox-${index}`}
-                            labelText=""
-                            value={index}
-                            checked={selectedLines.includes(index)}
-                            onChange={(target) => {
-                              if (target) {
-                                selectedLines.push(index);
-                                this.setState({ selectedLines });
-                              } else {
-                                this.setState({ selectedLines: selectedLines.filter((e) => e !== index) });
-                              }
-                            }}
-                          />
-                        </TableCell>
+                    {orderDetailList.map((row, index) => (
+                      <TableRow key={`row-${index.toString()}`}>
                         <TableCell key={`stt-${index.toString()}`}>{index + 1}</TableCell>
-                        <TableCell key={`material-${index.toString()}`}>
-                          <ComboBox
-                            id={`materialID-Dropdown-${index}`}
-                            titleText=""
-                            placeholder="Mã vật tư"
-                            label=""
-                            items={materialIDs}
-                            selectedItem={orderDetails[index].material_id === '' ? null : materialIDs.find((e) => e.id === orderDetails[index].material_id)}
-                            shouldFilterItem={({ item, inputValue }) => {
-                              if (!inputValue) return true;
-                              return item.label.toLowerCase().includes(inputValue.toLowerCase());
-                            }}
-                            onChange={(e) => {
-                              materialIDErrorMessages[index] = '';
-                              amountErrorMessages[index] = '';
-                              qualityErrorMessages[index] = '';
-                              quantityErrorMessages[index] = '';
-                              const selectedMaterialID = e.selectedItem === null ? '' : e.selectedItem.id;
-                              if (selectedMaterialID === '') {
-                                orderDetails[index].material_id = '';
-                                orderDetails[index].material_name = '';
-                                orderDetails[index].unit = '';
-                                orderDetails[index].quality = '';
-                                orderDetails[index].quantity = '';
-                                orderDetails[index].stock_quantity = '';
-                                orderDetails[index].minimum_quantity = '';
-                                orderDetails[index].price = '';
-                                orderDetails[index].amount = '';
-                              } else {
-                                orderDetails[index].material_id = selectedMaterialID;
-                                orderDetails[index].material_name = materialList.find((item) => item.material_id === selectedMaterialID).material_name;
-                                orderDetails[index].unit = materialList.find((item) => item.material_id === selectedMaterialID).unit;
-                                if (orderDetails[index].quality !== '') {
-                                  const stockRecord = materialList.find(
-                                    (item) => item.material_id === selectedMaterialID && item.quality === orderDetails[index].quality
-                                  );
-                                  if (stockRecord == null) {
-                                    materialIDErrorMessages[index] = 'Trong kho không có loại vật tư tương ứng';
-                                    orderDetails[index].quantity = '';
-                                    orderDetails[index].stock_quantity = '';
-                                    orderDetails[index].minimum_quantity = '';
-                                    orderDetails[index].price = '';
-                                    orderDetails[index].amount = '';
-                                  } else {
-                                    orderDetails[index].quantity = '';
-                                    orderDetails[index].stock_quantity = stockRecord.quantity;
-                                    orderDetails[index].minimum_quantity = stockRecord.minimum_quantity;
-                                    orderDetails[index].price = stockRecord.price;
-                                    orderDetails[index].amount = '';
-                                  }
-                                }
-                              }
-                              orderDetails[index].material_id = selectedMaterialID;
-                              orderDetails[index].material_name =
-                                selectedMaterialID === '' ? '' : materialList.find((item) => item.material_id === selectedMaterialID).material_name;
-                              orderDetails[index].unit =
-                                selectedMaterialID === '' ? '' : materialList.find((item) => item.material_id === selectedMaterialID).unit;
-                              if (orderDetails[index].quality !== '') {
-                                if (selectedMaterialID !== '') {
-                                  const stockRecord = materialList.find(
-                                    (item) => item.material_id === selectedMaterialID && item.quality === orderDetails[index].quality
-                                  );
-                                  orderDetails[index].price = stockRecord == null ? '' : stockRecord.price;
-                                  orderDetails[index].stock_quantity = stockRecord == null ? '' : stockRecord.quantity;
-                                } else {
-                                  orderDetails[index].price = '';
-                                  orderDetails[index].stock_quantity = '';
-                                }
-                              }
-                              materialIDErrorMessages[index] = '';
-                              this.setState({
-                                orderDetails,
-                                materialIDErrorMessages,
-                              });
-                            }}
-                            invalid={materialIDErrorMessages[index] !== ''}
-                            invalidText={materialIDErrorMessages[index]}
-                          />
-                        </TableCell>
-                        <TableCell key={`unit-${index.toString()}`}>{orderDetails[index].unit}</TableCell>
-                        <TableCell key={`quality-${index.toString()}`}>
-                          <Dropdown
-                            id={`quality-Dropdown-${index}`}
-                            titleText=""
-                            label=""
-                            items={qualityList}
-                            selectedItem={orderDetails[index].quality === '' ? null : qualityList.find((e) => e.id === orderDetails[index].quality)}
-                            onChange={(e) => {
-                              orderDetails[index].quality = e.selectedItem.id;
-                              qualityErrorMessages[index] = '';
-                              materialIDErrorMessages[index] = '';
-                              if (orderDetails[index].material_id !== '') {
-                                const stockRecord = materialList.find(
-                                  (item) => item.material_id === orderDetails[index].material_id && item.quality === e.selectedItem.id
-                                );
-                                if (stockRecord == null) {
-                                  materialIDErrorMessages[index] = 'Trong kho không có loại vật tư tương ứng';
-                                  orderDetails[index].quantity = '';
-                                  orderDetails[index].stock_quantity = '';
-                                  orderDetails[index].minimum_quantity = '';
-                                  orderDetails[index].price = '';
-                                  orderDetails[index].amount = '';
-                                } else {
-                                  orderDetails[index].price = stockRecord.price;
-                                  orderDetails[index].stock_quantity = stockRecord.quantity;
-                                  orderDetails[index].minimum_quantity = stockRecord.minimum_quantity;
-                                }
-                              }
-                              this.setState({ orderDetails, qualityErrorMessages });
-                            }}
-                            disabled={orderDetails[index].material_id === ''}
-                            invalid={qualityErrorMessages[index] !== ''}
-                            invalidText={qualityErrorMessages[index]}
-                          />
-                        </TableCell>
+                        <TableCell key={`materialID-${index.toString()}`}>{orderDetailList[index].materialID}</TableCell>
+                        <TableCell key={`materialName-${index.toString()}`}>{orderDetailList[index].materialName}</TableCell>
+                        <TableCell key={`unit-${index.toString()}`}>{orderDetailList[index].unit}</TableCell>
+                        <TableCell key={`materialTypeName-${index.toString()}`}>{orderDetailList[index].materialTypeName}</TableCell>
+                        <TableCell key={`materialGroupName-${index.toString()}`}>{orderDetailList[index].materialGroupName}</TableCell>
                         <TableCell key={`quantity-${index.toString()}`}>
                           <TextInput
                             id={`quantity-textinput-${index}`}
                             labelText=""
                             onChange={(e) => {
+                              orderDetailList[index].requestQuantity = e.target.value;
                               quantityErrorMessages[index] = '';
-                              const quantity = e.target.value;
-                              if (quantity === '') {
-                                return;
-                              }
-                              if (!quantity.match(/^\d+$/) || Number(quantity) < 1) {
-                                quantityErrorMessages[index] = 'Số lượng không hợp lệ';
-                                this.setState({ quantityErrorMessages });
-                                return;
-                              }
-                              if (Number(quantity) > orderDetails[index].stock_quantity - orderDetails[index].minimum_quantity) {
-                                quantityErrorMessages[index] = 'Số lượng vượt quá cho phép';
-                                this.setState({ quantityErrorMessages });
-                                return;
-                              }
-                              orderDetails[index].quantity = Number(e.target.value);
-                              orderDetails[index].amount = Number(e.target.value) * Number(orderDetails[index].price);
-                              this.setState({ orderDetails });
+                              this.setState({ orderDetailList, quantityErrorMessages });
                             }}
-                            disabled={orderDetails[index].material_id === '' || orderDetails[index].quality === ''}
-                            value={orderDetails[index].quantity}
+                            value={orderDetailList[index].requestQuantity}
                             invalid={quantityErrorMessages[index] !== ''}
                             invalidText={quantityErrorMessages[index]}
                           />
                         </TableCell>
-                        <TableCell key={`stock-quantity-${index.toString()}`}>{orderDetails[index].stock_quantity}</TableCell>
-                        <TableCell key={`minimum-quantity-${index.toString()}`}>{orderDetails[index].minimum_quantity}</TableCell>
-                        <TableCell key={`price-${index.toString()}`}>{CurrencyFormatter.format(orderDetails[index].price)}</TableCell>
                         <TableCell key={`amount-${index.toString()}`}>
                           <TextInput
                             id={`amount-textinput-${index}`}
                             labelText=""
                             onChange={(e) => {
-                              orderDetails[index].amount = e.target.value;
-                              this.setState({ orderDetails });
+                              orderDetailList[index].requestAmount = e.target.value;
+                              amountErrorMessages[index] = '';
+                              this.setState({ orderDetailList, amountErrorMessages });
                             }}
-                            value={orderDetails[index].amount}
+                            value={orderDetailList[index].requestAmount}
                             invalid={amountErrorMessages[index] !== ''}
                             invalidText={amountErrorMessages[index]}
                           />
+                        </TableCell>
+                        <TableCell key={`remove-button-${index.toString()}`}>
+                          <Button
+                            onClick={() => {
+                              this.setState({
+                                orderDetailList: orderDetailList.filter((e) => e.materialID !== row.materialID),
+                                quantityErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
+                                amountErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
+                              });
+                            }}
+                          >
+                            Xoá
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}

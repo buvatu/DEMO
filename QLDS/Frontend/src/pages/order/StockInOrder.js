@@ -24,7 +24,7 @@ import {
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
 import { addOrder, getCategoryList, getMaterialListWithStockQuantity, getSupplierList, getUserList } from '../../services';
@@ -43,10 +43,8 @@ class StockInOrder extends Component {
         requestDate: this.formatDate(new Date()),
         tester: '',
         testNote: '',
-        testDate: '',
         approver: '',
         approveNote: '',
-        approveDate: '',
         supplier: '',
         no: '',
         co: '',
@@ -731,6 +729,8 @@ class StockInOrder extends Component {
                             onClick={() => {
                               this.setState({
                                 orderDetailList: orderDetailList.filter((e) => e.materialID !== row.materialID),
+                                quantityErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
+                                amountErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
                               });
                             }}
                           >

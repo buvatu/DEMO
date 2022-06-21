@@ -24,18 +24,9 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import {
-  cancelOrder,
-  exportStockInOrderRecipe,
-  exportTestRecipe,
-  getCategoryList,
-  getMaterialListWithStockQuantity,
-  getOrder,
-  getSupplierList,
-  getUserList,
-} from '../../services';
+import { cancelOrder, exportStockOutOrderRecipe, exportTestRecipe, getCategoryList, getMaterialListInStock, getOrder, getUserList } from '../../services';
 
-class StockInOrderDetail extends Component {
+class StockOutOrderDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -82,7 +73,8 @@ class StockInOrderDetail extends Component {
       },
       testerList: [],
       approverList: [],
-      supplierList: [],
+      engineList: [],
+      otherConsumerList: [],
       categoryList: [],
     };
   }
@@ -97,11 +89,11 @@ class StockInOrderDetail extends Component {
     const orderID = params.get('orderID');
     setLoading(true);
     try {
-      const getStockInOrderInfoResult = await getOrder(orderID);
+      const getStockOutOrderInfoResult = await getOrder(orderID);
       if (
-        getStockInOrderInfoResult.data.orderInfo.requestor !== auth.userID &&
-        getStockInOrderInfoResult.data.orderInfo.tester !== auth.userID &&
-        getStockInOrderInfoResult.data.orderInfo.approver !== auth.userID
+        getStockOutOrderInfoResult.data.orderInfo.requestor !== auth.userID &&
+        getStockOutOrderInfoResult.data.orderInfo.tester !== auth.userID &&
+        getStockOutOrderInfoResult.data.orderInfo.approver !== auth.userID
       ) {
         setErrorMessage('Bạn không có quyền truy cập');
         setLoading(false);
@@ -109,28 +101,27 @@ class StockInOrderDetail extends Component {
       }
       const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
-      const getSupplierListResult = await getSupplierList();
       const getCategoryListResult = await getCategoryList();
-      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
-      const orderDetailList = getStockInOrderInfoResult.data.orderDetailList.map((e) => {
+      const getMaterialListResult = await getMaterialListInStock(auth.companyID);
+      const orderDetailList = getStockOutOrderInfoResult.data.orderDetailList.map((e) => {
         const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
         e.materialName = selectedMaterial.materialName;
         e.unit = selectedMaterial.unit;
         e.materialGroupName = selectedMaterial.materialGroupName;
         e.materialTypeName = selectedMaterial.materialTypeName;
-        if (getStockInOrderInfoResult.data.orderInfo.status === 'created') {
+        if (getStockOutOrderInfoResult.data.orderInfo.status === 'created') {
           e.quantity = e.requestQuantity;
           e.amount = e.requestAmount;
         }
-        if (getStockInOrderInfoResult.data.orderInfo.status === 'tested') {
+        if (getStockOutOrderInfoResult.data.orderInfo.status === 'tested') {
           e.quantity = e.testQuantity;
           e.amount = e.testAmount;
         }
-        if (getStockInOrderInfoResult.data.orderInfo.status === 'completed') {
+        if (getStockOutOrderInfoResult.data.orderInfo.status === 'completed') {
           e.quantity = e.approveQuantity;
           e.amount = e.approveAmount;
         }
-        if (getStockInOrderInfoResult.data.orderInfo.status === 'canceled') {
+        if (getStockOutOrderInfoResult.data.orderInfo.status === 'canceled') {
           // eslint-disable-next-line no-nested-ternary
           e.quantity = e.approveQuantity !== '' ? e.approveQuantity : e.testQuantity !== '' ? e.testQuantity : e.requestQuantity;
           // eslint-disable-next-line no-nested-ternary
@@ -138,7 +129,7 @@ class StockInOrderDetail extends Component {
         }
         return e;
       });
-      const { status } = getStockInOrderInfoResult.data.orderInfo;
+      const { status } = getStockOutOrderInfoResult.data.orderInfo;
       const changedOrderDetailList = orderDetailList.filter((e) => {
         if (status === 'canceled' || status === 'created') {
           return false;
@@ -165,21 +156,16 @@ class StockInOrderDetail extends Component {
         approverList: getApproverListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
         }),
-        supplierList: getSupplierListResult.data
-          .sort((a, b) => a.supplierName.localeCompare(b.supplierName))
-          .map((e) => {
-            return { id: e.supplierID, label: e.supplierID.concat(' - ').concat(e.supplierName) };
-          }),
         categoryList: [
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
             return { id: e.categoryID, label: e.categoryName };
           }),
         ],
-        orderInfo: getStockInOrderInfoResult.data.orderInfo,
+        orderInfo: getStockOutOrderInfoResult.data.orderInfo,
         orderDetailList,
         changedOrderDetailList,
-        testRecipe: getStockInOrderInfoResult.data.testRecipe,
+        testRecipe: getStockOutOrderInfoResult.data.testRecipe,
       });
       this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, testDate: this.formatDate(new Date()) } }));
     } catch {
@@ -226,10 +212,10 @@ class StockInOrderDetail extends Component {
     return '';
   };
 
-  downloadStockInRecipe = async () => {
+  downloadStockOutRecipe = async () => {
     const { auth, setErrorMessage } = this.props;
     const { orderInfo } = this.state;
-    await exportStockInOrderRecipe(orderInfo.id, auth.companyID)
+    await exportStockOutOrderRecipe(orderInfo.id, auth.companyID)
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -266,10 +252,28 @@ class StockInOrderDetail extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { orderInfo, testerList, approverList, orderDetailList, supplierList, categoryList, testRecipe, changedOrderDetailList } = this.state;
+    const { orderInfo, testerList, approverList, orderDetailList, engineList, categoryList, testRecipe, changedOrderDetailList, otherConsumerList } = this.state;
+
+    const repairGroupList = [
+      { id: 'Tổ Điện', label: 'Tổ Điện' },
+      { id: 'Tổ Khung Gầm', label: 'Tổ Khung Gầm' },
+      { id: 'Tổ Động cơ', label: 'Tổ Động cơ' },
+      { id: 'Tổ Hãm', label: 'Tổ Hãm' },
+      { id: 'Tổ Cơ khí', label: 'Tổ Cơ khí' },
+      { id: 'Tổ Truyền động', label: 'Tổ Truyền động' },
+    ];
+
+    const repairLevelList = [
+      { id: 'Đột xuất', label: 'Đột xuất' },
+      { id: 'Ro', label: 'Ro' },
+      { id: 'R1', label: 'R1' },
+      { id: 'R2', label: 'R2' },
+      { id: 'Rt', label: 'Rt' },
+      { id: 'Đại tu', label: 'Đại tu' },
+    ];
 
     return (
-      <div className="stock-in-detail">
+      <div className="stock-out-detail">
         {/* Loading */}
         {isLoading && <Loading description="Loading data. Please wait..." withOverlay />}
         {/* Success Modal */}
@@ -306,7 +310,7 @@ class StockInOrderDetail extends Component {
         </div>
         <br />
         <div className="view-header--box">
-          <h4>Yêu cầu nhập kho</h4>
+          <h4>Yêu cầu xuất kho</h4>
         </div>
         <br />
 
@@ -314,10 +318,10 @@ class StockInOrderDetail extends Component {
         <div className="bx--grid">
           <div className="bx--row">
             <div className="bx--col-lg-4">
-              <TextInput id="orderName-TextInput" placeholder="" labelText="Tên yêu cầu" value={orderInfo.orderName} disabled />
+              <TextInput id="orderName-TextInput" placeholder="Vui lòng nhập tên yêu cầu" labelText="Tên yêu cầu" value={orderInfo.orderName} disabled />
             </div>
             <div className="bx--col-lg-4">
-              <TextInput id="requestNote-TextInput" placeholder="" labelText="Lý do" value={orderInfo.requestNote} disabled />
+              <TextInput id="requestNote-TextInput" placeholder="Vui lòng nhập lý do lập bảng" labelText="Lý do" value={orderInfo.requestNote} disabled />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <DatePicker datePickerType="single" dateFormat="d/m/Y" value={orderInfo.requestDate}>
@@ -326,6 +330,7 @@ class StockInOrderDetail extends Component {
             </div>
           </div>
           <br />
+
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
@@ -348,44 +353,69 @@ class StockInOrderDetail extends Component {
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="deliver-TextInput" placeholder="" labelText="Người giao hàng" value={orderInfo.deliver} disabled />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="stockName-TextInput" placeholder="" labelText="Nhập vào kho" value={orderInfo.stockName} disabled />
+              <TextInput id="stockName-TextInput" placeholder="" labelText="Xuất tại kho (ngăn lô)" value={orderInfo.stockName} disabled />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <TextInput id="address-TextInput" placeholder="" labelText="Địa chỉ kho" value={orderInfo.address} disabled />
             </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput id="attachedDocument-TextInput" placeholder="" labelText="Số chứng từ gốc kèm theo" value={orderInfo.attachedDocument} disabled />
+            </div>
           </div>
           <br />
+
           <div className="bx--row">
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="engineID-Dropdown"
+                titleText="Đầu máy tiêu thụ"
+                label=""
+                items={engineList}
+                selectedItem={
+                  engineList.find((e) => e.id === orderInfo.consumer) == null
+                    ? { id: 'other', label: 'Đối tượng tiêu thụ khác' }
+                    : engineList.find((e) => e.id === orderInfo.consumer)
+                }
+                disabled
+              />
+            </div>
             <div className="bx--col-lg-4">
               <ComboBox
-                id="supplier-Dropdown"
-                titleText="Đơn vị cung cấp"
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
                 placeholder=""
                 label=""
-                items={supplierList}
-                selectedItem={orderInfo.supplier === '' ? null : supplierList.find((e) => e.id === orderInfo.supplier)}
+                items={otherConsumerList}
+                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
                 onChange={(e) =>
-                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, supplier: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
                 }
                 disabled
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="recipeNo-TextInput" placeholder="" labelText="Số hoá đơn" value={orderInfo.recipeNo} disabled />
+              <Dropdown
+                id="repairLevel-Dropdown"
+                titleText="Cấp sửa chữa"
+                label=""
+                items={repairLevelList}
+                selectedItem={orderInfo.repairLevel === '' ? null : repairLevelList.find((e) => e.id === orderInfo.repairLevel)}
+                disabled
+              />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
-              <TextInput id="attachedDocument-TextInput" placeholder="" labelText="Số chứng từ gốc kèm theo" value={orderInfo.attachedDocument} disabled />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <DatePicker datePickerType="single" dateFormat="d/m/Y" value={orderInfo.recipeDate}>
-                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày trên hoá đơn" id="recipeDate-datepicker" disabled />
-              </DatePicker>
+              <Dropdown
+                id="repairGroup-Dropdown"
+                titleText="Tổ sửa chữa"
+                label=""
+                items={repairGroupList}
+                selectedItem={orderInfo.repairGroup === '' ? null : repairGroupList.find((e) => e.id === orderInfo.repairGroup)}
+                disabled
+              />
             </div>
           </div>
           <br />
+
           <div className="bx--row">
             <div className="bx--col-lg-3 bx--col-md-3">
               <ComboBox
@@ -579,7 +609,7 @@ class StockInOrderDetail extends Component {
               <TextInput id="status-TextInput" placeholder="" labelText="Trạng thái yêu cầu" value={this.getOrderStatusInVN()} disabled />
             </div>
             <div className="bx--col-lg-3 bx--col-md-3">
-              <Button onClick={() => this.downloadStockInRecipe()} style={{ marginTop: '1rem' }} disabled={orderInfo.status !== 'completed'}>
+              <Button onClick={() => this.downloadStockOutRecipe()} style={{ marginTop: '1rem' }} disabled={orderInfo.status !== 'completed'}>
                 Tải phiếu nhập kho
               </Button>
             </div>
@@ -687,7 +717,7 @@ class StockInOrderDetail extends Component {
   }
 }
 
-StockInOrderDetail.propTypes = {
+StockOutOrderDetail.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
@@ -721,4 +751,4 @@ const mapDispatchToProps = (dispatch) => ({
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(StockInOrderDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(StockOutOrderDetail);

@@ -11,7 +11,7 @@ import {
   SkipToContent,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Route, Switch, withRouter } from 'react-router-dom';
 import { removeCurrentLoggedInUser, setCurrentLoggedInUser } from './actions/authAction';
@@ -30,13 +30,15 @@ import Login from './pages/Login';
 import MaterialAdd from './pages/material/MaterialAdd';
 import MaterialList from './pages/material/MaterialList';
 import MaterialUpdate from './pages/material/MaterialUpdate';
-import OrderDetails from './pages/order/OrderDetails';
 import OrderList from './pages/order/OrderList';
 import StockInOrder from './pages/order/StockInOrder';
 import StockInOrderApprove from './pages/order/StockInOrderApprove';
 import StockInOrderDetail from './pages/order/StockInOrderDetail';
 import StockInOrderTest from './pages/order/StockInOrderTest';
 import StockOutOrder from './pages/order/StockOutOrder';
+import StockOutOrderApprove from './pages/order/StockOutOrderApprove';
+import StockOutOrderDetail from './pages/order/StockOutOrderDetail';
+import StockOutOrderTest from './pages/order/StockOutOrderTest';
 import OrderReport from './pages/report/OrderReport';
 import StockInOrderReport from './pages/report/StockInOrderReport';
 import StockOutOrderReport from './pages/report/StockOutOrderReport';
@@ -150,7 +152,7 @@ class App extends Component {
                         </SideNavMenuItem>
                       )}
                       <SideNavMenuItem element={Link} to="/order/list">
-                        Danh sách yêu cầu chờ duyệt
+                        Danh sách yêu cầu
                       </SideNavMenuItem>
                       <SideNavMenuItem element={Link} to="/stock/update">
                         Cập nhật kho đầu kì
@@ -232,12 +234,16 @@ class App extends Component {
             <Route exact path="/scrap-price" component={isAuthenticated ? ScrapPriceAdjust : Login} />
 
             <Route exact path="/order/stock-in" component={isAuthenticated && role === 'phongkehoachvattu' ? StockInOrder : Home} />
-            <Route exact path="/order/stock-out" component={isAuthenticated && role === 'phongkehoachvattu' ? StockOutOrder : Home} />
             <Route exact path="/order/stock-in/test" component={isAuthenticated && role === 'phongkythuat' ? StockInOrderTest : Home} />
             <Route exact path="/order/stock-in/approve" component={isAuthenticated && role === 'phongketoantaichinh' ? StockInOrderApprove : Home} />
             <Route exact path="/order/stock-in/detail" component={isAuthenticated ? StockInOrderDetail : Home} />
+
+            <Route exact path="/order/stock-out" component={isAuthenticated && role === 'phongkehoachvattu' ? StockOutOrder : Home} />
+            <Route exact path="/order/stock-out/test" component={isAuthenticated && role === 'phongkythuat' ? StockOutOrderTest : Home} />
+            <Route exact path="/order/stock-out/approve" component={isAuthenticated && role === 'phongketoantaichinh' ? StockOutOrderApprove : Home} />
+            <Route exact path="/order/stock-out/detail" component={isAuthenticated ? StockOutOrderDetail : Home} />
+
             <Route exact path="/order/list" component={isAuthenticated ? OrderList : Home} />
-            <Route exact path="/order/details" component={isAuthenticated ? OrderDetails : Home} />
 
             <Route exact path="/report/stock" component={isAuthenticated ? StockReport : Home} />
             <Route exact path="/report/order" component={isAuthenticated ? OrderReport : Home} />

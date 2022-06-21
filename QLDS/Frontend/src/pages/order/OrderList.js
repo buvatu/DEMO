@@ -20,7 +20,7 @@ import {
   TableRow,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
@@ -49,49 +49,78 @@ class OrderList extends Component {
   componentDidMount = async () => {
     const { setLoading, auth, setErrorMessage } = this.props;
     const { pageSize } = this.state;
-    const requestor = auth.role === 'phongkehoach' ? auth.userID : '';
-    const tester = auth.role === 'phongkythuat' ? auth.userID : '';
-    const approver = auth.role === 'phongketoan' ? auth.userID : '';
-    if (requestor === '' && tester === '' && approver === '') {
+    if (auth.role !== 'phongkehoachvattu' && auth.role !== 'phongkythuat' && auth.role !== 'phongketoantaichinh') {
       setErrorMessage('Bạn không đủ quyền truy cập trang này');
       return;
     }
     setLoading(true);
-    const getRequestorListResult = await getUserList('', '', auth.companyID, 'phongkehoach');
-    const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
-    const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoan');
-    const getOrderListResult = await getOrderList(requestor, tester, approver, '', '');
+    try {
+      const getRequestorListResult = await getUserList('', '', auth.companyID, 'phongkehoachvattu');
+      const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
+      const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
+      const getOrderListResult = await getOrderList(auth.role, auth.userID);
+      const orderList = getOrderListResult.data;
+      let searchResultList = [];
+      if (auth.role === 'phongkehoachvattu') {
+        searchResultList = orderList.filter((e) => e.status === 'requested' || e.status === 'tested');
+      }
+      if (auth.role === 'phongkythuat') {
+        searchResultList = orderList.filter((e) => e.status === 'requested');
+      }
+      if (auth.role === 'phongketoantaichinh') {
+        searchResultList = orderList.filter((e) => e.status === 'tested');
+      }
+      this.setState({
+        requestor: auth.role === 'phongkehoachvattu' ? auth.userID : '',
+        requestorList: getRequestorListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
+        tester: auth.role === 'phongkythuat' ? auth.userID : '',
+        testerList: getTesterListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
+        approver: auth.role === 'phongketoantaichinh' ? auth.userID : '',
+        approverList: getApproverListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
+        orderList,
+        orderListDisplay: searchResultList.slice(0, pageSize),
+        statusList: [
+          { id: 'requested', label: 'Chờ nghiệm thu' },
+          { id: 'tested', label: 'Chờ phê duyệt' },
+          { id: 'completed', label: 'Đã hoàn thành' },
+          { id: 'canceled', label: 'Bị huỷ' },
+        ],
+      });
+    } catch {
+      setErrorMessage('Có lỗi khi tải trang. Vui lòng thử lại');
+      return;
+    }
+
     setLoading(false);
-    this.setState({
-      requestorList: getRequestorListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      testerList: getTesterListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      approverList: getApproverListResult.data.map((e) => {
-        return { id: e.user_id, label: e.username };
-      }),
-      requestor,
-      tester,
-      approver,
-      orderList: getOrderListResult.data,
-      orderListDisplay: getOrderListResult.data.slice(0, pageSize),
-      statusList: [
-        { id: 'need test', label: 'Chờ nghiệm thu' },
-        { id: 'need approve', label: 'Chờ phê duyệt' },
-        { id: 'completed', label: 'Đã hoàn thành' },
-      ],
-      requestDate: this.formatDate(new Date()),
-    });
   };
 
   findOrderList = async () => {
-    const { status, requestor, tester, approver, requestDate, pageSize } = this.state;
-    const getOrderListResult = await getOrderList(requestor, tester, approver, status, requestDate);
+    const { status, requestor, tester, approver, requestDate, pageSize, orderList } = this.state;
+    let searchResultList = [];
+    if (status !== '') {
+      searchResultList = orderList.filter((e) => e.status === status);
+    }
+    if (requestor !== '') {
+      searchResultList = orderList.filter((e) => e.requestor === requestor);
+    }
+    if (tester !== '') {
+      searchResultList = orderList.filter((e) => e.tester === tester);
+    }
+    if (approver !== '') {
+      searchResultList = orderList.filter((e) => e.approver === approver);
+    }
+    if (requestDate !== '') {
+      searchResultList = orderList.filter((e) => e.requestDate === requestDate);
+    }
     this.setState({
-      orderList: getOrderListResult.data,
-      orderListDisplay: getOrderListResult.data.slice(0, pageSize),
+      page: 1,
+      orderListDisplay: searchResultList.slice(0, pageSize),
     });
   };
 
@@ -103,6 +132,17 @@ class OrderList extends Component {
     const mm = `0${inputDate.getMonth() + 1}`.slice(-2);
     const dd = `0${inputDate.getDate()}`.slice(-2);
     return `${dd}/${mm}/${yyyy}`;
+  };
+
+  getOrderPath = (order) => {
+    const { auth } = this.props;
+    if (auth.role === 'phongkythuat' && order.status === 'requested') {
+      return 'test';
+    }
+    if (auth.role === 'phongketoantaichinh' && order.status === 'tested') {
+      return 'approve';
+    }
+    return 'detail';
   };
 
   render() {
@@ -169,42 +209,39 @@ class OrderList extends Component {
                 onChange={(e) => this.setState({ status: e.selectedItem.id })}
               />
             </div>
-            {auth.role !== 'phongkehoach' && (
-              <div className="bx--col-lg-2 bx--col-md-2">
-                <Dropdown
-                  id="requestor-Dropdown"
-                  titleText="Người tạo yêu cầu"
-                  label=""
-                  items={requestorList}
-                  selectedItem={requestor === '' ? null : requestorList.find((e) => e.id === requestor)}
-                  onChange={(e) => this.setState({ requestor: e.selectedItem.id })}
-                />
-              </div>
-            )}
-            {auth.role !== 'phongkythuat' && (
-              <div className="bx--col-lg-2 bx--col-md-2">
-                <Dropdown
-                  id="tester-Dropdown"
-                  titleText="Người nghiệm thu"
-                  label=""
-                  items={testerList}
-                  selectedItem={tester === '' ? null : testerList.find((e) => e.id === tester)}
-                  onChange={(e) => this.setState({ tester: e.selectedItem.id })}
-                />
-              </div>
-            )}
-            {auth.role !== 'phongketoan' && (
-              <div className="bx--col-lg-2 bx--col-md-2">
-                <Dropdown
-                  id="approver-Dropdown"
-                  titleText="Người phê duyệt"
-                  label=""
-                  items={approverList}
-                  selectedItem={approver === '' ? null : approverList.find((e) => e.id === approver)}
-                  onChange={(e) => this.setState({ approver: e.selectedItem.id })}
-                />
-              </div>
-            )}
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="requestor-Dropdown"
+                titleText="Người tạo yêu cầu"
+                label=""
+                items={requestorList}
+                selectedItem={requestor === '' ? null : requestorList.find((e) => e.id === requestor)}
+                onChange={(e) => this.setState({ requestor: e.selectedItem.id })}
+                disabled={auth.role === 'phongkehoachvattu'}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="tester-Dropdown"
+                titleText="Người nghiệm thu"
+                label=""
+                items={testerList}
+                selectedItem={tester === '' ? null : testerList.find((e) => e.id === tester)}
+                onChange={(e) => this.setState({ tester: e.selectedItem.id })}
+                disabled={auth.role === 'phongkythuat'}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="approver-Dropdown"
+                titleText="Người phê duyệt"
+                label=""
+                items={approverList}
+                selectedItem={approver === '' ? null : approverList.find((e) => e.id === approver)}
+                onChange={(e) => this.setState({ approver: e.selectedItem.id })}
+                disabled={auth.role === 'phongketoantaichinh'}
+              />
+            </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <DatePicker datePickerType="single" dateFormat="d/m/Y" onChange={(e) => this.setState({ requestDate: this.formatDate(e[0]) })} value={requestDate}>
                 <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày tạo yêu cầu" id="requestDate-datepicker" />
@@ -227,11 +264,13 @@ class OrderList extends Component {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeader>Mã yêu cầu</TableHeader>
+                      <TableHeader>Tên yêu cầu</TableHeader>
                       <TableHeader>Loại yêu cầu</TableHeader>
                       <TableHeader>Người yêu cầu</TableHeader>
-                      <TableHeader>Ngày tạo</TableHeader>
                       <TableHeader>Lý do lập</TableHeader>
+                      <TableHeader>Ngày tạo</TableHeader>
+                      <TableHeader>Người nghiệm thu</TableHeader>
+                      <TableHeader>Người phê duyệt</TableHeader>
                       <TableHeader>Trạng thái</TableHeader>
                     </TableRow>
                   </TableHead>
@@ -241,22 +280,24 @@ class OrderList extends Component {
                         <TableCell>
                           <Link
                             to={{
-                              pathname: '/order/details',
-                              search: `?orderID=${order.order_id}`,
+                              pathname: (order.orderType === 'I' ? '/order/stock-in/' : '/order/stock-out/').concat(this.getOrderPath(order)),
+                              search: `?orderID=${order.id}`,
                             }}
                           >
-                            {order.order_id}
+                            {order.orderName}
                           </Link>
                         </TableCell>
-                        <TableCell>{order.order_name}</TableCell>
+                        <TableCell>{order.orderType === 'I' ? 'Yêu cầu nhập kho' : 'Yêu cầu xuất kho'}</TableCell>
                         <TableCell>{order.requestor}</TableCell>
-                        <TableCell>{order.request_date}</TableCell>
-                        <TableCell>{order.request_note}</TableCell>
+                        <TableCell>{order.requestNote}</TableCell>
+                        <TableCell>{order.requestDate}</TableCell>
+                        <TableCell>{order.tester}</TableCell>
+                        <TableCell>{order.approver}</TableCell>
                         <TableCell>
-                          {order.status === 'need test' && 'Chờ nghiệm thu'}
-                          {order.status === 'need approve' && 'Chờ phê duyệt'}
+                          {order.status === 'requested' && 'Chờ nghiệm thu'}
+                          {order.status === 'tested' && 'Chờ phê duyệt'}
                           {order.status === 'completed' && 'Đã hoàn thành'}
-                          {order.status === 'cancel' && 'Đã huỷ'}
+                          {order.status === 'canceled' && 'Đã huỷ'}
                         </TableCell>
                       </TableRow>
                     ))}
