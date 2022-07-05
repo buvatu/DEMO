@@ -8,6 +8,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -18,7 +19,7 @@ import {
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
@@ -28,38 +29,50 @@ class EngineAnalysisList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      engineAnalysisID: '',
+      engineAnalysisName: '',
       engineID: '',
-      engineList: [],
+      engineIDList: [],
       repairLevel: '',
       repairDate: '',
       repairDateList: [],
       engineAnalysisList: [],
+      searchResult: [],
       engineAnalysisListDisplay: [],
+      page: 1,
+      pageSize: 10,
     };
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth } = this.props;
+    const { setLoading, setErrorMessage, auth } = this.props;
     setLoading(true);
-    const getEngineAnalysisListResult = await getEngineAnalysisList(auth.companyID);
+    try {
+      const getEngineAnalysisListResult = await getEngineAnalysisList(auth.companyID);
+      this.setState({
+        engineAnalysisList: getEngineAnalysisListResult.data,
+        searchResult: getEngineAnalysisListResult.data,
+        engineAnalysisListDisplay: getEngineAnalysisListResult.data.slice(0, 10),
+
+        engineIDList: [
+          ...new Set(
+            getEngineAnalysisListResult.data.map((e) => {
+              return { id: e.engineID, label: e.engineID };
+            })
+          ),
+        ],
+
+        repairDateList: [
+          ...new Set(
+            getEngineAnalysisListResult.data.map((e) => {
+              return { id: e.repairDate, label: e.repairDate };
+            })
+          ),
+        ],
+      });
+    } catch {
+      setErrorMessage('Lỗi khi tải trang. Vui lòng thử lại');
+    }
     setLoading(false);
-    const engineAnalysisList = getEngineAnalysisListResult.data;
-    const engineList = [
-      ...new Set(
-        engineAnalysisList.map((e) => {
-          return { id: e.engine_id, label: e.engine_id };
-        })
-      ),
-    ];
-    const repairDateList = [
-      ...new Set(
-        engineAnalysisList.map((e) => {
-          return { id: e.repair_date, label: e.repair_date };
-        })
-      ),
-    ];
-    this.setState({ engineAnalysisList, engineList, repairDateList, engineAnalysisListDisplay: engineAnalysisList });
   };
 
   delete = async (engineAnalysisID) => {
@@ -72,28 +85,21 @@ class EngineAnalysisList extends Component {
   };
 
   findEngineAnalysisList = () => {
-    const { engineAnalysisList, engineAnalysisID, engineID, repairLevel, repairDate } = this.state;
-    let engineAnalysisListDisplay = engineAnalysisList;
-    if (engineAnalysisID.trim() !== '') {
-      engineAnalysisListDisplay = engineAnalysisListDisplay.filter((e) => e.engine_analysis_id.includes(engineAnalysisID.trim()));
+    const { engineAnalysisList, engineAnalysisName, engineID, repairLevel, repairDate } = this.state;
+    let searchResult = JSON.parse(JSON.stringify(engineAnalysisList));
+    if (engineAnalysisName.trim() !== '') {
+      searchResult = searchResult.filter((e) => e.engineAnalysisName.includes(engineAnalysisName));
     }
     if (engineID !== '') {
-      engineAnalysisListDisplay = engineAnalysisListDisplay.filter((e) => e.engine_id === engineID);
+      searchResult = searchResult.filter((e) => e.engineID === engineID);
     }
     if (repairLevel !== '') {
-      engineAnalysisListDisplay = engineAnalysisListDisplay.filter((e) => e.repair_level === repairLevel);
+      searchResult = searchResult.filter((e) => e.repairLevel === repairLevel);
     }
     if (repairDate !== '') {
-      engineAnalysisListDisplay = engineAnalysisListDisplay.filter((e) => e.repair_date === repairDate);
+      searchResult = searchResult.filter((e) => e.repairDate === repairDate);
     }
-    this.setState({ engineAnalysisListDisplay });
-  };
-
-  formatDate = (inputDate) => {
-    const yyyy = inputDate.getFullYear().toString();
-    const mm = `0${inputDate.getMonth() + 1}`.slice(-2);
-    const dd = `0${inputDate.getDate()}`.slice(-2);
-    return `${dd}/${mm}/${yyyy}`;
+    this.setState({ searchResult, engineAnalysisListDisplay: searchResult.slice(0, 10) });
   };
 
   render() {
@@ -102,7 +108,19 @@ class EngineAnalysisList extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { engineAnalysisListDisplay, engineAnalysisID, engineID, engineList, repairLevel, repairDateList, repairDate } = this.state;
+    const {
+      engineAnalysisList,
+      searchResult,
+      engineAnalysisListDisplay,
+      page,
+      pageSize,
+      engineAnalysisName,
+      engineID,
+      engineIDList,
+      repairLevel,
+      repairDateList,
+      repairDate,
+    } = this.state;
 
     const repairLevelList = [
       { id: 'Đột xuất', label: 'Đột xuất' },
@@ -114,7 +132,7 @@ class EngineAnalysisList extends Component {
     ];
 
     return (
-      <div className="company-list">
+      <div className="engine-analysis-list">
         {/* Loading */}
         {isLoading && <Loading description="Loading data. Please wait..." withOverlay />}
         {/* Success Modal */}
@@ -166,11 +184,11 @@ class EngineAnalysisList extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <TextInput
-                id="engineAnalysisID-TextInput"
-                placeholder="Vui lòng nhập mã biên bản"
-                labelText="Mã biên bản"
-                value={engineAnalysisID}
-                onChange={(e) => this.setState({ engineAnalysisID: e.target.value })}
+                id="engineAnalysisName-TextInput"
+                placeholder="Vui lòng nhập một phần tên biên bản để tìm kiếm"
+                labelText="Tên biên bản"
+                value={engineAnalysisName}
+                onChange={(e) => this.setState({ engineAnalysisName: e.target.value })}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
@@ -178,8 +196,8 @@ class EngineAnalysisList extends Component {
                 id="engineID-Dropdown"
                 titleText="Đầu máy tiêu thụ"
                 label=""
-                items={engineList}
-                selectedItem={engineID === '' ? null : engineList.find((e) => e.id === engineID)}
+                items={engineIDList}
+                selectedItem={engineID === '' ? null : engineIDList.find((e) => e.id === engineID)}
                 onChange={(e) => this.setState({ engineID: e.selectedItem.id })}
               />
             </div>
@@ -207,7 +225,7 @@ class EngineAnalysisList extends Component {
               <Button style={{ marginTop: '1rem', marginRight: '1rem' }} onClick={() => this.findEngineAnalysisList()}>
                 Tìm kiếm
               </Button>
-              <Button style={{ marginTop: '1rem' }} onClick={() => history.push('/engine/analysis/add')}>
+              <Button style={{ marginTop: '1rem' }} onClick={() => history.push('/engine/analysis')}>
                 Tạo biên bản giải thể
               </Button>
             </div>
@@ -218,16 +236,14 @@ class EngineAnalysisList extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
-              <TableContainer title={`Có tất cả ${engineAnalysisListDisplay.length} biên bản giải thể.`}>
+              <TableContainer title={`Có tất cả ${searchResult.length} biên bản giải thể.`}>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeader>Mã biên bản giải thể</TableHeader>
-                      <TableHeader>Tên biên bản giải thể</TableHeader>
-                      <TableHeader>Số hiệu đầu máy</TableHeader>
-                      <TableHeader>Loại đầu máy</TableHeader>
-                      <TableHeader>Ngày vào sửa chữa</TableHeader>
-                      <TableHeader>Cấp sửa chữa</TableHeader>
+                      <TableHeader key="engineAnalysisName">Tên biên bản giải thể</TableHeader>
+                      <TableHeader key="engineID">Số hiệu đầu máy</TableHeader>
+                      <TableHeader key="repairDate">Ngày vào sửa chữa</TableHeader>
+                      <TableHeader key="repairLevel">Cấp sửa chữa</TableHeader>
                       <TableHeader>Xoá</TableHeader>
                     </TableRow>
                   </TableHead>
@@ -235,21 +251,37 @@ class EngineAnalysisList extends Component {
                     {engineAnalysisListDisplay.map((row, index) => (
                       <TableRow key={`row-${index.toString()}`}>
                         <TableCell>
-                          <Link to={`/engine/analysis/update?engineAnalysisID=${row.engine_analysis_id}`}>{row.engine_analysis_id}</Link>
+                          <Link to={`/engine/analysis?engineAnalysisID=${row.id}`}>{row.engineAnalysisName}</Link>
                         </TableCell>
-                        <TableCell>{row.engine_analysis_name}</TableCell>
-                        <TableCell>{row.engine_id}</TableCell>
-                        <TableCell>{row.engine_type}</TableCell>
-                        <TableCell>{row.repair_date}</TableCell>
-                        <TableCell>{row.repair_level}</TableCell>
+                        <TableCell>{row.engineID}</TableCell>
+                        <TableCell>{row.repairDate}</TableCell>
+                        <TableCell>{row.repairLevel}</TableCell>
                         <TableCell>
-                          <Button onClick={() => this.delete(row.engine_analysis_id)}>Xoá</Button>
+                          <Button onClick={() => this.delete(row.id)}>Xoá</Button>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[5, 10, 15]}
+                totalItems={engineAnalysisList.length}
+                onChange={(target) => {
+                  this.setState({
+                    engineAnalysisListDisplay: searchResult.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
+              />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2" />
           </div>

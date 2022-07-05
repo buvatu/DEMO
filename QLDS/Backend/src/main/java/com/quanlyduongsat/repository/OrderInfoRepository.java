@@ -22,4 +22,16 @@ public interface OrderInfoRepository extends JpaRepository<OrderInfo, Long> {
 
     List<OrderInfo> findByApprover(String approver);
 
+    @Query("select oi from OrderInfo oi where oi.status = 'completed' and oi.companyID = :companyID and oi.approveDate between :startDate and :endDate")
+    List<OrderInfo> getOrderInfoList(@Param("companyID") String companyID, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("select oi from OrderInfo oi where oi.orderType = 'O' and oi.status = 'completed' and oi.companyID = :companyID and oi.approveDate between :startDate and :endDate")
+    List<OrderInfo> getStockOutOrderInfoList(@Param("companyID") String companyID, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("select oi from OrderInfo oi where oi.orderType = 'I' and oi.status = 'completed' and oi.companyID = :companyID and oi.approveDate between :startDate and :endDate")
+    List<OrderInfo> getStockInOrderInfoList(@Param("companyID") String companyID, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("select oi from OrderInfo oi where oi.status = 'completed' and oi.companyID = :companyID and oi.approveDate between :startDate and :endDate")
+    List<OrderInfo> getCompletedOrderInfoList(@Param("companyID") String companyID, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
 }

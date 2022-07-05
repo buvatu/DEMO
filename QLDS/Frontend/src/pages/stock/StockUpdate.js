@@ -1,17 +1,14 @@
 import { CloudUpload32 } from '@carbon/icons-react';
 import {
   Button,
-  Checkbox,
-  ComboBox,
   ComposedModal,
-  DatePicker,
-  DatePickerInput,
   Dropdown,
   InlineNotification,
   Loading,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -22,48 +19,89 @@ import {
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { filterStockList, getMaterialList, stockUpdate } from '../../services';
+import { getMaterialListWithStockQuantity, getStockList, stockUpdate } from '../../services';
 
 class StockUpdate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      materialList: [],
       stockList: [],
-      selectedLines: [],
-      materialIDErrorMessages: [],
       quantityErrorMessages: [],
       amountErrorMessages: [],
-      requestDate: '',
+
+      materialList: [],
+      searchResult: [],
+      materialListDisplay: [],
+      page: 1,
+      pageSize: 5,
+      filterMaterialID: '',
+      filterMaterialGroup: '',
+      filterMatetrialName: '',
+      filterMaterialType: '',
     };
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth } = this.props;
+    const { setLoading, auth, setErrorMessage } = this.props;
+    if (auth.role !== 'phongketoantaichinh') {
+      setErrorMessage('Chỉ có người của phòng tài chính kế toán mới có thể truy cập chức năng này.');
+      return;
+    }
+
     setLoading(true);
-    const getStockListResult = await filterStockList('', '', '', '', auth.companyID);
-    const getMaterialListResult = await getMaterialList('', '', '', '');
-    const stockList = getStockListResult.data;
+    try {
+      const getStockListResult = await getStockList(auth.companyID);
+      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+      const stockList = getStockListResult.data.map((e) => {
+        e.quantity = e.stockQuantity;
+        return e;
+      });
+
+      const materialList = getMaterialListResult.data;
+
+      this.setState({
+        materialList,
+        searchResult: materialList,
+        materialListDisplay: materialList.slice(0, 5),
+        stockList,
+        quantityErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
+        amountErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
+      });
+    } catch {
+      setErrorMessage('Có lỗi khi tải trang. Vui lòng thử lại sau.');
+    }
     setLoading(false);
+  };
+
+  findMaterial = () => {
+    const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize, materialList } = this.state;
+    let filterResult = JSON.parse(JSON.stringify(materialList));
+    if (filterMaterialID !== '') {
+      filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
+    }
+    if (filterMatetrialName !== '') {
+      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+    }
+    if (filterMaterialGroup !== '') {
+      filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
+    }
+    if (filterMaterialType !== '') {
+      filterResult = filterResult.filter((e) => e.materialTypeID === filterMaterialType);
+    }
     this.setState({
-      stockList,
-      materialList: getMaterialListResult.data,
-      requestDate: this.formatDate(new Date()),
-      materialIDErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
-      quantityErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
-      amountErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
+      searchResult: filterResult,
+      materialListDisplay: filterResult.slice(0, pageSize),
     });
   };
 
-  save = async () => {
+  saveUpdatedStock = async () => {
     const { setErrorMessage, setLoading, setSubmitResult, auth } = this.props;
-    const { stockList, materialIDErrorMessages, quantityErrorMessages, amountErrorMessages, requestDate } = this.state;
+    const { stockList, quantityErrorMessages, amountErrorMessages } = this.state;
 
     this.setState({
-      materialIDErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
       quantityErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
       amountErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
     });
@@ -71,10 +109,6 @@ class StockUpdate extends Component {
 
     let hasError = false;
     stockList.forEach((e, index) => {
-      if (e.material_id === '') {
-        hasError = true;
-        materialIDErrorMessages[index] = 'Mã vật tư không thể bỏ trống';
-      }
       if (e.quantity === '') {
         hasError = true;
         quantityErrorMessages[index] = 'Cần nhập vào số lượng';
@@ -92,59 +126,61 @@ class StockUpdate extends Component {
         amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
       }
     });
-    this.setState({ materialIDErrorMessages, quantityErrorMessages, amountErrorMessages });
+    this.setState({ quantityErrorMessages, amountErrorMessages });
 
-    if (
-      stockList.length > 0 &&
-      new Set(
-        stockList.map((e) => {
-          return `${e.material_id}-${e.quality}`;
-        })
-      ).size !== stockList.length
-    ) {
-      hasError = true;
-      setErrorMessage('Có mã vật tư bị trùng. Vui lòng kiểm tra lại');
-    }
     if (hasError) {
       return;
     }
-    setLoading(true);
-    const getStockUpdateResult = await stockUpdate(stockList, auth.companyID, auth.userID, requestDate);
-    setLoading(false);
-    if (getStockUpdateResult.data.length !== stockList.length) {
-      setErrorMessage('Có lỗi cập nhật danh mục kho.');
-      return;
-    }
-    setSubmitResult('Danh mục kho được câp nhật thành công');
-  };
 
-  formatDate = (inputDate) => {
-    const yyyy = inputDate.getFullYear().toString();
-    const mm = `0${inputDate.getMonth() + 1}`.slice(-2);
-    const dd = `0${inputDate.getDate()}`.slice(-2);
-    return `${dd}/${mm}/${yyyy}`;
+    setLoading(true);
+    try {
+      await stockUpdate(stockList, auth.companyID);
+    } catch {
+      setErrorMessage('Cập nhật kho đầu kì bị lỗi. Vui lòng thử lại sau.');
+    }
+    setLoading(false);
+    setSubmitResult('Danh mục kho được câp nhật thành công');
   };
 
   render() {
     // Props first
-    const { setErrorMessage, setSubmitResult, history, common } = this.props;
+    const { setErrorMessage, setSubmitResult, history, common, auth } = this.props;
     const { submitResult, errorMessage, isLoading } = common;
 
-    // Then state
-    const { orderDetails, selectedLines, materialIDErrorMessages, quantityErrorMessages, amountErrorMessages, requestDate, stockList, materialList } = this.state;
-
-    const materialIDs = materialList
-      .map((e) => {
-        return { id: e.material_id, label: e.material_id.concat(' - ').concat(e.material_name) };
-      })
-      .sort((a, b) => a.label.split(' - ')[1].localeCompare(b.label.split(' - ')[1]));
-
-    const qualityList = [
-      { id: 'Mới', label: 'Mới' },
-      { id: 'Loại I', label: 'Loại I' },
-      { id: 'Loại II', label: 'Loại II' },
-      { id: 'Phế liệu', label: 'Phế liệu' },
+    const materialGroups = [
+      { id: '', label: '' },
+      { id: 'phutungmuamoi', label: 'Phụ tùng mua mới' },
+      { id: 'phutunggiacongcokhi', label: 'Phụ tùng gia công cơ khí' },
+      { id: 'phutungkhoiphuc', label: 'Phụ tùng khôi phục' },
     ];
+    const materialTypes = [
+      { id: '', label: '' },
+      { id: '1521', label: 'Kho nguyên vật liệu chính' },
+      { id: '1522', label: 'Kho vật liệu xây dựng cơ bản' },
+      { id: '1523', label: 'Kho dầu mỡ bôi trơn' },
+      { id: '1524', label: 'Kho phụ tùng' },
+      { id: '1525', label: 'Kho nhiên liệu' },
+      { id: '1526', label: 'Kho nguyên vật liệu phụ' },
+      { id: '1527', label: 'Kho phế liệu' },
+      { id: '1528', label: 'Kho phụ tùng gia công cơ khí' },
+      { id: '1529', label: 'Kho nhiên liệu tồn trên phương tiện' },
+      { id: '1531', label: 'Kho công cụ dụng cụ' },
+    ];
+
+    // Then state
+    const {
+      filterMaterialID,
+      filterMaterialGroup,
+      filterMatetrialName,
+      filterMaterialType,
+      materialListDisplay,
+      searchResult,
+      page,
+      pageSize,
+      quantityErrorMessages,
+      amountErrorMessages,
+      stockList,
+    } = this.state;
 
     return (
       <div className="stock-update">
@@ -184,70 +220,160 @@ class StockUpdate extends Component {
         </div>
         <br />
         <div className="view-header--box">
-          <h4>Nhập kho đầu kì</h4>
+          <h4>Cập nhật kho đầu kì</h4>
         </div>
         <br />
 
         {/* Content page */}
         <div className="bx--grid">
           <div className="bx--row">
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() => {
-                  stockList.push({
-                    material_id: '',
-                    material_name: '',
-                    unit: '',
-                    quality: 'Mới',
-                    quantity: '',
-                    amount: '',
-                  });
-                  materialIDErrorMessages.push('');
-                  quantityErrorMessages.push('');
-                  amountErrorMessages.push('');
-                  this.setState({ stockList, materialIDErrorMessages, quantityErrorMessages, amountErrorMessages });
-                }}
-                style={{ marginTop: '1rem' }}
-              >
-                Thêm vật tư
-              </Button>
+            <div className="bx--col-lg-4">
+              <TextInput
+                id="filterMaterialID-TextInput"
+                placeholder="Vui lòng nhập một phần mã vật tư để tìm kiếm"
+                labelText="Mã vật tư"
+                value={filterMaterialID}
+                onChange={(e) => this.setState({ filterMaterialID: e.target.value })}
+              />
             </div>
-            <span style={{ maxLength: '3rem' }} />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button
-                onClick={() => {
-                  this.setState({
-                    stockList: stockList.filter((e, index) => !selectedLines.includes(index)),
-                    materialIDErrorMessages: materialIDErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    quantityErrorMessages: quantityErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    amountErrorMessages: amountErrorMessages.filter((e, index) => !selectedLines.includes(index)),
-                    selectedLines: [],
-                  });
-                }}
-                style={{ marginTop: '1rem' }}
-              >
-                Xoá vật tư
-              </Button>
+            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+            <div className="bx--col-lg-4">
+              <Dropdown
+                id="filterMaterialGroup-Dropdown"
+                titleText="Nhóm vật tư"
+                label=""
+                items={materialGroups}
+                selectedItem={filterMaterialGroup === '' ? null : materialGroups.find((e) => e.id === filterMaterialGroup)}
+                onChange={(e) => this.setState({ filterMaterialGroup: e.selectedItem.id })}
+              />
             </div>
             <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
             <div className="bx--col-lg-2 bx--col-md-2">
-              <DatePicker datePickerType="single" dateFormat="d/m/Y" onChange={(e) => this.setState({ requestDate: this.formatDate(e[0]) })} value={requestDate}>
-                <DatePickerInput datePickerType="single" placeholder="dd/mm/yyyy" labelText="Ngày tạo yêu cầu" id="requestDate-datepicker" />
-              </DatePicker>
-            </div>
-            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Button onClick={() => this.save()} style={{ marginTop: '1rem' }}>
-                Lưu thông tin
+              <Button onClick={() => this.findMaterial()} style={{ marginTop: '1rem' }}>
+                Tìm
               </Button>
             </div>
           </div>
+          <br />
+          <div className="bx--row">
+            <div className="bx--col-lg-4">
+              <TextInput
+                id="filterMaterialName-TextInput"
+                placeholder="Vui lòng nhập một phần tên vật tư để tìm kiếm"
+                labelText="Tên vật tư"
+                value={filterMatetrialName}
+                onChange={(e) => this.setState({ filterMatetrialName: e.target.value })}
+              />
+            </div>
+            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+            <div className="bx--col-lg-4">
+              <Dropdown
+                id="filterMaterialType-Dropdown"
+                titleText="Loại vật tư (tài khoản kho)"
+                label=""
+                items={materialTypes}
+                selectedItem={filterMaterialType === '' ? null : materialTypes.find((e) => e.id === filterMaterialType)}
+                onChange={(e) => this.setState({ filterMaterialType: e.selectedItem.id })}
+              />
+            </div>
+            <div className="bx--col-sm-1 bx--col-md-1 bx--col-lg-1" />
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Button
+                style={{ marginTop: '1rem' }}
+                onClick={() => this.setState({ filterMaterialID: '', filterMaterialGroup: '', filterMatetrialName: '', filterMaterialType: '' })}
+              >
+                Xoá bộ lọc
+              </Button>
+            </div>
+          </div>
+          <br />
+          <hr className="LeftNav-module--divider--1Z49I" />
+          <div className="bx--row">
+            <div className="bx--col-lg-2 bx--col-md-2" />
+            <div className="bx--col-lg-12">
+              <TableContainer title={`Kết quả tìm kiếm cho ra ${searchResult.length} mục vật tư tương ứng.`}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader key="materialID">Mã vật tư</TableHeader>
+                      <TableHeader key="materialName">Tên vật tư</TableHeader>
+                      <TableHeader key="materialTypeName">Loại vật tư</TableHeader>
+                      <TableHeader key="materialGroupName">Nhóm vật tư</TableHeader>
+                      <TableHeader key="unit">Đơn vị tính</TableHeader>
+                      <TableHeader key="minimumQuantity">Lượng tồn tối thiểu</TableHeader>
+                      <TableHeader key="stockQuantity">Lượng tồn trong kho</TableHeader>
+                      <TableHeader />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {materialListDisplay.map((material, index) => (
+                      <TableRow key={`row-${index.toString()}}`}>
+                        <TableCell key={`materialID-${index.toString()}`}>{material.materialID}</TableCell>
+                        <TableCell key={`materialName-${index.toString()}`}>{material.materialName}</TableCell>
+                        <TableCell key={`materialTypeName-${index.toString()}`}>{material.materialTypeName}</TableCell>
+                        <TableCell key={`materialGroupName-${index.toString()}`}>{material.materialGroupName}</TableCell>
+                        <TableCell key={`unit-${index.toString()}`}>{material.unit}</TableCell>
+                        <TableCell key={`minimumQuantity-${index.toString()}`}>{material.minimumQuantity}</TableCell>
+                        <TableCell key={`stockQuantity-${index.toString()}`}>{material.stockQuantity}</TableCell>
+                        <TableCell>
+                          <Button
+                            disabled={stockList.find((e) => e.materialID === material.materialID) != null}
+                            onClick={() => {
+                              stockList.push({
+                                materialID: material.materialID,
+                                materialName: material.materialName,
+                                materialTypeName: material.materialTypeName,
+                                materialGroupName: material.materialGroupName,
+                                unit: material.unit,
+                                quantity: '',
+                                amount: '',
+                                status: 'A',
+                                companyID: auth.companyID,
+                              });
+                              quantityErrorMessages.push('');
+                              amountErrorMessages.push('');
+                              this.setState({ stockList, quantityErrorMessages, amountErrorMessages });
+                            }}
+                          >
+                            Thêm
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Pagination
+                className="fixed-pagination"
+                backwardText="Previous page"
+                forwardText="Next page"
+                itemsPerPageText="Items per page:"
+                page={page}
+                pageNumberText="Page Number"
+                pageSize={pageSize}
+                pageSizes={[5, 10, 15]}
+                totalItems={searchResult.length}
+                onChange={(target) => {
+                  this.setState({
+                    materialListDisplay: searchResult.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    page: target.page,
+                    pageSize: target.pageSize,
+                  });
+                }}
+              />
+            </div>
+          </div>
+          <br />
         </div>
-        <br />
         <br />
         <div className="bx--grid">
           <hr className="LeftNav-module--divider--1Z49I" />
+          <br />
+          <div className="bx--row">
+            <div className="bx--col-lg-12">
+              <Button onClick={() => this.saveUpdatedStock()}>Cập nhật kho</Button>
+            </div>
+          </div>
           <br />
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
@@ -256,90 +382,34 @@ class StockUpdate extends Component {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeader />
                       <TableHeader key="stt">STT</TableHeader>
-                      <TableHeader key="materialID" style={{ minWidth: '35%' }}>
-                        Mã vật tư - Tên vật tư
-                      </TableHeader>
+                      <TableHeader key="materialID">Mã vật tư</TableHeader>
+                      <TableHeader key="materialName">Tên vật tư</TableHeader>
                       <TableHeader key="unit">Đơn vị</TableHeader>
-                      <TableHeader key="quality">Chất lượng</TableHeader>
+                      <TableHeader key="materialTypeName">Thuộc kho</TableHeader>
+                      <TableHeader key="materialGroupName">Loại vật tư</TableHeader>
                       <TableHeader key="quantity">Số lượng</TableHeader>
                       <TableHeader key="amount">Thành tiền</TableHeader>
+                      <TableHeader />
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {stockList.map((row, index) => (
-                      <TableRow key={row.id}>
-                        <TableCell>
-                          <Checkbox
-                            id={`materialID-checkbox-${index}`}
-                            labelText=""
-                            value={index}
-                            checked={selectedLines.includes(index)}
-                            onChange={(target) => {
-                              if (target) {
-                                selectedLines.push(index);
-                                this.setState({ selectedLines });
-                              } else {
-                                this.setState({ selectedLines: selectedLines.filter((e) => e !== index) });
-                              }
-                            }}
-                          />
-                        </TableCell>
+                      <TableRow key={`row-${index.toString()}`}>
                         <TableCell key={`stt-${index.toString()}`}>{index + 1}</TableCell>
-                        <TableCell key={`material-${index.toString()}`}>
-                          <ComboBox
-                            id={`materialID-Dropdown-${index}`}
-                            titleText=""
-                            placeholder="Mã vật tư"
-                            label=""
-                            items={materialIDs}
-                            selectedItem={stockList[index].material_id === '' ? null : materialIDs.find((e) => e.id === stockList[index].material_id)}
-                            shouldFilterItem={({ item, inputValue }) => {
-                              if (!inputValue) return true;
-                              return item.label.toLowerCase().includes(inputValue.toLowerCase());
-                            }}
-                            onChange={(e) => {
-                              const selectedItemID = e.selectedItem === null ? '' : e.selectedItem.id;
-                              stockList[index].material_id = selectedItemID;
-                              stockList[index].material_name =
-                                selectedItemID === '' ? '' : materialList.find((item) => item.material_id === selectedItemID).material_name;
-                              stockList[index].unit = selectedItemID === '' ? '' : materialList.find((item) => item.material_id === selectedItemID).unit;
-                              materialIDErrorMessages[index] = '';
-                              quantityErrorMessages[index] = '';
-                              amountErrorMessages[index] = '';
-                              this.setState({
-                                stockList,
-                                materialIDErrorMessages,
-                                quantityErrorMessages,
-                                amountErrorMessages,
-                              });
-                            }}
-                            invalid={materialIDErrorMessages[index] !== ''}
-                            invalidText={materialIDErrorMessages[index]}
-                          />
-                        </TableCell>
-                        <TableCell key={`unit-${index.toString()}`}>{row.unit}</TableCell>
-                        <TableCell key={`quality-${index.toString()}`}>
-                          <Dropdown
-                            id={`quality-Dropdown-${index}`}
-                            titleText=""
-                            label=""
-                            items={qualityList}
-                            selectedItem={stockList[index].quality === '' ? null : qualityList.find((e) => e.id === stockList[index].quality)}
-                            onChange={(e) => {
-                              stockList[index].quality = e.selectedItem.id;
-                              this.setState({ orderDetails });
-                            }}
-                          />
-                        </TableCell>
+                        <TableCell key={`materialID-${index.toString()}`}>{stockList[index].materialID}</TableCell>
+                        <TableCell key={`materialName-${index.toString()}`}>{stockList[index].materialName}</TableCell>
+                        <TableCell key={`unit-${index.toString()}`}>{stockList[index].unit}</TableCell>
+                        <TableCell key={`materialTypeName-${index.toString()}`}>{stockList[index].materialTypeName}</TableCell>
+                        <TableCell key={`materialGroupName-${index.toString()}`}>{stockList[index].materialGroupName}</TableCell>
                         <TableCell key={`quantity-${index.toString()}`}>
                           <TextInput
                             id={`quantity-textinput-${index}`}
                             labelText=""
                             onChange={(e) => {
-                              stockList[index].quantity = Number(e.target.value);
-                              this.setState({ orderDetails });
+                              stockList[index].quantity = e.target.value;
+                              quantityErrorMessages[index] = '';
+                              this.setState({ stockList, quantityErrorMessages });
                             }}
                             value={stockList[index].quantity}
                             invalid={quantityErrorMessages[index] !== ''}
@@ -351,13 +421,27 @@ class StockUpdate extends Component {
                             id={`amount-textinput-${index}`}
                             labelText=""
                             onChange={(e) => {
-                              stockList[index].amount = Number(e.target.value);
-                              this.setState({ stockList });
+                              stockList[index].amount = e.target.value;
+                              amountErrorMessages[index] = '';
+                              this.setState({ stockList, amountErrorMessages });
                             }}
                             value={stockList[index].amount}
                             invalid={amountErrorMessages[index] !== ''}
                             invalidText={amountErrorMessages[index]}
                           />
+                        </TableCell>
+                        <TableCell key={`remove-button-${index.toString()}`}>
+                          <Button
+                            onClick={() => {
+                              this.setState({
+                                stockList: stockList.filter((e) => e.materialID !== row.materialID),
+                                quantityErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
+                                amountErrorMessages: Array(stockList.length).fill('', 0, stockList.length),
+                              });
+                            }}
+                          >
+                            Xoá
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}

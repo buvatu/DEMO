@@ -383,7 +383,7 @@ export const addOrderChangesHistory = (orderChanges, updatedUser) => {
 
 export const getStockList = (companyID) => {
   return request({
-    url: '/stock/list',
+    url: '/report/stock/list',
     params: { companyID },
     method: GET,
   });
@@ -407,20 +407,12 @@ export const stockOut = (orderDetails, companyID, updatedUser) => {
   });
 };
 
-export const stockUpdate = (stockList, companyID, updatedUser, requestDate) => {
+export const stockUpdate = (stockList, companyID) => {
   return request({
     url: '/stock/update',
-    params: { companyID, updatedUser, requestDate },
+    params: { companyID },
     data: stockList,
     method: PUT,
-  });
-};
-
-export const filterStockList = (filterMaterialID, filterMaterialType, filterMaterialGroup, filterQuality, companyID) => {
-  return request({
-    url: '/stock/filter/list',
-    params: { filterMaterialID, filterMaterialType, filterMaterialGroup, filterQuality, companyID },
-    method: GET,
   });
 };
 
@@ -433,10 +425,26 @@ export const exportStockReport = (filterMaterialID, filterMaterialType, filterMa
   });
 };
 
-export const getCompletedOrderList = (fromDate, toDate, companyID, filterMaterialType) => {
+export const getCompletedOrderList = (fromDate, toDate, companyID) => {
   return request({
     url: '/report/order/completed/list',
-    params: { fromDate, toDate, companyID, filterMaterialType },
+    params: { fromDate, toDate, companyID },
+    method: GET,
+  });
+};
+
+export const getCompletedStockOutOrderList = (fromDate, toDate, companyID) => {
+  return request({
+    url: '/report/order/stock-out/completed/list',
+    params: { fromDate, toDate, companyID },
+    method: GET,
+  });
+};
+
+export const getCompletedStockInOrderList = (fromDate, toDate, companyID) => {
+  return request({
+    url: '/report/order/stock-in/completed/list',
+    params: { fromDate, toDate, companyID },
     method: GET,
   });
 };
@@ -457,10 +465,28 @@ export const getFilteredOrders = (orderType, companyID, materialID, supplier, co
   });
 };
 
-export const exportOrderReport = (fromDate, toDate, companyID, filterMaterialType) => {
+export const exportOrderReport = (fromDate, toDate, companyID) => {
   return request({
     url: '/report/order',
-    params: { fromDate, toDate, companyID, filterMaterialType },
+    params: { fromDate, toDate, companyID },
+    method: GET,
+    responseType: 'blob', // important
+  });
+};
+
+export const exportStockOutReport = (fromDate, toDate, companyID, materialTypeID, consumer, repairGroup, repairLevel, category) => {
+  return request({
+    url: '/report/order/stock-out',
+    params: { fromDate, toDate, companyID, materialTypeID, consumer, repairGroup, repairLevel, category },
+    method: GET,
+    responseType: 'blob', // important
+  });
+};
+
+export const exportStockInReport = (fromDate, toDate, companyID, materialTypeID) => {
+  return request({
+    url: '/report/order/stock-in',
+    params: { fromDate, toDate, companyID, materialTypeID },
     method: GET,
     responseType: 'blob', // important
   });
@@ -506,10 +532,10 @@ export const getEngineAnalysisInfo = (engineAnalysisID) => {
   });
 };
 
-export const addEngineAnalysisInfo = (engineAnalysisID, engineAnalysisName, engineID, engineType, repairDate = '', repairLevel = '', companyID, updatedUser) => {
+export const addEngineAnalysisInfo = (engineAnalysisInfo) => {
   return request({
     url: '/engine/analysis/info',
-    params: { engineAnalysisID, engineAnalysisName, engineID, engineType, repairDate, repairLevel, companyID, updatedUser },
+    data: engineAnalysisInfo,
     method: POST,
   });
 };
@@ -522,29 +548,37 @@ export const deleteEngineAnalysisInfo = (engineAnalysisID) => {
   });
 };
 
-export const getComponentList = (engineAnalysisID) => {
+export const getEngineAnalysisDetailList = (engineAnalysisID) => {
   return request({
-    url: '/engine/analysis/components',
+    url: '/engine/analysis/detail/list',
     params: { engineAnalysisID },
     method: GET,
   });
 };
 
-export const insertComponents = (engineAnalysisID, components, updatedUser) => {
+export const getScrapClassifyList = (engineAnalysisID) => {
   return request({
-    url: '/engine/analysis/components',
-    params: { engineAnalysisID, updatedUser },
-    data: components,
+    url: '/engine/analysis/scrap-classify/list',
+    params: { engineAnalysisID },
+    method: GET,
+  });
+};
+
+export const insertEngineAnalysisDetailList = (engineAnalysisID, engineAnalysisDetailList) => {
+  return request({
+    url: '/engine/analysis/detail',
+    params: { engineAnalysisID },
+    data: engineAnalysisDetailList,
     method: POST,
   });
 };
 
-export const updateComponents = (engineAnalysisID, components, updatedUser) => {
+export const insertScrapClassifyList = (engineAnalysisID, scrapClassifyDetailList) => {
   return request({
-    url: '/engine/analysis/components',
-    params: { engineAnalysisID, updatedUser },
-    data: components,
-    method: PUT,
+    url: '/engine/analysis/scrap-classify',
+    params: { engineAnalysisID },
+    data: scrapClassifyDetailList,
+    method: POST,
   });
 };
 
@@ -723,6 +757,23 @@ export const cancelOrder = (orderInfo) => {
   return request({
     url: '/order/cancel',
     data: orderInfo,
+    method: PUT,
+  });
+};
+
+export const getAdjustPriceList = (companyID, adjustTime) => {
+  return request({
+    url: '/stock/price-adjust/list',
+    params: { adjustTime, companyID },
+    method: GET,
+  });
+};
+
+export const adjustPrice = (companyID, adjustTime, priceList) => {
+  return request({
+    url: '/stock/price/adjust',
+    params: { adjustTime, companyID },
+    data: priceList,
     method: PUT,
   });
 };

@@ -1,6 +1,8 @@
 package com.quanlyduongsat.util;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
@@ -102,4 +104,12 @@ public class QLDSUtils {
         return StringUtils.capitalize(result);
     }
 
+    public static String convertDateToString(Date inputDate) {
+        try {
+            return new SimpleDateFormat("dd/MM/yyyy").format(inputDate);
+        } catch (Exception e) {
+            return "";
+        }
+
+    }
 }
