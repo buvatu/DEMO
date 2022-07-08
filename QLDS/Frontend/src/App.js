@@ -35,6 +35,7 @@ import MaterialAdd from './pages/material/MaterialAdd';
 import MaterialList from './pages/material/MaterialList';
 import MaterialUpdate from './pages/material/MaterialUpdate';
 import OrderList from './pages/order/OrderList';
+import PriceAdjust from './pages/order/PriceAdjust';
 import StockInOrder from './pages/order/StockInOrder';
 import StockInOrderApprove from './pages/order/StockInOrderApprove';
 import StockInOrderDetail from './pages/order/StockInOrderDetail';
@@ -161,9 +162,12 @@ class App extends Component {
                       <SideNavMenuItem element={Link} to="/stock/update">
                         Cập nhật kho đầu kì
                       </SideNavMenuItem>
+                      <SideNavMenuItem element={Link} to="/order/price/adjust">
+                        Cập nhật giá tháng trước
+                      </SideNavMenuItem>
                     </SideNavMenu>
                     <SideNavDivider />
-                    <SideNavMenu title="Quản lý nhiêu liệu" isActive>
+                    {/* <SideNavMenu title="Quản lý nhiêu liệu" isActive>
                       <SideNavMenuItem element={Link} to="/vcf">
                         Điều chỉnh VCF
                       </SideNavMenuItem>
@@ -176,8 +180,7 @@ class App extends Component {
                       <SideNavMenuItem element={Link} to="/fuel">
                         Báo cáo nhiên liệu
                       </SideNavMenuItem>
-                    </SideNavMenu>
-                    <SideNavDivider />
+                    </SideNavMenu> <SideNavDivider /> */}
                     <SideNavMenu title="Báo cáo" isActive>
                       <SideNavMenuItem element={Link} to="/report/stock">
                         Báo cáo tồn kho
@@ -226,8 +229,7 @@ class App extends Component {
 
             <Route exact path="/engine" component={isAuthenticated ? Engine : Login} />
             <Route exact path="/engine/analysis/list" component={isAuthenticated ? EngineAnalysisList : Home} />
-            <Route exact path="/engine/analysis/add" component={isAuthenticated ? EngineAnalysis : Home} />
-            <Route exact path="/engine/analysis/update" component={isAuthenticated ? EngineAnalysis : Home} />
+            <Route exact path="/engine/analysis" component={isAuthenticated ? EngineAnalysis : Home} />
 
             <Route exact path="/supplier" component={isAuthenticated ? Supplier : Login} />
 
@@ -252,13 +254,12 @@ class App extends Component {
             <Route exact path="/order/stock-out/test" component={isAuthenticated && role === 'phongkythuat' ? StockOutOrderTest : Home} />
             <Route exact path="/order/stock-out/approve" component={isAuthenticated && role === 'phongketoantaichinh' ? StockOutOrderApprove : Home} />
             <Route exact path="/order/stock-out/detail" component={isAuthenticated ? StockOutOrderDetail : Home} />
-
             <Route exact path="/order/list" component={isAuthenticated ? OrderList : Home} />
 
-            <Route exact path="/report/stock" component={isAuthenticated ? StockReport : Home} />
+            <Route exact path="/report/stock" component={isAuthenticated && role === 'phongketoantaichinh' ? StockReport : Home} />
             <Route exact path="/report/order" component={isAuthenticated ? OrderReport : Home} />
-            <Route exact path="/report/order/stock-in" component={isAuthenticated ? StockInOrderReport : Home} />
-            <Route exact path="/report/order/stock-out" component={isAuthenticated ? StockOutOrderReport : Home} />
+            <Route exact path="/report/order/stock-in" component={isAuthenticated && role === 'phongketoantaichinh' ? StockInOrderReport : Home} />
+            <Route exact path="/report/order/stock-out" component={isAuthenticated && role === 'phongketoantaichinh' ? StockOutOrderReport : Home} />
 
             <Route exact path="/vcf" component={isAuthenticated ? VCFAdjust : Home} />
 
@@ -270,6 +271,8 @@ class App extends Component {
             <Route exact path="/fuel" component={isAuthenticated ? FuelReport : Home} />
 
             <Route exact path="/stock/update" component={isAuthenticated ? StockUpdate : Home} />
+
+            <Route exact path="/order/price/adjust" component={isAuthenticated && role === 'phongketoantaichinh' ? PriceAdjust : Home} />
           </Switch>
         </Content>
       </div>

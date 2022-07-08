@@ -41,6 +41,7 @@ class OrderList extends Component {
       approverList: [],
       orderList: [],
       orderListDisplay: [],
+      searchResultList: [],
       page: 1,
       pageSize: 10,
     };
@@ -60,15 +61,15 @@ class OrderList extends Component {
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getOrderListResult = await getOrderList(auth.role, auth.userID);
       const orderList = getOrderListResult.data;
-      let searchResultList = [];
+      let searchResultList = JSON.parse(JSON.stringify(orderList));
       if (auth.role === 'phongkehoachvattu') {
-        searchResultList = orderList.filter((e) => e.status === 'requested' || e.status === 'tested');
+        searchResultList = searchResultList.filter((e) => e.status === 'created' || e.status === 'tested');
       }
       if (auth.role === 'phongkythuat') {
-        searchResultList = orderList.filter((e) => e.status === 'requested');
+        searchResultList = searchResultList.filter((e) => e.status === 'created');
       }
       if (auth.role === 'phongketoantaichinh') {
-        searchResultList = orderList.filter((e) => e.status === 'tested');
+        searchResultList = searchResultList.filter((e) => e.status === 'tested');
       }
       this.setState({
         requestor: auth.role === 'phongkehoachvattu' ? auth.userID : '',
@@ -84,9 +85,10 @@ class OrderList extends Component {
           return { id: e.userID, label: e.username };
         }),
         orderList,
+        searchResultList,
         orderListDisplay: searchResultList.slice(0, pageSize),
         statusList: [
-          { id: 'requested', label: 'Chờ nghiệm thu' },
+          { id: 'created', label: 'Chờ nghiệm thu' },
           { id: 'tested', label: 'Chờ phê duyệt' },
           { id: 'completed', label: 'Đã hoàn thành' },
           { id: 'canceled', label: 'Bị huỷ' },
@@ -107,19 +109,20 @@ class OrderList extends Component {
       searchResultList = orderList.filter((e) => e.status === status);
     }
     if (requestor !== '') {
-      searchResultList = orderList.filter((e) => e.requestor === requestor);
+      searchResultList = searchResultList.filter((e) => e.requestor === requestor);
     }
     if (tester !== '') {
-      searchResultList = orderList.filter((e) => e.tester === tester);
+      searchResultList = searchResultList.filter((e) => e.tester === tester);
     }
     if (approver !== '') {
-      searchResultList = orderList.filter((e) => e.approver === approver);
+      searchResultList = searchResultList.filter((e) => e.approver === approver);
     }
     if (requestDate !== '') {
-      searchResultList = orderList.filter((e) => e.requestDate === requestDate);
+      searchResultList = searchResultList.filter((e) => e.requestDate === requestDate);
     }
     this.setState({
       page: 1,
+      searchResultList,
       orderListDisplay: searchResultList.slice(0, pageSize),
     });
   };
@@ -136,7 +139,7 @@ class OrderList extends Component {
 
   getOrderPath = (order) => {
     const { auth } = this.props;
-    if (auth.role === 'phongkythuat' && order.status === 'requested') {
+    if (auth.role === 'phongkythuat' && order.status === 'created') {
       return 'test';
     }
     if (auth.role === 'phongketoantaichinh' && order.status === 'tested') {
@@ -151,8 +154,22 @@ class OrderList extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { status, statusList, requestDate, requestor, requestorList, tester, testerList, approver, approverList, orderList, orderListDisplay, page, pageSize } =
-      this.state;
+    const {
+      status,
+      statusList,
+      requestDate,
+      requestor,
+      requestorList,
+      tester,
+      testerList,
+      approver,
+      approverList,
+      orderList,
+      orderListDisplay,
+      page,
+      pageSize,
+      searchResultList,
+    } = this.state;
 
     return (
       <div className="order-list">
@@ -275,8 +292,8 @@ class OrderList extends Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {orderListDisplay.map((order) => (
-                      <TableRow>
+                    {orderListDisplay.map((order, index) => (
+                      <TableRow key={`row-${index.toString()}`}>
                         <TableCell>
                           <Link
                             to={{
@@ -316,7 +333,7 @@ class OrderList extends Component {
                 totalItems={orderList.length}
                 onChange={(target) => {
                   this.setState({
-                    orderListDisplay: orderList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
+                    orderListDisplay: searchResultList.slice((target.page - 1) * target.pageSize, target.page * target.pageSize),
                     page: target.page,
                     pageSize: target.pageSize,
                   });

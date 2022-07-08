@@ -12,10 +12,18 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  StructuredListBody,
+  StructuredListCell,
+  StructuredListHead,
+  StructuredListRow,
+  StructuredListWrapper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
+  TableExpandedRow,
+  TableExpandHeader,
+  TableExpandRow,
   TableHead,
   TableHeader,
   TableRow,
@@ -25,77 +33,140 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
 import { CurrencyFormatter } from '../../constants';
-import { exportOrderReport, getFilteredOrders, getRelatedData } from '../../services';
+import { exportStockOutReport, getCategoryList, getCompletedStockOutOrderList, getMaterialListWithStockQuantity } from '../../services';
 
 class StockInOrderReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fromDate: '',
-      toDate: '',
-      materialID: '',
+      fromDate: this.formatDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+      toDate: this.formatDate(new Date()),
+      materialTypeID: '',
       materialList: [],
       consumer: '',
       consumerList: [],
-      supplier: '', // Tổ sửa chữa
-      deliver: '', // Cấp sửa chữa
-      recipeNo: '', // Khoản mục
-      recipeNoList: [],
+      repairGroup: '',
+      repairLevel: '',
+      category: '',
+      categoryList: [],
 
       orderList: [],
     };
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth } = this.props;
+    const { setLoading, auth, setErrorMessage } = this.props;
+    const { fromDate, toDate } = this.state;
+    if (auth.role !== 'phongketoantaichinh') {
+      setErrorMessage('Chỉ có người của phòng tài chính kế toán mới có thể truy cập chức năng này.');
+      return;
+    }
+
     setLoading(true);
-    const getRelatedDataResult = await getRelatedData('O', auth.companyID);
-    this.setState({
-      materialList: getRelatedDataResult.data
-        .map((e) => {
-          return { id: e.material_id, label: e.material_id.concat(' - ').concat(e.material_name) };
-        })
-        .filter(({ id }, index, a) => a.findIndex((e) => id === e.id) === index),
-      consumerList: getRelatedDataResult.data
-        .filter((e) => e.consumer)
-        .map((e) => {
-          return { id: e.consumer, label: e.consumer };
-        })
-        .filter(({ id }, index, a) => a.findIndex((e) => id === e.id) === index),
-      recipeNoList: getRelatedDataResult.data
-        .filter((e) => e.recipe_no)
-        .map((e) => {
-          return { id: e.recipe_no, label: e.recipe_no };
-        })
-        .filter(({ id }, index, a) => a.findIndex((e) => id === e.id) === index),
-    });
+    let materialList = [];
+    try {
+      const getCompletedOrderListResult = await getCompletedStockOutOrderList(fromDate, toDate, auth.companyID);
+      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+      const getCategoryListResult = await getCategoryList();
+      materialList = getMaterialListResult.data;
+      this.setState({
+        orderList: getCompletedOrderListResult.data.map((e, index) => {
+          e.id = e.orderInfo.id.toString();
+          e.stt = index + 1;
+          e.orderName = e.orderInfo.orderName;
+          e.requestNote = e.orderInfo.requestNote;
+          e.consumer = e.orderInfo.consumer;
+          e.repairLevel = e.orderInfo.repairLevel;
+          e.repairGroup = e.orderInfo.repairGroup;
+          e.category = e.orderInfo.category;
+          e.approveDate = e.orderInfo.approveDate;
+          e.totalAmount = e.orderDetailList.reduce((previousValue, currentValue) => previousValue + currentValue.approveAmount, 0);
+          e.orderDetailList.forEach((detail) => {
+            const material = materialList.find((item) => item.materialID === detail.materialID);
+            // eslint-disable-next-line no-param-reassign
+            detail.materialName = material.materialName;
+            // eslint-disable-next-line no-param-reassign
+            detail.unit = material.unit;
+          });
+          return e;
+        }),
+        materialList,
+        categoryList: getCategoryListResult.data,
+        consumerList: [
+          ...new Set(
+            getMaterialListResult.data.map((e) => {
+              return { id: e.consumer, label: e.consumer };
+            })
+          ),
+        ],
+      });
+    } catch {
+      setErrorMessage('Có lỗi khi tải trang. Vui lòng thử lại sau.');
+    }
     setLoading(false);
   };
 
   getOrderList = async () => {
-    const { setLoading, auth } = this.props;
-    const { fromDate, toDate, materialID, supplier, consumer, recipeNo, deliver } = this.state;
+    const { setLoading, auth, setErrorMessage } = this.props;
+    const { fromDate, toDate, materialList, materialTypeID, consumer, repairGroup, repairLevel, category } = this.state;
+    if (fromDate === '' || toDate === '') {
+      setErrorMessage('Đầu kì và cuối kì không được bỏ trống');
+      return;
+    }
     setLoading(true);
-    const getFilteredOrderListResult = await getFilteredOrders('O', auth.companyID, materialID, supplier, consumer, recipeNo, deliver, fromDate, toDate);
-    setLoading(false);
-    this.setState({
-      orderList: getFilteredOrderListResult.data.map((e, index) => {
-        e.id = index.toString();
+    try {
+      const getCompletedOrderListResult = await getCompletedStockOutOrderList(fromDate, toDate, auth.companyID);
+      let orderList = getCompletedOrderListResult.data.map((e, index) => {
+        e.id = e.orderInfo.id.toString();
         e.stt = index + 1;
+        e.orderName = e.orderInfo.orderName;
+        e.requestNote = e.orderInfo.requestNote;
+        e.consumer = e.orderInfo.consumer;
+        e.repairLevel = e.orderInfo.repairLevel;
+        e.repairGroup = e.orderInfo.repairGroup;
+        e.category = e.orderInfo.category;
+        e.approveDate = e.orderInfo.approveDate;
+        e.orderDetailList.forEach((detail) => {
+          const material = materialList.find((item) => item.materialID === detail.materialID);
+          // eslint-disable-next-line no-param-reassign
+          detail.materialName = material.materialName;
+          // eslint-disable-next-line no-param-reassign
+          detail.unit = material.unit;
+        });
+        if (materialTypeID !== '') {
+          e.orderDetailList = e.orderDetailList.filter((detail) => detail.materialTypeID === materialTypeID);
+        }
+        e.totalAmount = e.orderDetailList.reduce((previousValue, currentValue) => previousValue + currentValue.approveAmount, 0);
         return e;
-      }),
-    });
+      });
+      if (consumer !== '') {
+        orderList = orderList.filter((e) => e.consumer === consumer);
+      }
+      if (repairLevel !== '') {
+        orderList = orderList.filter((e) => e.repairLevel === repairLevel);
+      }
+      if (repairGroup !== '') {
+        orderList = orderList.filter((e) => e.repairGroup === repairGroup);
+      }
+      if (category !== '') {
+        orderList = orderList.filter((e) => e.category === category);
+      }
+      this.setState({ orderList });
+    } catch {
+      setErrorMessage('Có lỗi khi tải trang. Vui lòng thử lại sau.');
+    }
+    setLoading(false);
   };
 
   exportStockOutOrderReport = async () => {
     const { auth, setErrorMessage } = this.props;
-    const { fromDate, toDate } = this.state;
-    await exportOrderReport(fromDate, toDate, auth.companyID)
+    const { fromDate, toDate, materialTypeID, consumer, repairGroup, repairLevel, category } = this.state;
+    await exportStockOutReport(fromDate, toDate, auth.companyID, materialTypeID, consumer, repairGroup, repairLevel, category)
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'Bao cao xuat nhap.xlsx');
+        link.setAttribute('download', 'Bao_cao_xuat_kho.xlsx');
         document.body.appendChild(link);
         link.click();
       })
@@ -117,9 +188,23 @@ class StockInOrderReport extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { fromDate, toDate, orderList, materialID, materialList, consumer, consumerList, supplier, recipeNo, recipeNoList, deliver } = this.state;
+    const { fromDate, toDate, orderList, materialTypeID, consumer, consumerList, repairGroup, repairLevel, category, categoryList } = this.state;
 
-    const supplierList = [
+    const materialTypes = [
+      { id: '', label: '' },
+      { id: '1521', label: 'Kho nguyên vật liệu chính' },
+      { id: '1522', label: 'Kho vật liệu xây dựng cơ bản' },
+      { id: '1523', label: 'Kho dầu mỡ bôi trơn' },
+      { id: '1524', label: 'Kho phụ tùng' },
+      { id: '1525', label: 'Kho nhiên liệu' },
+      { id: '1526', label: 'Kho nguyên vật liệu phụ' },
+      { id: '1527', label: 'Kho phế liệu' },
+      { id: '1528', label: 'Kho phụ tùng gia công cơ khí' },
+      { id: '1529', label: 'Kho nhiên liệu tồn trên phương tiện' },
+      { id: '1531', label: 'Kho công cụ dụng cụ' },
+    ];
+
+    const repairGroupList = [
       { id: 'Tổ Điện', label: 'Tổ Điện' },
       { id: 'Tổ Khung Gầm', label: 'Tổ Khung Gầm' },
       { id: 'Tổ Động cơ', label: 'Tổ Động cơ' },
@@ -128,12 +213,12 @@ class StockInOrderReport extends Component {
       { id: 'Tổ Truyền động', label: 'Tổ Truyền động' },
     ];
 
-    const deliverList = [
+    const repairLevelList = [
       { id: 'Đột xuất', label: 'Đột xuất' },
       { id: 'Ro', label: 'Ro' },
-      { id: 'Rt', label: 'Rt' },
       { id: 'R1', label: 'R1' },
       { id: 'R2', label: 'R2' },
+      { id: 'Rt', label: 'Rt' },
       { id: 'Đại tu', label: 'Đại tu' },
     ];
 
@@ -188,19 +273,14 @@ class StockInOrderReport extends Component {
             <div className="bx--col-lg-4" />
           </div>
           <div className="bx--row">
-            <div className="bx--col-lg-4">
-              <ComboBox
-                id="materialID-ComboBox"
-                titleText="Mã vật tư"
-                placeholder=""
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <Dropdown
+                id="materialType-Dropdown"
+                titleText="Kho"
                 label=""
-                items={materialList}
-                selectedItem={materialID === '' ? null : materialList.find((e) => e.id === materialID)}
-                shouldFilterItem={({ item, inputValue }) => {
-                  if (!inputValue) return true;
-                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
-                }}
-                onChange={(e) => this.setState({ materialID: e.selectedItem == null ? '' : e.selectedItem.id })}
+                items={materialTypes}
+                selectedItem={materialTypeID === '' ? null : materialTypes.find((e) => e.id === materialTypeID)}
+                onChange={(e) => this.setState({ materialTypeID: e.selectedItem.id })}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
@@ -215,32 +295,37 @@ class StockInOrderReport extends Component {
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="deliver-Dropdown"
+                id="repairLevel-Dropdown"
                 titleText="Cấp sửa chữa"
                 label=""
-                items={deliverList}
-                selectedItem={deliver === '' ? null : deliverList.find((e) => e.id === deliver)}
-                onChange={(e) => this.setState({ deliver: e.selectedItem.id })}
+                items={repairLevelList}
+                selectedItem={repairLevel === '' ? null : repairLevelList.find((e) => e.id === repairLevel)}
+                onChange={(e) => this.setState({ repairLevel: e.selectedItem.id })}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="supplier-Dropdown"
-                titleText="Tổ"
+                id="repairGroup-Dropdown"
+                titleText="Tổ sửa chữa"
                 label=""
-                items={supplierList}
-                selectedItem={supplier === '' ? null : supplierList.find((e) => e.id === supplier)}
-                onChange={(e) => this.setState({ supplier: e.selectedItem.id })}
+                items={repairGroupList}
+                selectedItem={repairGroup === '' ? null : repairGroupList.find((e) => e.id === repairGroup)}
+                onChange={(e) => this.setState({ repairGroup: e.selectedItem.id })}
               />
             </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Dropdown
-                id="recipeNo-Dropdown"
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="category-ComboBox"
                 titleText="Khoản mục"
+                placeholder=""
                 label=""
-                items={recipeNoList}
-                selectedItem={recipeNo === '' ? null : recipeNoList.find((e) => e.id === recipeNo)}
-                onChange={(e) => this.setState({ recipeNo: e.selectedItem.id })}
+                items={categoryList}
+                selectedItem={category === '' ? null : categoryList.find((e) => e.id === category)}
+                onChange={(e) => this.setState({ category: e.selectedItem.id })}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
               />
             </div>
           </div>
@@ -263,6 +348,11 @@ class StockInOrderReport extends Component {
                 Tìm
               </Button>
             </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Button onClick={() => this.exportStockOutOrderReport()} style={{ marginTop: '1rem' }}>
+                Xuất báo cáo
+              </Button>
+            </div>
           </div>
           <br />
           <br />
@@ -274,49 +364,78 @@ class StockInOrderReport extends Component {
                 rows={orderList}
                 headers={[
                   { header: 'STT', key: 'stt' },
-                  { header: 'Mã vật tư', key: 'material_id' },
-                  { header: 'Tên vật tư', key: 'material_name' },
-                  { header: 'Chất lượng', key: 'quality' },
-                  { header: 'Số lượng xuất', key: 'quantity' },
-                  { header: 'Thành tiền', key: 'amount' },
+                  { header: 'Tên đơn', key: 'orderName' },
                   { header: 'Đối tượng chi phí', key: 'consumer' },
-                  { header: 'Tổ', key: 'supplier' },
-                  { header: 'Cấp sửa chữa', key: 'deliver' },
-                  { header: 'Ngày xuất', key: 'approve_date' },
+                  { header: 'Tổ phụ trách', key: 'repairGroup' },
+                  { header: 'Cấp sửa chữa', key: 'repairLevel' },
+                  { header: 'Ngày xuất', key: 'approveDate' },
+                  { header: 'Tổng giá trị', key: 'totalAmount' },
                 ]}
-                render={({ rows, headers }) => (
-                  <TableContainer
-                    title="Báo cáo xuất kho"
-                    description={
-                      rows.length === 0
-                        ? ''
-                        : `Tổng xuất trong kỳ: ${CurrencyFormatter.format(
-                            rows.reduce((previousValue, currentValue) => previousValue + currentValue.cells[5].value, 0)
-                          )}`
-                    }
-                  >
+                render={({ rows, headers, getRowProps }) => (
+                  <TableContainer title={`Có tất cả ${orderList.length} đơn xuất nhập trong kì.`}>
                     <Table>
                       <TableHead>
                         <TableRow>
+                          <TableExpandHeader />
                           {headers.map((header) => (
                             <TableHeader key={header.key}>{header.header}</TableHeader>
                           ))}
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {rows.map((row) => (
-                          <TableRow key={row.id}>
-                            <TableCell key={row.cells[0].id}>{row.cells[0].value}</TableCell>
-                            <TableCell key={row.cells[1].id}>{row.cells[1].value}</TableCell>
-                            <TableCell key={row.cells[2].id}>{row.cells[2].value}</TableCell>
-                            <TableCell key={row.cells[3].id}>{row.cells[3].value}</TableCell>
-                            <TableCell key={row.cells[4].id}>{row.cells[4].value}</TableCell>
-                            <TableCell key={row.cells[5].id}>{CurrencyFormatter.format(row.cells[5].value)}</TableCell>
-                            <TableCell key={row.cells[6].id}>{row.cells[6].value}</TableCell>
-                            <TableCell key={row.cells[7].id}>{row.cells[7].value}</TableCell>
-                            <TableCell key={row.cells[8].id}>{row.cells[8].value}</TableCell>
-                            <TableCell key={row.cells[9].id}>{row.cells[9].value}</TableCell>
-                          </TableRow>
+                        {rows.map((row, index) => (
+                          <React.Fragment key={row.id.toString()}>
+                            <TableExpandRow
+                              // eslint-disable-next-line react/jsx-props-no-spreading
+                              {...getRowProps({ row })}
+                            >
+                              <TableCell key={row.cells[0].id}>{index + 1}</TableCell>
+                              <TableCell key={row.cells[1].id}>{row.cells[1].value}</TableCell>
+                              <TableCell key={row.cells[2].id}>{row.cells[2].value}</TableCell>
+                              <TableCell key={row.cells[3].id}>{row.cells[3].value}</TableCell>
+                              <TableCell key={row.cells[4].id}>{row.cells[4].value}</TableCell>
+                              <TableCell key={row.cells[5].id}>{row.cells[5].value}</TableCell>
+                              <TableCell key={row.cells[6].id}>{CurrencyFormatter.format(row.cells[6].value)}</TableCell>
+                            </TableExpandRow>
+                            <TableExpandedRow colSpan={headers.length + 1}>
+                              <StructuredListWrapper>
+                                <StructuredListHead>
+                                  <StructuredListRow head>
+                                    <StructuredListCell head key={`row-${index.toString()}-materialID`}>
+                                      Mã vật tư
+                                    </StructuredListCell>
+                                    <StructuredListCell head key={`row-${index.toString()}-materialName`}>
+                                      Tên vật tư
+                                    </StructuredListCell>
+                                    <StructuredListCell head key={`row-${index.toString()}-unit`}>
+                                      Đơn vị
+                                    </StructuredListCell>
+                                    <StructuredListCell head key={`row-${index.toString()}-quantity`}>
+                                      Số lượng
+                                    </StructuredListCell>
+                                    <StructuredListCell head key={`row-${index.toString()}-amount   `}>
+                                      Thành tiền
+                                    </StructuredListCell>
+                                  </StructuredListRow>
+                                </StructuredListHead>
+                                <StructuredListBody>
+                                  {orderList
+                                    .find((e) => e.id === row.id)
+                                    .orderDetailList.map((detail) => (
+                                      <StructuredListRow key={`row-${detail.id}`}>
+                                        <StructuredListCell key={`row-${index.toString()}-${detail.id}-materialID`}>{detail.materialID}</StructuredListCell>
+                                        <StructuredListCell key={`row-${index.toString()}-${detail.id}-materialName`}>{detail.materialName}</StructuredListCell>
+                                        <StructuredListCell key={`row-${index.toString()}-${detail.id}-unit`}>{detail.unit}</StructuredListCell>
+                                        <StructuredListCell key={`row-${index.toString()}-${detail.id}-quantity`}>{detail.approveQuantity}</StructuredListCell>
+                                        <StructuredListCell key={`row-${index.toString()}-${detail.id}-amount`}>
+                                          {CurrencyFormatter.format(detail.approveAmount)}
+                                        </StructuredListCell>
+                                      </StructuredListRow>
+                                    ))}
+                                </StructuredListBody>
+                              </StructuredListWrapper>
+                            </TableExpandedRow>
+                          </React.Fragment>
                         ))}
                       </TableBody>
                     </Table>
