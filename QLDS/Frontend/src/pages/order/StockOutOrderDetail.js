@@ -21,7 +21,7 @@ import {
   TextInput,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
 import { cancelOrder, exportStockOutOrderRecipe, exportTestRecipe, getCategoryList, getMaterialListInStock, getOrder, getUserList } from '../../services';

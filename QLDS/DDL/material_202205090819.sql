@@ -1739,7 +1739,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('181010700','Gioăng nắp su pap an toàn cacte động cơ','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-10 07:43:50.645','nsson'),
 	 ('181010800','Gioăng mặt bích cacte sau','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-10 07:44:40.745','nsson'),
-	 ('181020000','Trục khuỷu và bạc trục, bạc biên','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-10 07:45:31.992','nsson'),
+	 ('181020000','Trục khuỷu và bạc trục, bạc biên','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-10 07:45:31.992','nsson'),
 	 ('181020200','Bánh răng hai nửa trục khuỷu động cơ    ','cái','122978','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-10 08:16:38.061','nsson'),
 	 ('181020300','Chốt định tâm                                                                                       ','cái','122977','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-10 08:17:58.063','nsson'),
 	 ('181020400','Phớt chắn dầu đầu trục khuỷu                                                                 ','cái','040400 MA','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-10 08:44:08.495','nsson'),
@@ -1972,7 +1972,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('096100200','Hộp giảm tốc góc D9E','bộ','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-20 11:20:59.235','kimlinh'),
 	 ('096310100','Bi cao su khớp nối lai HGT góc','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-20 11:24:52.781','kimlinh'),
 	 ('096310200','Dây curoa C77','sợi','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-20 11:25:28.978','kimlinh'),
-	 ('096310300','Dây curoa C108','sợi','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-20 11:26:20.96','kimlinh'),
+	 ('096310300','Dây curoa C108','sợi','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-20 11:26:20.96','kimlinh'),
 	 ('096310400','Dây curoa C120','sợi','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-20 11:26:46.611','kimlinh'),
 	 ('181170200','Bơm nước nhiệt độ thấp','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-11 10:57:01.203','nsson'),
 	 ('185050000','Van phân phối','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-02-11 14:23:30.685','nsson'),
@@ -1994,7 +1994,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('181090800','Bạc khớp mềm','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-11 09:08:33.876','nsson'),
 	 ('181090900','Gioăng vú tỳ khớp mềm','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-11 09:09:01.08','nsson'),
 	 ('131120201','Thân bơm cao áp Pump housing','cái','10330057','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-12 11:11:03.115','mailong'),
-	 ('131120300','Đường ống dẫn nhiên liệu Piping fuel oil','ống','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 11:11:50.142','mailong'),
+	 ('131120300','Đường ống dẫn nhiên liệu Piping fuel oil','ống','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 11:11:50.142','mailong'),
 	 ('184010100','Bờ lốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:00:14.494','nsson'),
 	 ('184010103','Bánh răng cóc bờ lốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:02:39.981','nsson'),
 	 ('181100000','Bộ giảm chấn trục khủyu','bộ','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-11 09:09:47.838','nsson'),
@@ -2118,7 +2118,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('181070700','Mặt bích đỡ cam','cái','','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-11 08:22:32.175','nsson'),
 	 ('181070800','Núm tỳ cần đẩy con đội động cơ','cái','','phutungmuamoi','Phụ tùng mua mới','16','1524','Kho phụ tùng','','2022-01-11 08:41:41.58','nsson'),
 	 ('132090100','Cuộn dây van điện không xả cát','cuộn','','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-19 14:23:01.952','mailong'),
-	 ('132090200','Nút ấn xả cát','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:24:18.294','mailong'),
+	 ('132090200','Nút ấn xả cát','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:24:18.294','mailong'),
 	 ('091141502','Khúc cong nối với bánh đà ( elbow )','cái','4L6215','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 15:15:41.648','kimlinh'),
 	 ('091141503','Khúc cong nối ống vào bơm ( elbow )','cái','4L6234','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 15:16:12.881','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
@@ -2245,9 +2245,9 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('181021200','Ê cu gối đỡ trục khuỷu động cơ','cái','','phutungmuamoi','Phụ tùng mua mới','16','1524','Kho phụ tùng','','2022-01-10 09:11:49.564','nsson'),
 	 ('181021300','Bu lông M18 đuôi trục cơ                                                                           ','cái','124283 MA','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-10 09:17:07.382','nsson'),
-	 ('181030000','Cụm piston','cụm','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-10 09:18:07.977','nsson'),
+	 ('181030000','Cụm piston','cụm','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-10 09:18:07.977','nsson'),
 	 ('181030100','Thân piston                                                                                              ','cái','125109','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-10 09:22:49.221','nsson'),
-	 ('181030200','Ắc piston                                                                                                    ','cái','123381-1','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-10 09:24:33.09','nsson'),
+	 ('181030200','Ắc piston                                                                                                    ','cái','123381-1','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-10 09:24:33.09','nsson'),
 	 ('181030300','Nắp ắc piston trái                                                                                   ','cái','125110','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-10 09:25:31.258','nsson'),
 	 ('181030400','Nắp ắc piston phải                                                                                  ','cái','125111','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-10 09:26:43.252','nsson'),
 	 ('181030500','Xéc măng hơi động cơ mạ crôm                                                           ','cái','125121MA','phutungmuamoi','Phụ tùng mua mới','16','1524','Kho phụ tùng','','2022-01-10 09:27:47.197','nsson'),
@@ -2751,11 +2751,11 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('184010106','ắc đuôi  bờ lốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:10:32.275','nsson'),
 	 ('184010107','ắc càng bờ lốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:11:04.244','nsson'),
-	 ('131120316','Rắc co ống nhiên liệu đến bầu lọc Elbow 90° male, filter to hose','cái','11329890','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 14:11:42.286','mailong'),
+	 ('131120316','Rắc co ống nhiên liệu đến bầu lọc Elbow 90° male, filter to hose','cái','11329890','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 14:11:42.286','mailong'),
 	 ('184010108','ắc treo bờ lốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:11:50.995','nsson'),
-	 ('131120309','Rắc co đầu vào nhiên liệu Elbow 90° male fuel inlet','cái','11329890','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 14:12:18.995','mailong'),
+	 ('131120309','Rắc co đầu vào nhiên liệu Elbow 90° male fuel inlet','cái','11329890','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 14:12:18.995','mailong'),
 	 ('184010109','Bạc ắc giằng đỡ bờ lốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:12:37.074','nsson'),
-	 ('131120317','Ống mềm nhiên liệu Hose flexible filter to hearder','ống','11327900','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 14:13:11.406','mailong'),
+	 ('131120317','Ống mềm nhiên liệu Hose flexible filter to hearder','ống','11327900','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 14:13:11.406','mailong'),
 	 ('131120400','Bầu lọc nhiên liệu Filter, fuel oil','cái','10050050','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 14:13:56.005','mailong'),
 	 ('184010112','Giá đỡ guốc hãm','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:14:32.957','nsson'),
 	 ('131120405','Zoăng nắp bầu lọc nhiên liệu Gasket, cover to housing','cái','10170194','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 14:14:44.903','mailong');
@@ -2804,7 +2804,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('131070114','Bạc trục cam  Bushing in block for camshaft','cái','10150080','phutungmuamoi','Phụ tùng mua mới','7','1524','Kho phụ tùng','','2022-01-12 14:41:56.552','mailong'),
 	 ('131070107','Bulong bắt các đoạn cam Stud, bolt, spl, cam shaft section','cái','10211020','phutungmuamoi','Phụ tùng mua mới','32','1524','Kho phụ tùng','','2022-01-12 14:43:08.466','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('131070111','Bulong bắt bánh răng trục cam Capscrew cam shaft nut 3/8"-16x1-1/4  in.lg','cái','15044117','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 14:43:44.768','mailong'),
+	 ('131070111','Bulong bắt bánh răng trục cam Capscrew cam shaft nut 3/8"-16x1-1/4  in.lg','cái','15044117','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 14:43:44.768','mailong'),
 	 ('184020101','Vòng bi canonbox to','vòng','M239447/410','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-12 14:43:55.306','nsson'),
 	 ('184020103','Căn vòng bi canonbox','cái','','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-12 14:45:23.831','nsson'),
 	 ('184020104','Kaphi ngoài vòng bi canononbox to','cái','','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 14:47:29.542','nsson'),
@@ -2846,7 +2846,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('131130408','Zoăng mặt bích đường ống vào trao  đổi nhiệt Gasket, pipe to pump to couping','cái','10170923','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-12 15:06:51.812','mailong'),
 	 ('131130405','Zoăng mặt bích trao đổi nhiệt Gasket, casing to head','cái','10310290','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-12 15:07:22.858','mailong'),
 	 ('131130500','Van điều áp dầu bôi trơn Valve, lubricating oil regulating ( 105-110 PSI )','cụm','10060613','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:07:55.564','mailong'),
-	 ('131130506','Đế van điều áp dầu bôi trơn Disc, cup','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1528','Kho phụ tùng gia công cơ khí','','2022-01-12 15:08:34.933','mailong');
+	 ('131130506','Đế van điều áp dầu bôi trơn Disc, cup','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-12 15:08:34.933','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('131130600','Bơm dầu cơ giới Pump and drive, libricating oil','bộ','10060418','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:13:00.405','mailong'),
 	 ('131130630','Bánh răng lai bơm dầu Gear, driver','cái','10140426','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:13:30.678','mailong'),
@@ -2872,7 +2872,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('131100102','Mặt bích tăng áp Gas inlet casing (water cooled )','cụm','10080636','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:54:32.404','mailong'),
 	 ('131100109','Vỏ tăng áp main casing','cái','10121158','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:55:06.725','mailong'),
-	 ('131100124','Bạc chặn dầu phía cánh bơm tăng áp Compressor end oil seal','bộ','10130895','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 15:56:46.038','mailong'),
+	 ('131100124','Bạc chặn dầu phía cánh bơm tăng áp Compressor end oil seal','bộ','10130895','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 15:56:46.038','mailong'),
 	 ('131100120','Bạc gối đỡ  trục tăng áp Floating bushing','bộ','10150249','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:58:24.263','mailong'),
 	 ('131100132','Bạc chặn dầu phía tuabin tăng áp turbine end oil seal','bộ','10122588','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 15:59:08.264','mailong'),
 	 ('131100112','Trục + cánh tua bin tăng áp Roto assy','bộ','10080661','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-12 16:00:02.834','mailong'),
@@ -2911,8 +2911,8 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('131030107','Xecmang dầu piston động cơ Compression oil scraper piston ring','cái','10245789','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-12 16:54:58.307','mailong'),
 	 ('131030200','Tay biên piston động cơ Connecting rod','cái','10140529','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-12 16:56:03.852','mailong'),
 	 ('185010204','Xi lanh thấp áp bơm gió Po - nội','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-13 16:57:24.835','nsson'),
-	 ('131030216','Bulong tay biên động cơ Nut spl con rod bolt','cái','10211070','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 16:57:00.886','mailong'),
-	 ('131030300','Xylanh động cơ cylinder ','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-12 16:57:28.608','mailong');
+	 ('131030216','Bulong tay biên động cơ Nut spl con rod bolt','cái','10211070','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 16:57:00.886','mailong'),
+	 ('131030300','Xylanh động cơ cylinder ','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-12 16:57:28.608','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('131030318','Zoăng nước vai xylanh động cơ gasket top cylinder liner to block','cái','10170560','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-12 16:58:00.608','mailong'),
 	 ('131030319','Zoăng nước váy xylanh động cơ Gasket, centre, bottom cylinder liner to  block','cái','10170595','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-12 16:58:30.656','mailong'),
@@ -2922,14 +2922,14 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('131020200','Trục khuỷu động cơ crankshaft','cái','10141110','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-13 15:26:58.961','mailong'),
 	 ('131020328','Bạc gối  7 nửa dưới Shell, STD, No.7 Lower','cái','10150018','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-13 15:31:03.661','mailong'),
 	 ('131020329','Bạc gối 7 nửa trên Shell, STD, No.7 Upper','cái','10150031','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-13 15:31:42.87','mailong'),
-	 ('131020327','Bạc trục cơ giữa Shell, std, centre','cái','10150020','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-13 15:32:36.249','mailong'),
-	 ('131020326','Bạc trục cơ thường Shell, std, main brg. Int','cái','10150018','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-13 15:32:20.658','mailong');
+	 ('131020327','Bạc trục cơ giữa Shell, std, centre','cái','10150020','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-13 15:32:36.249','mailong'),
+	 ('131020326','Bạc trục cơ thường Shell, std, main brg. Int','cái','10150018','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-13 15:32:20.658','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('131060102','Bánh răng dẫn động trục cam Gear, crank shaft (cam shaft driving)','cái','10140463','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-13 15:33:30.152','mailong'),
 	 ('131060117','Bánh răng trục khuỷu động cơ Gear, on extension shaft','cái','10140487','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-13 15:34:32.26','mailong'),
 	 ('131140203','Zoăng chủ quản đường nước Gasket, branch pipe to header','cái','10170583','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-13 15:37:32.164','mailong'),
 	 ('131150100','Cụm siêu tốc trip engine overspeed','cụm','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-13 15:41:43.004','mailong'),
-	 ('131150200','van an toàn cacte động cơ crankcase explosion door','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-13 15:42:10.692','mailong'),
+	 ('131150200','van an toàn cacte động cơ crankcase explosion door','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-13 15:42:10.692','mailong'),
 	 ('184050200','Cụm giảm chấn đầu đấm','cụm','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-13 15:58:10.12','nsson'),
 	 ('184050201','Khung hộp đầu đấm','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-13 15:59:31.188','nsson'),
 	 ('184050202','Bu lông gông đầu đấm','cái','','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-13 16:00:07.361','nsson'),
@@ -3173,10 +3173,10 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('185130700','Gioăng đường ống gió phi 28 - nội','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-14 10:48:07.672','nsson'),
 	 ('185130800','Gioăng đường ống hãm phi 44 loại tròn','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-14 10:48:35.778','nsson'),
 	 ('185130900','Gioăng đường ống hãm phi 11.5','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-14 10:49:47.068','nsson'),
-	 ('131130314','Ống dầu từ TĐN đến bầu lọc thô giữa Hose flexible, L.O to filter, centre','ống','11328162','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-21 11:02:37.762','mailong'),
+	 ('131130314','Ống dầu từ TĐN đến bầu lọc thô giữa Hose flexible, L.O to filter, centre','ống','11328162','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-21 11:02:37.762','mailong'),
 	 ('131130315','Ống dầu từ TĐN đến bầu lọc thô dưới Hose, flexible, L.O to filter, lower','ống','11327704','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-21 11:03:06.968','mailong'),
 	 ('185140000','Van giảm áp chống trượt','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-14 13:52:17.806','nsson'),
-	 ('185140100','Gioăng van hãm khẩn phi 28','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-14 14:09:05.942','nsson');
+	 ('185140100','Gioăng van hãm khẩn phi 28','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-14 14:09:05.942','nsson');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('185140200','Gioăng đường ống gió phi 44 loại vuông','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-14 14:50:20.083','nsson'),
 	 ('185150000','Van hãm khẫn','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-14 14:51:02.817','nsson'),
@@ -3246,23 +3246,23 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('185222500','Van một chiều CRFL','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 09:58:21.444','nsson'),
 	 ('185222600','Gioăng van 1 chiều CRFL - nội','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 09:58:52.957','nsson'),
-	 ('134010102','Xà bình quân ngắn Equaliser, short','cái','11021688','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:06:24.506','mailong'),
+	 ('134010102','Xà bình quân ngắn Equaliser, short','cái','11021688','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:06:24.506','mailong'),
 	 ('184010000','Khung giá chuyển hướng ','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 10:09:59.643','nsson'),
-	 ('134010103','Xà bình quân dài Equaliser, long','cái','11021688','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:11:41.215','mailong'),
-	 ('134010104','Ke trượt to GCH 290x160x5','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:12:26.896','mailong'),
-	 ('134010105','Ke trượt nhỏ giá chuyển hướng 290x160x5','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:12:49.598','mailong'),
-	 ('134010106','Ắc xà bình quân máy ấn','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 10:13:35.295','mailong'),
-	 ('134010107','Ắc gông xà bình quân máy ấn','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:14:01.962','mailong'),
-	 ('134020101','Trục bánh xe Axle','cái','11230484','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:14:37.69','mailong');
+	 ('134010103','Xà bình quân dài Equaliser, long','cái','11021688','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:11:41.215','mailong'),
+	 ('134010104','Ke trượt to GCH 290x160x5','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:12:26.896','mailong'),
+	 ('134010105','Ke trượt nhỏ giá chuyển hướng 290x160x5','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:12:49.598','mailong'),
+	 ('134010106','Ắc xà bình quân máy ấn','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 10:13:35.295','mailong'),
+	 ('134010107','Ắc gông xà bình quân máy ấn','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:14:01.962','mailong'),
+	 ('134020101','Trục bánh xe Axle','cái','11230484','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:14:37.69','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('134020102','Mâm bánh xe ấn Wheel 38’ dia','cái','11231907','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:15:52.794','mailong'),
+	 ('134020102','Mâm bánh xe ấn Wheel 38’ dia','cái','11231907','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:15:52.794','mailong'),
 	 ('186010000','Các loại trục các đăng','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 10:16:18.234','nsson'),
 	 ('186010100','Các đăng lớn loại ngắn','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:16:52.708','nsson'),
-	 ('134030101','Vòng bi đầu trục bánh xe ấn Cylindrical roller bearing','cái','BC4B 459696 A','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:17:18.558','mailong'),
+	 ('134030101','Vòng bi đầu trục bánh xe ấn Cylindrical roller bearing','cái','BC4B 459696 A','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:17:18.558','mailong'),
 	 ('186010101','Ngõng chữ thập cac đăng lớn','cái','GWB 58730','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-17 10:17:31.483','nsson'),
-	 ('134030102','Ke trượt bầu dầu loại 165x34x5','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:18:08.168','mailong'),
-	 ('134030104','Ke trượt bầu dầu loại 192x102x6','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:18:29.667','mailong'),
-	 ('134030105','Ke trượt bầu dầu loại 190x105x6','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:18:50.522','mailong'),
+	 ('134030102','Ke trượt bầu dầu loại 165x34x5','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:18:08.168','mailong'),
+	 ('134030104','Ke trượt bầu dầu loại 192x102x6','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:18:29.667','mailong'),
+	 ('134030105','Ke trượt bầu dầu loại 190x105x6','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:18:50.522','mailong'),
 	 ('134040101','Bạc canonbox  Axle bearing PE & CE ','cặp','453140013','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-17 10:19:35.633','mailong'),
 	 ('186010200','Các đăng lớn loại dài','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:20:27.166','nsson');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
@@ -3271,46 +3271,46 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('134091112','Lò xo giảm chấn đầu trục loại nhỏ Inner Spring','cái','11410140','phutungmuamoi','Phụ tùng mua mới','16','1524','Kho phụ tùng','','2022-01-17 10:21:40.176','mailong'),
 	 ('186010301','Ngỗng chữ thập các đăng con lai côn quạt','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:21:49.663','nsson'),
 	 ('134110101','Giảm chấn thủy lực Hydraulic Damper (200 kg/10 CM /sec) ','cái','KNORR BREMSE DRG.NO, 131171','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-17 10:22:26.783','mailong'),
-	 ('134100101','Giảm chấn MTĐK Suspension motor nose holder with sand-witch mounting','cái','11020179','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:22:59.129','mailong'),
+	 ('134100101','Giảm chấn MTĐK Suspension motor nose holder with sand-witch mounting','cái','11020179','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:22:59.129','mailong'),
 	 ('186020100','Quạt làm mát MTĐK trước','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:24:28.58','nsson'),
 	 ('186020101','Cánh quạt làm mát MTĐK trước','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:24:51.658','nsson'),
 	 ('186020102','Puli moay ơ quạt làm mát MTĐK trước','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:25:13.977','nsson'),
 	 ('000075110','Bơm nhiên liệu TY','cái',NULL,NULL,NULL,NULL,'1527','Kho phế liệu',NULL,NULL,NULL);
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('133010100','Stator máy phát điện chính stator assy wound complete','cái','429330001','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:27:15.597','mailong'),
-	 ('133010200','Rotor tổng thành máy phát điện chính Rotor assembly','cái','444450001','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:27:49.159','mailong'),
-	 ('133010213','Vòng bi MPĐC NU320 ECM/C4-VA301 roller bearing','cái','401430006','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:28:15.828','mailong'),
-	 ('133010300','Giá đỡ chổi than MPĐC Brush holder ','cái','425200005','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:28:44.098','mailong'),
-	 ('133010304','Chổi than máy phát điện chính Carbon Brush','cái','425200008','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:29:16.43','mailong'),
-	 ('133010306','Cọc giá đỡ chổi than MPĐC Brush holder arm','cái','425200011','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:29:45.893','mailong'),
-	 ('133010401','Bánh răng Z102 máy phát điện chính Bull  Gear wheel  (102 teeth )','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:30:10.772','mailong'),
-	 ('133020000','Mô tơ điện kéo Traction motor complete with pinion (Gear ratio 19/92)','cái','453100001','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:31:13.934','mailong'),
+	 ('133010100','Stator máy phát điện chính stator assy wound complete','cái','429330001','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:27:15.597','mailong'),
+	 ('133010200','Rotor tổng thành máy phát điện chính Rotor assembly','cái','444450001','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:27:49.159','mailong'),
+	 ('133010213','Vòng bi MPĐC NU320 ECM/C4-VA301 roller bearing','cái','401430006','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:28:15.828','mailong'),
+	 ('133010300','Giá đỡ chổi than MPĐC Brush holder ','cái','425200005','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:28:44.098','mailong'),
+	 ('133010304','Chổi than máy phát điện chính Carbon Brush','cái','425200008','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:29:16.43','mailong'),
+	 ('133010306','Cọc giá đỡ chổi than MPĐC Brush holder arm','cái','425200011','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:29:45.893','mailong'),
+	 ('133010401','Bánh răng Z102 máy phát điện chính Bull  Gear wheel  (102 teeth )','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:30:10.772','mailong'),
+	 ('133020000','Mô tơ điện kéo Traction motor complete with pinion (Gear ratio 19/92)','cái','453100001','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:31:13.934','mailong'),
 	 ('133180501','Vòng bi 6002-2Z NSK (máy phát xung)','vòng','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 11:04:05.843','mailong'),
-	 ('133020100','Rô to mô tơ điện kéo Armature complete less bearing','cái','453400001','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:31:41.753','mailong');
+	 ('133020100','Rô to mô tơ điện kéo Armature complete less bearing','cái','453400001','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:31:41.753','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('133020112','Trục roto MTĐK máy ấn armature shaft','cái','453400003','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:32:23.338','mailong'),
-	 ('133020109','Vòng bi NU326 MTĐK Armature bearing PE','vòng','453430006','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:33:09.133','mailong'),
-	 ('133020118','Vòng bi 6318 C4 MTĐK Armature bearing CE','vòng','453440006','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:33:37.404','mailong'),
-	 ('133020200','Stator mô tơ điện kéo stator assy complete','cái','453100004','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:34:06.054','mailong'),
-	 ('133020212','Cuộn dây cực từ phụ MTĐK Compole coil with insulation ','cái','453320002','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:34:42.482','mailong'),
-	 ('133020216','Cuộn dây cực từ chính MTĐK Main field coil complete with ‘crossed’ connections ','cái','453320004','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:35:24.42','mailong'),
+	 ('133020112','Trục roto MTĐK máy ấn armature shaft','cái','453400003','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:32:23.338','mailong'),
+	 ('133020109','Vòng bi NU326 MTĐK Armature bearing PE','vòng','453430006','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:33:09.133','mailong'),
+	 ('133020118','Vòng bi 6318 C4 MTĐK Armature bearing CE','vòng','453440006','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:33:37.404','mailong'),
+	 ('133020200','Stator mô tơ điện kéo stator assy complete','cái','453100004','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:34:06.054','mailong'),
+	 ('133020212','Cuộn dây cực từ phụ MTĐK Compole coil with insulation ','cái','453320002','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:34:42.482','mailong'),
+	 ('133020216','Cuộn dây cực từ chính MTĐK Main field coil complete with ‘crossed’ connections ','cái','453320004','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:35:24.42','mailong'),
 	 ('186020303','Bạc H 310 FAG','cái','H310FAG','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-21 07:17:22.029','nsson'),
-	 ('133020217','Cuộn dây cực từ chính MTĐK. Main field coil complete with ‘crossed’ connections ','cái','453320005','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:36:44.117','mailong'),
-	 ('133020218','Vành chặn mỡ MTĐK','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 10:37:42.872','mailong'),
+	 ('133020217','Cuộn dây cực từ chính MTĐK. Main field coil complete with ‘crossed’ connections ','cái','453320005','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:36:44.117','mailong'),
+	 ('133020218','Vành chặn mỡ MTĐK','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 10:37:42.872','mailong'),
 	 ('133020321','Chổi than mô tơ điện kéo ấn Carbon brush with pigtail','cái','453200011','phutungmuamoi','Phụ tùng mua mới','48','1524','Kho phụ tùng','','2022-01-17 10:39:04.799','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('133020308','Cọc giá đỡ chổi than MTĐK ấn Brush holder stud assembly','cái','453200008','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:39:40.726','mailong'),
+	 ('133020308','Cọc giá đỡ chổi than MTĐK ấn Brush holder stud assembly','cái','453200008','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:39:40.726','mailong'),
 	 ('133020312','Hộp canonbox  axle cap complete with oil filler un','cái','453140003','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-17 10:40:07.167','mailong'),
 	 ('133020323','Chổi dạ bôi trơn bạc canonbox ấn Axle bearing lubricator wick assy, complete','cái','453140011','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-17 10:40:45.153','mailong'),
-	 ('133020324','Nắp đổ dầu HGT trục bánh xe','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 10:41:32.833','mailong'),
+	 ('133020324','Nắp đổ dầu HGT trục bánh xe','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 10:41:32.833','mailong'),
 	 ('133020400','Bánh răng MTĐK ấn Pinion (19 teeth)','cái','453160010','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-17 10:42:11.857','mailong'),
-	 ('133030000','Máy phát kích từ  excitation generator  type AG2702AX with pinion','cái','426100002','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:44:22.159','mailong'),
-	 ('133020500','Roto tổng thành MPKT Armature Assy complet ( for AG2702AX)','cái','426400002','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:45:38.116','mailong'),
-	 ('133020600','Stator tổng thành MPKT field coil and connections','cái','26300009','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:46:07.54','mailong'),
-	 ('133020700','Giá đỡ chổi than MPKT Brush holder ','cái','426200003','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:46:33.921','mailong'),
-	 ('133020701','Chổi than MPKT Carbon brush','cái','426200004','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:47:20.449','mailong');
+	 ('133030000','Máy phát kích từ  excitation generator  type AG2702AX with pinion','cái','426100002','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:44:22.159','mailong'),
+	 ('133020500','Roto tổng thành MPKT Armature Assy complet ( for AG2702AX)','cái','426400002','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:45:38.116','mailong'),
+	 ('133020600','Stator tổng thành MPKT field coil and connections','cái','26300009','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:46:07.54','mailong'),
+	 ('133020700','Giá đỡ chổi than MPKT Brush holder ','cái','426200003','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:46:33.921','mailong'),
+	 ('133020701','Chổi than MPKT Carbon brush','cái','426200004','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:47:20.449','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('133020800','Bánh răng Z43 MPKT Pinion (for AG2702AX)','cái','426160002','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:47:49.557','mailong'),
+	 ('133020800','Bánh răng Z43 MPKT Pinion (for AG2702AX)','cái','426160002','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:47:49.557','mailong'),
 	 ('133040201','Cuộn dây cực từ chính MPĐP main field coils ‘S’','cuộn','426320007','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 10:49:53.883','mailong'),
 	 ('133040202','Cuộn dây cực từ chính MPĐP Main field coils ‘N’','cuộn','426320003','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 10:50:29.536','mailong'),
 	 ('133040203','Cuộn dây cực từ phụ MPĐP Compole & coil assy','cuộn','426320002','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-17 10:52:01.971','mailong'),
@@ -3318,23 +3318,23 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('186020203','Ca vét trục quạt làm mát MTĐK sau','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:57:54.053','nsson'),
 	 ('133040402','Vòng bi 6308-2Z NSK','vòng','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 10:58:06.027','mailong'),
 	 ('186020204','Trục quạt làm mát MTĐK sau','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:58:29.947','nsson'),
-	 ('133070000','Mô tơ dẫn động quạt làm mát mô tơ điện kéo','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 10:58:43.349','mailong'),
+	 ('133070000','Mô tơ dẫn động quạt làm mát mô tơ điện kéo','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 10:58:43.349','mailong'),
 	 ('186020205','Đĩa cân bằng quạt làm mát MTĐK sau','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 10:58:55.953','nsson');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('133070101','Vòng bi 6409 - C3 FAG','vòng','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 10:59:14.803','mailong'),
 	 ('186020301','Gioăng chắn mỡ trục quạt LMMTĐK phi 70','cái','','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-17 10:59:42.284','nsson'),
-	 ('133180100','Máy Phát cảm ứng vòng quay động cơ Tacho generator type AG 1404 AZ','cái','419100001','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 11:00:03.925','mailong'),
+	 ('133180100','Máy Phát cảm ứng vòng quay động cơ Tacho generator type AG 1404 AZ','cái','419100001','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 11:00:03.925','mailong'),
 	 ('133180101','Vòng bi 6306 NSK','vòng','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:00:33.367','mailong'),
 	 ('186020302','Gioăng chắn mỡ trục quạt LMMTĐK phi 51.5','cái','','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-17 11:00:40.128','nsson'),
 	 ('133180102','Vòng bi NU 306 E FAG','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:00:53.863','mailong'),
 	 ('133180200','Máy phát chuyển ghép tốc độ axle generator Type AG 903CX/M','cái','420100001','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:01:29.927','mailong'),
 	 ('186020304','Gối quạt làm mát MTĐK','cái','','phutungmuamoi','Phụ tùng mua mới','4','1524','Kho phụ tùng','','2022-01-17 11:01:51.809','nsson'),
 	 ('133180300','Mô tơ bơm nhiên liệu (ES117M) 1,5 HP  1.5 HP Fuel pump motor','cái','12102052','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:01:58.569','mailong'),
-	 ('133180301','Vòng bi bơm nhiên liệu 6303 ZZ','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 11:02:25.153','mailong');
+	 ('133180301','Vòng bi bơm nhiên liệu 6303 ZZ','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 11:02:25.153','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('186030100','Thân bầu côn quạt làm mát nước','cụm','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:02:57.855','nsson'),
 	 ('186030101','Bạc côn quạt làm mát nước','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:03:29.152','nsson'),
-	 ('133180401','Vòng bi 6409 - C3 FAG  (quạt LM hãm ĐN)','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 11:03:41.608','mailong'),
+	 ('133180401','Vòng bi 6409 - C3 FAG  (quạt LM hãm ĐN)','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 11:03:41.608','mailong'),
 	 ('000060105','Máy đo huyết áp','cái',NULL,NULL,NULL,NULL,'1526','Kho thuốc',NULL,NULL,NULL),
 	 ('186030102','Phớt côn quạt 150 X 180 X 15','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 11:04:11.863','nsson'),
 	 ('186030103','Phớt côn quạt 100 X 80 X 10','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 11:04:50.458','nsson'),
@@ -3418,7 +3418,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('186070700','Nắp đậy hộp két nước','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:15:08.683','nsson'),
 	 ('135010501','Piston cao áp bơm gió Piston dia 140','cái','00021858C','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:15:30.187','mailong'),
 	 ('135010502','Ắc piston cao áp bơm gió Gudgeon pin','cái','00046266A','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:15:55.161','mailong'),
-	 ('135010503','Phanh ắc piston bơm gió internal circlip','cái','000917245','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 14:17:02.373','mailong');
+	 ('135010503','Phanh ắc piston bơm gió internal circlip','cái','000917245','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 14:17:02.373','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('186070800','Van khoá cấp gió côn quạt','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:17:27.53','nsson'),
 	 ('135010504','Xéc măng hơi trên cao áp bơm gió Ring plain compression ','cái','00046264A','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:17:36.695','mailong'),
@@ -3426,7 +3426,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('135010505','Xéc măng hơi d¬ưới cao áp bơm gió Ring steppd compression ','cái','00046265A','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:18:17.98','mailong'),
 	 ('135010506','Xec măng dầu cao áp bơm gió oil ring','cái','00032542A','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 14:18:48.152','mailong'),
 	 ('186071000','Van chuyển mạch côn quạt','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:19:40.357','nsson'),
-	 ('135010601','Tay biên cao áp bơm gió Connecting rod','cái','000216300','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 14:19:47.775','mailong'),
+	 ('135010601','Tay biên cao áp bơm gió Connecting rod','cái','000216300','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 14:19:47.775','mailong'),
 	 ('135010608','Vòng bi đũa đầu nhỏ biên cao áp bơm gió Needle roller bearing','cái','000903904','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:20:37.144','mailong'),
 	 ('135010609','Phanh ắc piston bơm gió Internal circlip','cái','000917228','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 14:21:11.408','mailong'),
 	 ('186080100','Kính giữa phía trước ca bin','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:21:33.841','nsson');
@@ -3444,8 +3444,8 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('000010358','Dây cáp điện 4x16 bọc','m',NULL,NULL,NULL,NULL,'1521','Kho nguyên vật liệu chính',NULL,NULL,NULL),
 	 ('186080600','Kính sau ca bin đầu máy','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 14:26:21.386','nsson'),
-	 ('135010703','Căn đồng van nạp bơm gió Copper washer - inlet & discharge valve','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 14:26:30.847','mailong'),
-	 ('135010705','Ống lót van nạp Plug-inlet valve','cái','000319290','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 14:26:59.567','mailong'),
+	 ('135010703','Căn đồng van nạp bơm gió Copper washer - inlet & discharge valve','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-17 14:26:30.847','mailong'),
+	 ('135010705','Ống lót van nạp Plug-inlet valve','cái','000319290','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 14:26:59.567','mailong'),
 	 ('186080300','Kính kéo ca bin','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 14:27:37.656','nsson'),
 	 ('094090000','Lò xo thép ( spring )','bộ','','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-20 10:07:40.922','kimlinh'),
 	 ('186090000','Van hằng nhiệt côn quạt nhiệt độ cao','cái','72261711','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:30:34.252','nsson'),
@@ -3473,7 +3473,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('186111200','Van khoá bơm nước tay','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 14:45:44.79','nsson'),
 	 ('135010709','Ống lót van xả Plug-discharge valve','cái','000319300','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-17 15:16:55.774','mailong'),
 	 ('135010702','Bu zông mặt culat bơm gió Stud 1/2 UNC x 55','cái','000447580','phutungmuamoi','Phụ tùng mua mới','24','1524','Kho phụ tùng','','2022-01-17 15:17:36.345','mailong'),
-	 ('135010800','Van nạp bơm gió Valve assembly, inlet','cụm','A070072','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 15:18:25.555','mailong');
+	 ('135010800','Van nạp bơm gió Valve assembly, inlet','cụm','A070072','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 15:18:25.555','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('135010809','Càng cua không tải bơm gió Plunger','cái','070400340','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-17 15:19:16.052','mailong'),
 	 ('135010804','Lá gió van nạp bơm gió Valve plate','cái','070300290','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-17 15:20:22.949','mailong'),
@@ -3530,7 +3530,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('135020203','Gioăng nắp trên két cao áp Gasket, intercooler core to top cover','cái','000328580','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:06:01.753','mailong'),
 	 ('135030101','Lõi lọc gió bơm gió Element, sir intake strainer','cái','000325520','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 16:07:18.468','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('135040700','Cụm van điều khiển không tải van nạp Valve assembly, suction unloader','cụm','A070073','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:09:12.513','mailong'),
+	 ('135040700','Cụm van điều khiển không tải van nạp Valve assembly, suction unloader','cụm','A070073','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:09:12.513','mailong'),
 	 ('091030400','xecmang hơi động cơ số 2 ( Segment No 2 )','cái','1W6055','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-18 16:11:29.728','kimlinh'),
 	 ('091030500','xecmang dầu động cơ ( Segment oil )','cái','1W6055','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-18 16:12:18.322','kimlinh'),
 	 ('091030800','bạc biên đầu to động cơ ( Bearing ( standard))','cặp','4L3763','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-18 16:20:07.064','kimlinh'),
@@ -3538,16 +3538,16 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('091031000','Ê cu biên động cơ ( Nut )','cái','2580 A','phutungmuamoi','Phụ tùng mua mới','24','1524','Kho phụ tùng','','2022-01-18 16:21:39.38','kimlinh'),
 	 ('091031100','xilanh động cơ 8N9174 ( Cylinder )','cái','1S1160','phutungmuamoi','Phụ tùng mua mới','12','1524','Kho phụ tùng','','2022-01-18 16:22:32.513','kimlinh'),
 	 ('091031200','gioăng vai xilanh động cơ ( seal )','cái','5H2674','phutungmuamoi','Phụ tùng mua mới','24','1524','Kho phụ tùng','','2022-01-18 16:23:32.916','kimlinh'),
-	 ('135040701','Thân van không tải Body with bush','cái','070400380','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:14:19.044','mailong'),
-	 ('135040702','Đế lò xo van không tải Seat','cái','000438270','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:15:16.383','mailong');
+	 ('135040701','Thân van không tải Body with bush','cái','070400380','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:14:19.044','mailong'),
+	 ('135040702','Đế lò xo van không tải Seat','cái','000438270','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:15:16.383','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('135040703','Lò xo hồi vị van không tải Spring','cái','070400390','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:15:47.834','mailong'),
-	 ('135040704','Vòng zoăng làm kín gió van không tải O spring','cái','070400410','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:16:27.296','mailong'),
-	 ('135040705','Pittong van không tải Valve','cái','070400400','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:16:59.628','mailong'),
-	 ('135040706','Nắp van không tải Nut, cap','cái','000468930','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:17:27.393','mailong'),
-	 ('135040707','Lưới lọc gió van không tải Screen (mesh)','cái','000438340','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:17:53.746','mailong'),
-	 ('135040708','Vòng đệm van không tải Screen retainer','cái','00438350','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:18:21.886','mailong'),
-	 ('135040709','Căn đồng van không tải Washer, copper','cái','070400420','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:18:50.116','mailong'),
+	 ('135040703','Lò xo hồi vị van không tải Spring','cái','070400390','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:15:47.834','mailong'),
+	 ('135040704','Vòng zoăng làm kín gió van không tải O spring','cái','070400410','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:16:27.296','mailong'),
+	 ('135040705','Pittong van không tải Valve','cái','070400400','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:16:59.628','mailong'),
+	 ('135040706','Nắp van không tải Nut, cap','cái','000468930','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:17:27.393','mailong'),
+	 ('135040707','Lưới lọc gió van không tải Screen (mesh)','cái','000438340','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:17:53.746','mailong'),
+	 ('135040708','Vòng đệm van không tải Screen retainer','cái','00438350','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:18:21.886','mailong'),
+	 ('135040709','Căn đồng van không tải Washer, copper','cái','070400420','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:18:50.116','mailong'),
 	 ('135040800','Rơle áp lực gió không tải pressure switch RT5X ','bộ','00192425','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:22:10.565','mailong'),
 	 ('135040801','Gioăng mặt lắp ghép role áp lực gió không tải O ring I/D 14, cross section 2.5','cái','30070224','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:22:41.115','mailong'),
 	 ('135050000','Tay hãm lớn Valve, brake automatic A9','cái','11360010','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:23:10.187','mailong');
@@ -3556,77 +3556,77 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('135050102','Màng điều khiển tay hãm A9 Diaphragm ','cái','526346','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 16:24:11.046','mailong'),
 	 ('135050103','Bộ van hút và van xả tay hãm lớn A9 inlet and exhaust valve unit asy ','cụm','562349','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:24:41.437','mailong'),
 	 ('135060000','Tay hãm con Valve, brake independent SA9','cụm','11360021','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:27:46.555','mailong'),
-	 ('136100002','Bi chữ thập cac đăng nhỏ','bộ','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:28:08.61','mailong'),
+	 ('136100002','Bi chữ thập cac đăng nhỏ','bộ','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:28:08.61','mailong'),
 	 ('135060101','Bộ gioăng cao su tay hãm con SA-9 Maintenence rubber kit for SA-9 ','bộ','30293901','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:28:14.765','mailong'),
-	 ('135060102','Bộ van hút, xả tay hãm con SA-9 Valve inlet and exhaust unit ','bộ','564377','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:28:45.473','mailong'),
+	 ('135060102','Bộ van hút, xả tay hãm con SA-9 Valve inlet and exhaust unit ','bộ','564377','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:28:45.473','mailong'),
 	 ('135060103','Màng điều khiển tay hãm SA9 Diaphragm ','cái','526346','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 16:29:15.05','mailong'),
 	 ('135070000','Van phân phối C3W distributor valve','cụm','11360150','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:29:43.008','mailong'),
-	 ('135080000','Van giảm áp valve, air pressure control','cụm','10240792','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:30:19.982','mailong');
+	 ('135080000','Van giảm áp valve, air pressure control','cụm','10240792','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:30:19.982','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('135080243','Màng gió van giảm áp điều khiển Diaphragm, pilot','cái','10350433','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:30:58.184','mailong'),
 	 ('135090000','Thùng gió chính.','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-17 16:31:56.333','mailong'),
 	 ('135100000','Van an toàn thùng gió chính ấn','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-17 16:32:40.713','mailong'),
-	 ('135130100','Đồng hồ áp lực khí nạp','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:49:04.92','mailong'),
-	 ('135130200','Đồng hồ đo tốc độ vòng quay động cơ (điện tử)','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:49:24.592','mailong'),
-	 ('135130201','Cảm ứng đồng hồ vòng quay động cơ.','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:49:54.633','mailong'),
-	 ('135130300','Đồng hồ áp lực dầu 0-10 KG/cm2','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:50:15.753','mailong'),
-	 ('135130400','Đồng hồ áp lực nhiên liệu','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:50:51.298','mailong'),
-	 ('135130500','Đồng hồ dòng xạc acquy','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:51:11.011','mailong'),
-	 ('135130501','Điện trở Shun đồng hồ dòng xạc acquy','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:52:54.448','mailong');
+	 ('135130100','Đồng hồ áp lực khí nạp','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:49:04.92','mailong'),
+	 ('135130200','Đồng hồ đo tốc độ vòng quay động cơ (điện tử)','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:49:24.592','mailong'),
+	 ('135130201','Cảm ứng đồng hồ vòng quay động cơ.','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:49:54.633','mailong'),
+	 ('135130300','Đồng hồ áp lực dầu 0-10 KG/cm2','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:50:15.753','mailong'),
+	 ('135130400','Đồng hồ áp lực nhiên liệu','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:50:51.298','mailong'),
+	 ('135130500','Đồng hồ dòng xạc acquy','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:51:11.011','mailong'),
+	 ('135130501','Điện trở Shun đồng hồ dòng xạc acquy','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:52:54.448','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('135130601','Đồng hồ đo áp lực thùng gió chính','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:53:20.973','mailong'),
-	 ('135130602','Đồng hồ đo áp lực xylanh nồi hãm','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:53:40.099','mailong'),
-	 ('135130603','Đồng hồ đo áp lực gió đoàn xe','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:53:58.442','mailong'),
-	 ('135130700','Đồng hồ đo dòng điện kéo (điện tử)','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:58:41.412','mailong'),
-	 ('135130701','Điện trở Shun đồng hồ đo dòng điện kéo','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 16:59:02.718','mailong'),
-	 ('135130604','Ống mềm vào đồng hồ áp lực gió','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-17 17:02:41.076','mailong'),
+	 ('135130601','Đồng hồ đo áp lực thùng gió chính','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:53:20.973','mailong'),
+	 ('135130602','Đồng hồ đo áp lực xylanh nồi hãm','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:53:40.099','mailong'),
+	 ('135130603','Đồng hồ đo áp lực gió đoàn xe','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:53:58.442','mailong'),
+	 ('135130700','Đồng hồ đo dòng điện kéo (điện tử)','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:58:41.412','mailong'),
+	 ('135130701','Điện trở Shun đồng hồ đo dòng điện kéo','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 16:59:02.718','mailong'),
+	 ('135130604','Ống mềm vào đồng hồ áp lực gió','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-17 17:02:41.076','mailong'),
 	 ('000079056','Vòng bi NU 330(ấn)','vòng',NULL,NULL,NULL,NULL,'1527','Kho phế liệu',NULL,NULL,NULL),
-	 ('135140000','Xilanh gạt nước mưa','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 07:42:46.687','mailong'),
-	 ('135140100','Chổi gạt nước mưa','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 07:43:49.011','mailong'),
-	 ('135190000','Còi gió ấn horn, air ','cái','11430815','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 07:46:14.918','mailong');
+	 ('135140000','Xilanh gạt nước mưa','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 07:42:46.687','mailong'),
+	 ('135140100','Chổi gạt nước mưa','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 07:43:49.011','mailong'),
+	 ('135190000','Còi gió ấn horn, air ','cái','11430815','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 07:46:14.918','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('135190103','Màng còi ấn diaphragm','cái','11430352','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 07:46:40.445','mailong'),
+	 ('135190103','Màng còi ấn diaphragm','cái','11430352','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 07:46:40.445','mailong'),
 	 ('135210101','Bộ gioăng van C2-W Maintenance rubber kit for C2-W relay ','cái','30396201','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-18 07:47:27.189','mailong'),
 	 ('135210102','Bộ van xả rơ le C2-W Exhaust valve, Asy','bộ','559412','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-18 07:48:05.614','mailong'),
 	 ('135210103','Màng tác dụng C2W Diaphragm','bộ','536300','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-18 14:03:24.472','mailong'),
-	 ('135210104','Bộ gioăng van C3-W','bộ','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:03:51.93','mailong'),
-	 ('135210105','Bộ gioăng van F1 Maintenance kit comprising of 6items for F1 selector vvalve','cái','30393101','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:04:51.231','mailong'),
-	 ('135210106','Bộ gioăng MU- 2B Maitenance kit for MU-2B valve ','bộ','30295301','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:05:19.64','mailong'),
-	 ('136030100','Cần giật đầu đấm ấn','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1528','Kho phụ tùng gia công cơ khí','','2022-01-18 14:06:27.073','mailong'),
-	 ('136030200','Tấm đệm cao su giảm chấn đầu đấm','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:06:48.347','mailong'),
-	 ('136030300','Ắc đầu đấm phi 41','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','','1524','Kho phụ tùng','','2022-01-18 14:07:10.765','mailong');
+	 ('135210104','Bộ gioăng van C3-W','bộ','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:03:51.93','mailong'),
+	 ('135210105','Bộ gioăng van F1 Maintenance kit comprising of 6items for F1 selector vvalve','cái','30393101','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:04:51.231','mailong'),
+	 ('135210106','Bộ gioăng MU- 2B Maitenance kit for MU-2B valve ','bộ','30295301','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:05:19.64','mailong'),
+	 ('136030100','Cần giật đầu đấm ấn','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-18 14:06:27.073','mailong'),
+	 ('136030200','Tấm đệm cao su giảm chấn đầu đấm','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:06:48.347','mailong'),
+	 ('136030300','Ắc đầu đấm phi 41','cái','','phutunggiacongcokhi','Phụ tùng gia công cơ khí','0','1524','Kho phụ tùng','','2022-01-18 14:07:10.765','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('136030400','Bulong ê cu gồng giảm chấn đầu đấm','bộ','','phutungmuamoi','Phụ tùng mua mới','','1528','Kho phụ tùng gia công cơ khí','','2022-01-18 14:07:46.253','mailong'),
-	 ('136030500','Lẫy giữ cần giật đầu đấm','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:08:12.212','mailong'),
-	 ('136040000','Ông dẫn gió làm mát MTĐK duct air, traction motor, assy','cái','11021172','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:11:38.579','mailong'),
-	 ('136050000','Bộ hãm tay Brake hand','bộ','11360290','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:12:20.614','mailong'),
-	 ('136080101','Vòng bi Nu 314 ','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:19:43.817','mailong'),
-	 ('136080102','Vòng bi 6314 ','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:20:07.525','mailong'),
-	 ('136080103','Bánh răng quạt làm mát MTĐK','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:20:29.692','mailong'),
-	 ('136080201','Vòng bi 22211 EK','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:20:56.744','mailong'),
-	 ('136080202','Vòng bi 22211 E','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:21:17.682','mailong'),
+	 ('136030400','Bulong ê cu gồng giảm chấn đầu đấm','bộ','','phutungmuamoi','Phụ tùng mua mới','0','1528','Kho phụ tùng gia công cơ khí','','2022-01-18 14:07:46.253','mailong'),
+	 ('136030500','Lẫy giữ cần giật đầu đấm','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:08:12.212','mailong'),
+	 ('136040000','Ông dẫn gió làm mát MTĐK duct air, traction motor, assy','cái','11021172','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:11:38.579','mailong'),
+	 ('136050000','Bộ hãm tay Brake hand','bộ','11360290','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:12:20.614','mailong'),
+	 ('136080101','Vòng bi Nu 314 ','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:19:43.817','mailong'),
+	 ('136080102','Vòng bi 6314 ','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:20:07.525','mailong'),
+	 ('136080103','Bánh răng quạt làm mát MTĐK','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:20:29.692','mailong'),
+	 ('136080201','Vòng bi 22211 EK','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:20:56.744','mailong'),
+	 ('136080202','Vòng bi 22211 E','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:21:17.682','mailong'),
 	 ('136080203','Bạc H311','cái','','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 14:21:43.046','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('136080204','Trục quạt làm mát MTĐK sau.','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:22:21.476','mailong'),
-	 ('136090101','Vòng bi 2310 - C3 SKF ','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:23:09.123','mailong'),
-	 ('136090102','Chổi than khớp từ quạt làm mát','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:26:05.618','mailong'),
-	 ('136090103','Cuôn dây khớp từ','cuộn','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:26:33.369','mailong'),
-	 ('136100001','Bi chữ thập cac đăng to','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:27:47.483','mailong'),
-	 ('136100200','Cánh quạt làm mát nước fan radiator 60 in','cái','11420273','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:28:38.91','mailong'),
-	 ('136100101','Bánh răng bị động hộp GTG Bevel Pinion','cái','418160004','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 14:29:19.128','mailong'),
-	 ('136100102','Bánh răng chủ động hộp GTG Bevel Gear','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:17:58.516','mailong'),
-	 ('136100103','Vòng bi côn K45290/K45220 giảm tốc góc','vòng','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:18:25.115','mailong'),
+	 ('136080204','Trục quạt làm mát MTĐK sau.','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:22:21.476','mailong'),
+	 ('136090101','Vòng bi 2310 - C3 SKF ','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:23:09.123','mailong'),
+	 ('136090102','Chổi than khớp từ quạt làm mát','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:26:05.618','mailong'),
+	 ('136090103','Cuôn dây khớp từ','cuộn','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:26:33.369','mailong'),
+	 ('136100001','Bi chữ thập cac đăng to','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:27:47.483','mailong'),
+	 ('136100200','Cánh quạt làm mát nước fan radiator 60 in','cái','11420273','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:28:38.91','mailong'),
+	 ('136100101','Bánh răng bị động hộp GTG Bevel Pinion','cái','418160004','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 14:29:19.128','mailong'),
+	 ('136100102','Bánh răng chủ động hộp GTG Bevel Gear','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:17:58.516','mailong'),
+	 ('136100103','Vòng bi côn K45290/K45220 giảm tốc góc','vòng','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:18:25.115','mailong'),
 	 ('136100104','Vòng bi côn K639/K632 giảm tốc góc','vòng','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-18 15:18:50.387','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('136100105','Cac đăng quạt làm mát nước','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:19:24.159','mailong'),
+	 ('136100105','Cac đăng quạt làm mát nước','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:19:24.159','mailong'),
 	 ('136110000','Két làm mát nước Rad, right and left sides','cái','11420236','phutungmuamoi','Phụ tùng mua mới','8','1524','Kho phụ tùng','','2022-01-18 15:20:07.376','mailong'),
 	 ('132020100','Công tắc tơ khởi động kiểu M5022EC5 Cranking Contactor type M5022EC5','cái','05815030001V04','phutungmuamoi','Phụ tùng mua mới','3','1524','Kho phụ tùng','','2022-01-18 15:42:42.151','mailong'),
 	 ('091010101','Lò xo nhỏ ( Spring )','cái','1A2169','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:44:29.84','kimlinh'),
-	 ('132020300','Rơ le thời gian kiểu MTAM Electro-magnetic relay type MTAM assy','cái','05841011001V02','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:44:58.358','mailong'),
+	 ('132020300','Rơ le thời gian kiểu MTAM Electro-magnetic relay type MTAM assy','cái','05841011001V02','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:44:58.358','mailong'),
 	 ('091010102','Trục dẫn động ( spindle)','cái','4L6720','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:45:25.663','kimlinh'),
 	 ('132020200','Công tắc tơ CKC','cái','25815030017V02','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:46:13.681','mailong'),
 	 ('091010103','Ống bọc ngoài trục dẫn động ( sleeve assem)','cái','4F1520','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:46:19.607','kimlinh'),
-	 ('132020400','Cầu dao ắc qui Isolating Switch complete','cái','15790730001V00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:46:45.336','mailong'),
+	 ('132020400','Cầu dao ắc qui Isolating Switch complete','cái','15790730001V00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:46:45.336','mailong'),
 	 ('091010104','Bộ trục dẫn động điều tốc ( spindle assem )','cái','4L6721','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:47:15.402','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('132030100','Công tắc tơ kích từ kiểu M5022EC6 G.F. Contactor type M5022EC6 ','cái','05815030001V02','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:47:36.579','mailong'),
@@ -3640,24 +3640,24 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('091010115','Bộ lưới lọc dầu cacte ( Screen assem)','cái','6F7859','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:57:02.869','kimlinh'),
 	 ('091010116','Mặt nắp lỗ đổ dầu ( Plate )','cái','2F2006','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 15:57:54.949','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('132040100','Gioăng pittong công t/tơ đảo  chiều','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:59:37.981','mailong'),
-	 ('132040200','Đầu côn ống gió xylanh đảo chiều','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 15:59:57.166','mailong'),
-	 ('132040300','Cuộn dây van điện không đảo chiều','cuộn','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:00:21.047','mailong'),
-	 ('132040400','Tay gạt đảo chiều','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:00:44.065','mailong'),
+	 ('132040100','Gioăng pittong công t/tơ đảo  chiều','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:59:37.981','mailong'),
+	 ('132040200','Đầu côn ống gió xylanh đảo chiều','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 15:59:57.166','mailong'),
+	 ('132040300','Cuộn dây van điện không đảo chiều','cuộn','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:00:21.047','mailong'),
+	 ('132040400','Tay gạt đảo chiều','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:00:44.065','mailong'),
 	 ('091020301','Bu lông ( bolt )','cái','1D4609','phutungmuamoi','Phụ tùng mua mới','10','1524','Kho phụ tùng','','2022-01-18 16:04:13.758','kimlinh'),
 	 ('091020302','Bánh đà động cơ ( Damper )','cái','4L3436','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 16:05:19.01','kimlinh'),
 	 ('091020303','Khóa ( lock )','cái','5L8444','phutungmuamoi','Phụ tùng mua mới','5','1524','Kho phụ tùng','','2022-01-18 16:06:15.11','kimlinh'),
 	 ('091020304','Tấm đệm ( plate )','cái','6L1800','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-18 16:07:00.26','kimlinh'),
-	 ('132050100','Công tắc tơ cắt giảm shunt MTĐK ','cái','05815030004V00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:07:09.974','mailong'),
-	 ('132050200','Công tắc tơ động lực P1-P6 ấn','cái','05801030001V00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:07:40.013','mailong');
+	 ('132050100','Công tắc tơ cắt giảm shunt MTĐK ','cái','05815030004V00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:07:09.974','mailong'),
+	 ('132050200','Công tắc tơ động lực P1-P6 ấn','cái','05801030001V00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:07:40.013','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('132050300','Dây cáp động lực ','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:07:59.351','mailong'),
-	 ('132050400','Ống cao su cách điện cáp ','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:08:22.631','mailong'),
-	 ('132050500','Đầu cốt cáp động lực','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:08:46.705','mailong'),
+	 ('132050300','Dây cáp động lực ','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:07:59.351','mailong'),
+	 ('132050400','Ống cao su cách điện cáp ','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:08:22.631','mailong'),
+	 ('132050500','Đầu cốt cáp động lực','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:08:46.705','mailong'),
 	 ('000010359','Dây cáp điện cao su 3x120+1x70','m',NULL,NULL,NULL,NULL,'1521','Kho nguyên vật liệu chính',NULL,NULL,NULL),
-	 ('132060100','Rơ le mát kiểu loại M22ER2 Ground relay type M22ER2 ( Relay complete )','cái','05831030003V00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:09:28.987','mailong'),
-	 ('132070100','Rơ le chống trượt M23ER2  Relay M23ER2 complete','cái','15831030005V00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:10:22.868','mailong'),
-	 ('132070200','Công tắc cắt cặp Motor cut out swich','cái','35890030051P2','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-18 16:10:50.836','mailong'),
+	 ('132060100','Rơ le mát kiểu loại M22ER2 Ground relay type M22ER2 ( Relay complete )','cái','05831030003V00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:09:28.987','mailong'),
+	 ('132070100','Rơ le chống trượt M23ER2  Relay M23ER2 complete','cái','15831030005V00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:10:22.868','mailong'),
+	 ('132070200','Công tắc cắt cặp Motor cut out swich','cái','35890030051P2','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-18 16:10:50.836','mailong'),
 	 ('091100119','Đệm bạc chặn dầu cánh bơm ( spacer )','cái','2S1310','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 07:43:00.677','kimlinh'),
 	 ('091100120','Trục và cánh turbin ( shaft and wheel assem )','cái','2S1530','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 07:43:33.206','kimlinh'),
 	 ('091120113','Ống cao áp số 10 ( Line assem No10 )','cái','6L3910','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 10:12:23.817','kimlinh');
@@ -3674,7 +3674,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('091120302','gioăng bầu lọc nhiên liệu ( Seal)','cái','4L6779','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 10:22:15.764','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('091120303','gioăng nắp bầu lọc nhiên liệu ( gasket )','cái','4L8212','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-19 10:22:49.13','kimlinh'),
-	 ('091120304','vít xả E nhiên liệu ( Needle assem)','bộ','2A1927 ( 8F1937) (2A3885)','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 10:26:37.401','kimlinh'),
+	 ('091120304','vít xả E nhiên liệu ( Needle assem)','bộ','2A1927 ( 8F1937) (2A3885)','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 10:26:37.401','kimlinh'),
 	 ('091120305','Đồng hồ áp lực nhiên liệu ( Gauge) Rắc co đồng hồ áp lực nhiên liệu ( Elbow ) Ống nối đồng hồ áp lực nhiên liệu ( Nipple )','bộ','8H9560 (3B6769 ) (8B2383)','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 10:28:33.684','kimlinh'),
 	 ('091120306','Gioăng đầu rắc co đ/ hồ áp lực n/liệu (seal)','cái','4F7387','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 10:29:13.751','kimlinh'),
 	 ('091120401','bơm tay nhiên liệu ( pump )','cái','4L8232','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 10:30:55.238','kimlinh'),
@@ -3761,27 +3761,27 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('091131016','Ống dầu lên bộ TĐN ( tube assem)','cái','4L7859','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:19:37.177','kimlinh'),
 	 ('091131017','ống nối từ bộ TĐN lên bộ lọc ( tube assem)','cái','4L7867','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:20:08.802','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('132080300','Bàn đạp chống ngủ gật Deadman''s foot pedal','cái','025 0183 00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:20:29.608','mailong'),
+	 ('132080300','Bàn đạp chống ngủ gật Deadman''s foot pedal','cái','025 0183 00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:20:29.608','mailong'),
 	 ('091131018','ống nước ra bộ TĐN ( tube assem)','cái','4L8116','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:20:41.772','kimlinh'),
-	 ('132080301','Tiếp điểm phao nước','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:21:05.98','mailong'),
+	 ('132080301','Tiếp điểm phao nước','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:21:05.98','mailong'),
 	 ('091131019','ống dầu bôi trơn Piston ( tube assem)','cái','5L4262','phutungmuamoi','Phụ tùng mua mới','6','1524','Kho phụ tùng','','2022-01-19 14:21:15.518','kimlinh'),
-	 ('132080400','Còi chống ngủ gật Audible warning device','cái','025 0184 00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:21:33.967','mailong'),
+	 ('132080400','Còi chống ngủ gật Audible warning device','cái','025 0184 00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:21:33.967','mailong'),
 	 ('091131020','ống dầu nối với bầu lọc ( tube assem)','cái','6L1535','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:21:50.016','kimlinh'),
-	 ('132080500','Nút nhấn dạng nấm  Mashroom head push button ','cái','25890030033V02','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:22:01.158','mailong'),
-	 ('132080600','Cuộn dây van xả gió chống ngủ gật','cuộn','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:22:31.087','mailong'),
+	 ('132080500','Nút nhấn dạng nấm  Mashroom head push button ','cái','25890030033V02','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:22:01.158','mailong'),
+	 ('132080600','Cuộn dây van xả gió chống ngủ gật','cuộn','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:22:31.087','mailong'),
 	 ('091131021','Ống dầu bôi trơn TA bên phải (tube assem right hand )','cái','6L2819','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:22:42.237','kimlinh'),
 	 ('091131022','Ống dầu bôi trơn TA bên trái (tube assem left hand )','cái','6L2820','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:23:23.79','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('091131023','Gioăng đường ống dầu bôi trơn TA ( Seal oring )','cái','8M4437','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-19 14:24:02.744','kimlinh'),
-	 ('132100100','Công tắc đèn pha Head lamp switch ','cái','25890030031','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:41:36.731','mailong'),
-	 ('132100200','Công tắc chiếu sáng Lighting switch ','cái','35890030025P1','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:42:06.836','mailong'),
-	 ('132100300','Đèn pha','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:42:27.355','mailong'),
-	 ('132100400','Mảng đèn tín hiệu','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:42:45.431','mailong'),
-	 ('132140100','Công tắc tơ điều khiển khớp từ Contactor type M50EC ( Complete )','cái','25815030017V00','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:43:41.341','mailong'),
-	 ('132140200','Rơ le nhiệt','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:44:04.085','mailong'),
-	 ('132140300','Công tắc tơ bơm nhiên liệu, bơm xả khí các te kiểu loại M23EC2  E.M. contactor type M23EC2','cái','05815030005V21','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:44:30.869','mailong'),
-	 ('132140700','Điện trở shunt đồng hồ dòng điện xạc ắc quy Battery ammeter shunt ','cái','3.589E+10','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:45:56.089','mailong'),
-	 ('132140800','Card dao động 253  Oscillator Card 253 Complete ','cái','16702300026','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:46:25.193','mailong');
+	 ('132100100','Công tắc đèn pha Head lamp switch ','cái','25890030031','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:41:36.731','mailong'),
+	 ('132100200','Công tắc chiếu sáng Lighting switch ','cái','35890030025P1','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:42:06.836','mailong'),
+	 ('132100300','Đèn pha','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:42:27.355','mailong'),
+	 ('132100400','Mảng đèn tín hiệu','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:42:45.431','mailong'),
+	 ('132140100','Công tắc tơ điều khiển khớp từ Contactor type M50EC ( Complete )','cái','25815030017V00','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:43:41.341','mailong'),
+	 ('132140200','Rơ le nhiệt','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:44:04.085','mailong'),
+	 ('132140300','Công tắc tơ bơm nhiên liệu, bơm xả khí các te kiểu loại M23EC2  E.M. contactor type M23EC2','cái','05815030005V21','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:44:30.869','mailong'),
+	 ('132140700','Điện trở shunt đồng hồ dòng điện xạc ắc quy Battery ammeter shunt ','cái','3.589E+10','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:45:56.089','mailong'),
+	 ('132140800','Card dao động 253  Oscillator Card 253 Complete ','cái','16702300026','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:46:25.193','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
 	 ('132140900','Card Transistor công suất 254   Power Transistor card 254 Complete ','cái','16702300020','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:46:52.297','mailong'),
 	 ('132141000','Card  bộ trộn 186 Reference mixer Card 186 complete ','cái','1.67E+10','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:47:17.954','mailong'),
@@ -3794,12 +3794,12 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('132141700','Cạc điều khiển điều tiết  Control card (BN) Complete ','cái','16702200017','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 14:50:23.798','mailong'),
 	 ('132141900','Đầu từ máy phát xung bộ ghi băng tốc độ','cái','','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-19 14:51:34.25','mailong');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES
-	 ('132142000','Biến trở ốt oát  Comutator and resistor pack Assy ','cái','10314992','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:52:00.505','mailong'),
-	 ('132142200','Bộ gioăng ốt oát Kit de joint puor regulater PGE','bộ','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:52:42.601','mailong'),
-	 ('132142300','Phớt chắn dầu đầu trục bơm ốt oát Seal oil ( Manuel 36628-165 )','cái','10340099','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:53:09.155','mailong'),
+	 ('132142000','Biến trở ốt oát  Comutator and resistor pack Assy ','cái','10314992','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:52:00.505','mailong'),
+	 ('132142200','Bộ gioăng ốt oát Kit de joint puor regulater PGE','bộ','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:52:42.601','mailong'),
+	 ('132142300','Phớt chắn dầu đầu trục bơm ốt oát Seal oil ( Manuel 36628-165 )','cái','10340099','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:53:09.155','mailong'),
 	 ('091141501','Nắp hộp gom nước ( cover )','cái','4L8728','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-19 15:15:02.415','kimlinh'),
-	 ('132142100','Màng dầu ốt oát','cái','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:52:18.177','mailong'),
-	 ('132140600','Điện trở shunt đồng hồ dòng điện kéo Load ammeter shunt','cái','3.589E+10','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 14:45:23.505','mailong'),
+	 ('132142100','Màng dầu ốt oát','cái','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:52:18.177','mailong'),
+	 ('132140600','Điện trở shunt đồng hồ dòng điện kéo Load ammeter shunt','cái','3.589E+10','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 14:45:23.505','mailong'),
 	 ('091141508','Phớt làm kín nối van hằng nhiệt ( seal )','cái','8H2046','phutungmuamoi','Phụ tùng mua mới','2','1524','Kho phụ tùng','','2022-01-19 15:19:21.044','kimlinh'),
 	 ('091141509','Hệ thống ống nước lên từ bơm ( tube assem )','cái','4L7860','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 15:20:39.876','kimlinh'),
 	 ('091141510','ống nước lên van hằng nhiệt ( tube assem )','cái','4L7888','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 15:21:09.404','kimlinh'),
@@ -3889,7 +3889,7 @@ INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_
 	 ('091150430','Con lăn tay điều khiển ( roller )','cái','5H8285','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 16:25:45.856','kimlinh'),
 	 ('132142800','Bộ giới hạn dòng ACCR Armature Current Control Reactor E311 complete','cái','26700600004V00','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 16:26:16.44','mailong'),
 	 ('091150431','Lò xo đầu dưới thanh thăng bằng ( spring )','cái','1H516','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 16:26:28.371','kimlinh'),
-	 ('132142900','Bộ đèn cảnh báo','bộ','','phutungmuamoi','Phụ tùng mua mới','','1524','Kho phụ tùng','','2022-01-19 16:26:36.984','mailong'),
+	 ('132142900','Bộ đèn cảnh báo','bộ','','phutungmuamoi','Phụ tùng mua mới','0','1524','Kho phụ tùng','','2022-01-19 16:26:36.984','mailong'),
 	 ('091150432','Cơ cấu chỉnh tắt máy ( stop assem )','cái','2H5733','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 16:27:05.963','kimlinh'),
 	 ('091150433','Vít điều chỉnh Min – Max ( screw )','cái','5H9555','phutungmuamoi','Phụ tùng mua mới','1','1524','Kho phụ tùng','','2022-01-19 16:28:22.998','kimlinh');
 INSERT INTO qlds.material (material_id,material_name,unit,product_code,material_group_id,material_group_name,minimum_quantity,material_type_id,material_type_name,spec_id,updated_timestamp,updated_user) VALUES

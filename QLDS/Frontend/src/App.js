@@ -11,7 +11,7 @@ import {
   SkipToContent,
 } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Route, Switch, withRouter } from 'react-router-dom';
 import { removeCurrentLoggedInUser, setCurrentLoggedInUser } from './actions/authAction';
@@ -25,6 +25,10 @@ import Engine from './pages/engine/Engine';
 import EngineAnalysis from './pages/engine/EngineAnalysis';
 import EngineAnalysisList from './pages/engine/EngineAnalysisList';
 import FuelReport from './pages/fuel/FuelReport';
+import FuelInOrder from './pages/fuel/FuelInOrder';
+import FuelInOrderTest from './pages/fuel/FuelInOrderTest';
+import FuelInOrderApprove from './pages/fuel/FuelInOrderApprove';
+import FuelInOrderDetail from './pages/fuel/FuelInOrderDetail';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import MaterialAdd from './pages/material/MaterialAdd';
@@ -163,6 +167,12 @@ class App extends Component {
                       <SideNavMenuItem element={Link} to="/vcf">
                         Điều chỉnh VCF
                       </SideNavMenuItem>
+                      <SideNavMenuItem element={Link} to="/fuel/stock-in">
+                        Yêu cầu nhập nhiên liệu
+                      </SideNavMenuItem>
+                      <SideNavMenuItem element={Link} to="/fuel/stock-out">
+                        Yêu cầu xuất nhiên liệu
+                      </SideNavMenuItem>
                       <SideNavMenuItem element={Link} to="/fuel">
                         Báo cáo nhiên liệu
                       </SideNavMenuItem>
@@ -251,7 +261,14 @@ class App extends Component {
             <Route exact path="/report/order/stock-out" component={isAuthenticated ? StockOutOrderReport : Home} />
 
             <Route exact path="/vcf" component={isAuthenticated ? VCFAdjust : Home} />
+
+            <Route exact path="/fuel/stock-in" component={isAuthenticated && role === 'phongkehoachvattu' ? FuelInOrder : Home} />
+            <Route exact path="/fuel/stock-in/test" component={isAuthenticated && role === 'phongkythuat' ? FuelInOrderTest : Home} />
+            <Route exact path="/fuel/stock-in/approve" component={isAuthenticated && role === 'phongketoantaichinh' ? FuelInOrderApprove : Home} />
+            <Route exact path="/fuel/stock-in/detail" component={isAuthenticated ? FuelInOrderDetail : Home} />
+
             <Route exact path="/fuel" component={isAuthenticated ? FuelReport : Home} />
+
             <Route exact path="/stock/update" component={isAuthenticated ? StockUpdate : Home} />
           </Switch>
         </Content>
