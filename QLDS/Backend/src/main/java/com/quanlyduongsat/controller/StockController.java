@@ -194,7 +194,15 @@ public class StockController {
                     continue;
                 }
                 Price price = priceList.stream().filter(e -> e.getMaterialID().equals(materialID)).findFirst().get();
-                orderDetail.setApproveAmount(new BigDecimal(orderDetail.getApproveQuantity()).multiply(price.getPrice()));
+                BigDecimal approveAmount = new BigDecimal(orderDetail.getApproveQuantity()).multiply(price.getPrice());
+                orderDetail.setApproveAmount(approveAmount);
+                Optional<Stock> stockOptional = stockRepository.findByCompanyIDAndMaterialID(companyID, materialID);
+                if (!stockOptional.isPresent()) {
+                    continue;
+                }
+                Stock stock = stockOptional.get();
+                stock.setAmount(stock.getAmount().subtract(approveAmount));
+                stockRepository.save(stock);
             }
             orderDetailRepository.saveAll(orderDetaiList);
         }
