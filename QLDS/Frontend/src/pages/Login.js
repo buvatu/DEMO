@@ -1,11 +1,11 @@
 import { Button, InlineNotification, Loading, TextInput } from 'carbon-components-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { setCurrentLoggedInUser } from '../actions/authAction';
-import { assignErrorMessage, setLoadingValue } from '../actions/commonAction';
-import { login } from '../services';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue } from '../actions/commonAction';
+import { getMaterialListWithStockQuantity, login } from '../services';
 
 class Login extends Component {
   constructor(props) {
@@ -43,12 +43,14 @@ class Login extends Component {
     setLoading(true);
     try {
       const getLoginResult = await login(userID, password);
-      const { setUserInfo } = this.props;
+      const { setUserInfo, setMaterialList } = this.props;
       setUserInfo(getLoginResult.data);
-      if (getLoginResult.data.status === 'NA') {
+      if (getLoginResult.data.status !== 'A') {
         this.setState({ redirect: <Redirect to={`/user/update?userID=${userID}`} /> });
         return;
       }
+      const getMaterialListResult = await getMaterialListWithStockQuantity(getLoginResult.data.companyID);
+      setMaterialList(getMaterialListResult.data);
       this.setState({ redirect: <Redirect to="/home" /> });
     } catch (error) {
       if (error.response === undefined) {
@@ -171,6 +173,7 @@ Login.propTypes = {
   setUserInfo: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
+  setMaterialList: PropTypes.func.isRequired,
   common: PropTypes.shape({ errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
   auth: PropTypes.shape({
     userID: PropTypes.string,
@@ -187,6 +190,7 @@ const mapDispatchToProps = (dispatch) => ({
   setUserInfo: (userInfo) => dispatch(setCurrentLoggedInUser(userInfo)),
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

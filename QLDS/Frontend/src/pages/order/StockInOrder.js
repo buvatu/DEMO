@@ -26,7 +26,7 @@ import {
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import { addOrder, getCategoryList, getMaterialListWithStockQuantity, getSupplierList, getUserList } from '../../services';
 
 class StockInOrder extends Component {
@@ -82,12 +82,17 @@ class StockInOrder extends Component {
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth, setErrorMessage } = this.props;
+    const { setLoading, auth, setErrorMessage, common, setMaterialList } = this.props;
     setLoading(true);
+    let { materialList } = common;
     try {
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
-      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
       const getSupplierListResult = await getSupplierList();
       const getCategoryListResult = await getCategoryList();
       this.setState({
@@ -97,9 +102,9 @@ class StockInOrder extends Component {
         approverList: getApproverListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
         }),
-        materialList: getMaterialListResult.data,
-        searchResult: getMaterialListResult.data,
-        materialListDisplay: getMaterialListResult.data.slice(0, 5),
+        materialList,
+        searchResult: materialList,
+        materialListDisplay: materialList.slice(0, 5),
         supplierList: getSupplierListResult.data
           .sort((a, b) => a.supplierName.localeCompare(b.supplierName))
           .map((e) => {
@@ -767,7 +772,9 @@ StockInOrder.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
@@ -795,6 +802,7 @@ const mapDispatchToProps = (dispatch) => ({
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StockInOrder);

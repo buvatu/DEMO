@@ -1,4 +1,4 @@
-import { SET_ERROR_MESSAGE, SET_LOADING_VALUE, SET_SUBMIT_VALUE } from '../constants';
+import { SET_ERROR_MESSAGE, SET_LOADING_VALUE, SET_MATERIAL_LIST_VALUE, SET_SUBMIT_VALUE } from '../constants';
 
 export const assignErrorMessage = (errorMessage) => ({
   type: SET_ERROR_MESSAGE,
@@ -13,4 +13,9 @@ export const setLoadingValue = (isLoadingValue) => ({
 export const setSubmitValue = (submitResult) => ({
   type: SET_SUBMIT_VALUE,
   payload: submitResult,
+});
+
+export const setMaterialListValue = (materialList) => ({
+  type: SET_MATERIAL_LIST_VALUE,
+  payload: materialList,
 });

@@ -30,7 +30,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import { CurrencyFormatter } from '../../constants';
 import { exportStockInReport, getCompletedStockInOrderList, getMaterialListWithStockQuantity, getSupplierList } from '../../services';
 
@@ -48,7 +48,7 @@ class StockInOrderReport extends Component {
   }
 
   componentDidMount = async () => {
-    const { setLoading, auth, setErrorMessage } = this.props;
+    const { setLoading, auth, setErrorMessage, common, setMaterialList } = this.props;
     const { fromDate, toDate } = this.state;
     if (auth.role !== 'phongketoantaichinh') {
       setErrorMessage('Chỉ có người của phòng tài chính kế toán mới có thể truy cập chức năng này.');
@@ -56,14 +56,17 @@ class StockInOrderReport extends Component {
     }
 
     setLoading(true);
-    let materialList = [];
+    let { materialList } = common;
     let supplierList = [];
     try {
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const getCompletedOrderListResult = await getCompletedStockInOrderList(fromDate, toDate, auth.companyID);
-      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
       const getSupplierListResult = await getSupplierList();
 
-      materialList = getMaterialListResult.data;
       supplierList = getSupplierListResult.data;
       this.setState({
         orderList: getCompletedOrderListResult.data.map((e, index) => {
@@ -366,7 +369,9 @@ StockInOrderReport.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
@@ -394,6 +399,7 @@ const mapDispatchToProps = (dispatch) => ({
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StockInOrderReport);
