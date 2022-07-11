@@ -17,17 +17,17 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { getCategoryList, getSupplierList, getUserList, saveFuelOrder } from '../../services';
+import { getEngineListByCompany, getOtherConsumerList, getUserList, saveFuelOrder, updateFuelStockQuantity, getCategoryList } from '../../services';
 
 const fuelMaterialList = [{ id: '000050001', label: 'Dầu Diesel' }];
 
-class FuelInOrder extends Component {
+class FuelOutOrder extends Component {
   constructor(props) {
     super(props);
     const { auth } = this.props;
     this.state = {
       fuelOrderInfo: {
-        fuelOrderType: 'I',
+        fuelOrderType: 'O',
         status: 'created',
         fuelMaterialID: '',
         fuelOrderNote: '',
@@ -35,7 +35,7 @@ class FuelInOrder extends Component {
         standardFuelQuantity: '',
         requestor: auth.userID,
         requestDate: this.formatDate(new Date()),
-        supplier: '',
+        consumer: '',
         tester: '',
         testNote: '',
         approver: '',
@@ -49,14 +49,17 @@ class FuelInOrder extends Component {
         companyID: auth.companyID,
       },
       fuelOrderNoteErrorMessage: '',
+      engineList: [],
+      engineIDErrorMessage: '',
+      engineID: '',
+      otherConsumerList: [],
+      otherConsumerErrorMessage: '',
+      otherConsumer: '',
       testerErrorMessage: '',
       testerList: [],
       approverErrorMessage: '',
       approverList: [],
-      supplierErrorMessage: '',
-      supplierList: [],
       categoryList: [],
-      amountErrorMessages: '',
     };
   }
 
@@ -66,15 +69,22 @@ class FuelInOrder extends Component {
     try {
       const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
-      const getSupplierListResult = await getSupplierList();
+      const getEngineListResult = await getEngineListByCompany(auth.companyID);
+      const getOtherConsumerListResult = await getOtherConsumerList();
       const getCategoryListResult = await getCategoryList();
 
       this.setState({
-        supplierList: getSupplierListResult.data
-          .sort((a, b) => a.supplierName.localeCompare(b.supplierName))
-          .map((e) => {
-            return { id: e.supplierID, label: e.supplierID.concat(' - ').concat(e.supplierName) };
+        engineList: [
+          ...getEngineListResult.data.map((e) => {
+            return { id: e.engineID, label: e.engineID };
           }),
+          { id: 'other', label: 'Đối tượng tiêu thụ khác' },
+        ],
+        otherConsumerList: [
+          ...getOtherConsumerListResult.data.map((e) => {
+            return { id: e.consumerID, label: e.consumerName };
+          }),
+        ],
         testerList: getTesterListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
         }),
@@ -95,8 +105,7 @@ class FuelInOrder extends Component {
   };
 
   saveFuelOrder = async () => {
-    const { fuelOrderInfo } = this.state;
-    // const { fuelOrderType, fuelMaterialID, realFuelQuantity, standardFuelQuantity } = fuelOrderInfo;
+    const { fuelOrderInfo, engineID, otherConsumer } = this.state;
     const { setErrorMessage, setLoading, setSubmitResult } = this.props;
     let hasError = false;
 
@@ -106,9 +115,13 @@ class FuelInOrder extends Component {
       return;
     }
     // eslint-disable-next-line no-restricted-globals
-    if (fuelOrderInfo.amount === '' || isNaN(fuelOrderInfo.amount)) {
+    if (fuelOrderInfo.fuelOrderType === 'O' && (fuelOrderInfo.amount === '' || isNaN(fuelOrderInfo.amount))) {
       setErrorMessage('Thành tiền không hợp lệ');
       return;
+    }
+    if (fuelOrderInfo.fuelOrderNote.trim() === '') {
+      hasError = true;
+      this.setState({ fuelOrderNoteErrorMessage: 'Lý do không thể bỏ trống' });
     }
     if (fuelOrderInfo.tester === '') {
       hasError = true;
@@ -118,40 +131,50 @@ class FuelInOrder extends Component {
       hasError = true;
       this.setState({ approverErrorMessage: 'Người phê duyệt không thể bỏ trống' });
     }
-    if (fuelOrderInfo.supplier === '') {
+    if (fuelOrderInfo.engineID === '') {
       hasError = true;
-      this.setState({ supplierErrorMessage: 'Nhà cung cấp không thể bỏ trống' });
+      this.setState({ engineIDErrorMessage: 'Đầu máy tiêu thụ không thể bỏ trống' });
     }
-    if (fuelOrderInfo.fuelOrderNote.trim() === '') {
+    if (fuelOrderInfo.engineID === 'other' && fuelOrderInfo.otherConsumer === '') {
       hasError = true;
-      this.setState({ fuelOrderNoteErrorMessage: 'Lý do không thể bỏ trống' });
+      this.setState({ otherConsumerErrorMessage: 'Đối tượng tiêu thụ không thể bỏ trống' });
     }
-    // if (fuelOrderInfo.amount === '') {
-    //   hasError = true;
-    //   this.setState({ amountErrorMessages: 'Cần nhập vào thành tiền' });
-    // }
-    // if ((fuelOrderInfo.amount !== '' && !fuelOrderInfo.amount.match(/^\d+$/)) || Number(fuelOrderInfo.amount) < 1) {
-    //   hasError = true;
-    //   this.setState({ amountErrorMessages: 'Cần nhập vào thành tiềnThành tiền không đúng định dạng' });
-    // }
     if (hasError) {
       return;
     }
-    // setLoading(true);
+    if (engineID !== 'other') {
+      fuelOrderInfo.consumer = engineID;
+    } else {
+      fuelOrderInfo.consumer = otherConsumer;
+    }
+    setLoading(true);
     // const getSaveFuelStockResult = await saveFuelStock(fuelOrderType, fuelMaterialID, realFuelQuantity, standardFuelQuantity, auth.companyID, auth.userID);
     // setLoading(false);
     // if (getSaveFuelStockResult.data === -1) {
     //   setErrorMessage('Có lỗi khi tạo đơn');
     //   return;
     // }
-    setLoading(true);
+    // setLoading(true);
     const getSaveFuelOrderResult = await saveFuelOrder(fuelOrderInfo);
     setLoading(false);
     if (getSaveFuelOrderResult.data === -1) {
       setErrorMessage('Có lỗi khi tạo đơn');
       return;
     }
-    setSubmitResult('Đơn nhập nhiên liệu được tạo thành công');
+    setSubmitResult('Đơn xuất nhiên liệu được tạo thành công');
+  };
+
+  updateStockFuelQuantity = async () => {
+    const { setLoading, auth, setErrorMessage, setSubmitResult } = this.props;
+    const { stockFuelQuantity } = this.state;
+    setLoading(true);
+    const getUpdateFuelStockQuantityResult = await updateFuelStockQuantity(auth.companyID, stockFuelQuantity, auth.userID);
+    setLoading(false);
+    if (getUpdateFuelStockQuantityResult.data === -1) {
+      setErrorMessage('Có lỗi khi cập nhật kho nhiên liệu');
+      return;
+    }
+    setSubmitResult('Kho nhiên liệu được cập nhật thành công');
   };
 
   formatDate = (inputDate) => {
@@ -167,15 +190,30 @@ class FuelInOrder extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { supplierErrorMessage, supplierList, amountErrorMessages, fuelOrderNoteErrorMessage } = this.state;
-    const { fuelOrderInfo, testerErrorMessage, testerList, approverErrorMessage, approverList, categoryList } = this.state;
-    const { fuelOrderType, fuelMaterialID, fuelOrderNote, realFuelQuantity, standardFuelQuantity, requestDate, supplier, amount } = fuelOrderInfo;
+    const {
+      fuelOrderInfo,
+      fuelOrderNoteErrorMessage,
+      testerErrorMessage,
+      testerList,
+      approverErrorMessage,
+      approverList,
+      engineID,
+      engineList,
+      engineIDErrorMessage,
+      otherConsumer,
+      otherConsumerList,
+      otherConsumerErrorMessage,
+      categoryList,
+    } = this.state;
+    const { fuelOrderType, fuelMaterialID, fuelOrderNote, realFuelQuantity, standardFuelQuantity, requestDate, amount } = fuelOrderInfo;
 
-    const fuelStockInReasonList = [
-      { id: 'Nhập mới', label: 'Nhập mới' },
-      { id: 'Nhập xả máy các cấp sửa chữa', label: 'Nhập xả máy các cấp sửa chữa' },
-      { id: 'Nhập nhiên liệu xuất chạy tàu chưa hết', label: 'Nhập nhiên liệu xuất chạy tàu chưa hết' },
-      { id: 'Nhập vay từ đơn vị khác', label: 'Nhập vay từ đơn vị khác' },
+    const fuelStockOutReasonList = [
+      { id: 'Xuất nhiên liệu chạy tàu', label: 'Xuất nhiên liệu chạy tàu' },
+      { id: 'Xuất nhiên liệu cho các cấp sửa chữa', label: 'Xuất nhiên liệu cho các cấp sửa chữa' },
+      { id: 'Xuất nhiên liệu phục vụ sản xuất', label: 'Xuất nhiên liệu phục vụ sản xuất' },
+      { id: 'Xuất cho các đơn vị vay', label: 'Xuất cho các đơn vị vay' },
+      { id: 'Xuất bù đầu máy chạy tàu', label: 'Xuất bù đầu máy chạy tàu' },
+      { id: 'Xuất nhiên liệu vay cho đầu máy', label: 'Xuất nhiên liệu vay cho đầu máy' },
     ];
 
     return (
@@ -216,7 +254,7 @@ class FuelInOrder extends Component {
         </div>
         <br />
         <div className="view-header--box">
-          <h4>Yêu cầu nhập nhiên liệu</h4>
+          <h4>Yêu cầu xuất nhiên liệu</h4>
         </div>
         <br />
 
@@ -247,10 +285,10 @@ class FuelInOrder extends Component {
                 id="reason-Dropdown"
                 titleText="Lý do"
                 label=""
-                items={fuelStockInReasonList}
+                items={fuelStockOutReasonList}
                 selectedItem={
                   // eslint-disable-next-line no-nested-ternary
-                  fuelOrderNote === '' ? null : fuelStockInReasonList.find((e) => e.id === fuelOrderNote)
+                  fuelOrderNote === '' ? null : fuelStockOutReasonList.find((e) => e.id === fuelOrderNote)
                 }
                 onChange={(e) =>
                   this.setState((prevState) => ({
@@ -279,32 +317,34 @@ class FuelInOrder extends Component {
                 disabled={fuelOrderType === ''}
               />
             </div>
-            <div className="bx--col-lg-5">
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="engineID-Dropdown"
+                titleText="Đầu máy tiêu thụ"
+                label=""
+                items={engineList}
+                selectedItem={engineID === '' ? null : engineList.find((e) => e.id === engineID)}
+                onChange={(e) => this.setState({ engineID: e.selectedItem.id, engineIDErrorMessage: '' })}
+                invalid={engineIDErrorMessage !== ''}
+                invalidText={engineIDErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-4">
               <ComboBox
-                id="supplier-ComboBox"
-                titleText="Đơn vị cung cấp"
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
                 placeholder=""
                 label=""
-                items={supplierList}
+                items={otherConsumerList}
+                selectedItem={otherConsumer === '' ? null : otherConsumerList.find((e) => e.id === otherConsumer)}
+                onChange={(e) => this.setState({ otherConsumer: e.selectedItem.id, otherConsumerErrorMessage: '' })}
                 shouldFilterItem={({ item, inputValue }) => {
                   if (!inputValue) return true;
                   return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
-                onChange={(e) =>
-                  this.setState((prevState) => ({
-                    fuelOrderInfo: { ...prevState.fuelOrderInfo, supplier: e.selectedItem == null ? '' : e.selectedItem.id },
-                  }))
-                }
-                selectedItem={
-                  // eslint-disable-next-line no-nested-ternary
-                  supplier === '' ? null : supplierList.find((e) => e.id === supplier)
-                }
-                invalid={supplierErrorMessage !== ''}
-                invalidText={supplierErrorMessage}
-                disabled={
-                  fuelOrderType === '' ||
-                  (fuelOrderType === 'I' && (fuelOrderNote === 'Nhập xả máy các cấp sửa chữa' || fuelOrderNote === 'Nhập nhiên liệu xuất chạy tàu chưa hết'))
-                }
+                disabled={engineID !== 'other'}
+                invalid={otherConsumerErrorMessage !== ''}
+                invalidText={otherConsumerErrorMessage}
               />
             </div>
           </div>
@@ -347,8 +387,6 @@ class FuelInOrder extends Component {
                   }))
                 }
                 disabled={fuelOrderType === ''}
-                invalid={amountErrorMessages !== ''}
-                invalidText={amountErrorMessages}
               />
             </div>
           </div>
@@ -460,13 +498,13 @@ class FuelInOrder extends Component {
                   fuelOrderNote === '' ||
                   realFuelQuantity === '' ||
                   standardFuelQuantity === '' ||
-                  supplier === '' ||
-                  amount === ''
+                  amount === '' ||
+                  engineID === ''
                 }
                 onClick={() => this.saveFuelOrder()}
                 style={{ marginTop: '1rem' }}
               >
-                {fuelOrderType === 'I' && 'Tạo đơn nhập'}
+                {fuelOrderType === 'O' && 'Tạo đơn xuất'}
               </Button>
             </div>
           </div>
@@ -476,7 +514,7 @@ class FuelInOrder extends Component {
   }
 }
 
-FuelInOrder.propTypes = {
+FuelOutOrder.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
@@ -510,4 +548,4 @@ const mapDispatchToProps = (dispatch) => ({
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(FuelInOrder);
+export default connect(mapStateToProps, mapDispatchToProps)(FuelOutOrder);

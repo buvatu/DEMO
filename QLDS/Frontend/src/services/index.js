@@ -631,38 +631,10 @@ export const saveFuelStock = (fuelOrderType, fuelMaterialID, realFuelQuantity, s
   });
 };
 
-export const saveFuelOrder = (
-  fuelOrderType,
-  fuelMaterialID,
-  fuelMaterialName,
-  fuelOrderNote,
-  realFuelQuantity,
-  standardFuelQuantity,
-  requestDate,
-  supplier,
-  recipeNo,
-  consumer,
-  amount = '',
-  companyID,
-  updatedUser
-) => {
+export const saveFuelOrder = (fuelOrderInfo) => {
   return request({
-    url: '/fuel/order/save',
-    params: {
-      fuelOrderType,
-      fuelMaterialID,
-      fuelMaterialName,
-      fuelOrderNote,
-      realFuelQuantity,
-      standardFuelQuantity,
-      requestDate,
-      supplier,
-      recipeNo,
-      consumer,
-      amount,
-      companyID,
-      updatedUser,
-    },
+    url: '/fuel/order',
+    data: fuelOrderInfo,
     method: POST,
   });
 };

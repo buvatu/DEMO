@@ -257,3 +257,33 @@ create table qlds.order_info (
 	stock_no varchar,
 	attached_document varchar
 );
+
+drop table if exists qlds.fuel_order_info;
+create table qlds.fuel_order_info (
+	id serial primary key,
+	fuel_order_type varchar(1),
+	status varchar,
+    	fuel_material_id varchar,
+    	fuel_material_name varchar,
+    	fuel_order_note varchar,
+    	real_fuel_quantity decimal,
+    	standard_fuel_quantity decimal,
+	requestor varchar,
+	request_date date,
+    	supplier varchar,
+    	consumer varchar,
+	tester varchar,
+	test_note varchar,
+	test_date date,
+	approver varchar,
+	approve_note varchar,
+	approve_date date,
+	no varchar,
+	co varchar,
+	recipe_no varchar,
+    	amount decimal,
+	category varchar,
+	company_id varchar,
+	updated_timestamp timestamp,
+    	updated_user varchar
+);
