@@ -22,5 +22,6 @@ export const DELETE = 'DELETE';
 export const SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE';
 export const SET_SUBMIT_VALUE = 'SET_SUBMIT_VALUE';
 export const SET_LOADING_VALUE = 'SET_LOADING_VALUE';
+export const SET_MATERIAL_LIST_VALUE = 'SET_MATERIAL_LIST_VALUE';
 
 export const CurrencyFormatter = new Intl.NumberFormat('vn-VN');

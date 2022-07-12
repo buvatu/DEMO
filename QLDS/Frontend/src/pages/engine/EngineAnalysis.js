@@ -25,7 +25,7 @@ import {
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import {
   addEngineAnalysisInfo,
   exportEngineAnalysisReport,
@@ -70,19 +70,22 @@ class EngineAnalysis extends Component {
   }
 
   componentDidMount = async () => {
-    const { setLoading, setErrorMessage, location, auth } = this.props;
+    const { setLoading, setErrorMessage, location, auth, common, setMaterialList } = this.props;
     const params = new URLSearchParams(location.search);
 
     setLoading(true);
-    let materialList = [];
+    let { materialList } = common;
     try {
-      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
-      materialList = getMaterialListResult.data;
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const getEngineListResult = await getEngineListByCompany(auth.companyID);
       this.setState({
-        materialList: getMaterialListResult.data,
-        searchResult: getMaterialListResult.data,
-        materialListDisplay: getMaterialListResult.data.slice(0, 5),
+        materialList,
+        searchResult: materialList,
+        materialListDisplay: materialList.slice(0, 5),
         engineList: getEngineListResult.data,
       });
     } catch {
@@ -1267,7 +1270,9 @@ EngineAnalysis.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
@@ -1295,6 +1300,7 @@ const mapDispatchToProps = (dispatch) => ({
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EngineAnalysis);

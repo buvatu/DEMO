@@ -80,7 +80,7 @@ class StockInOrderTest extends Component {
   }
 
   componentDidMount = async () => {
-    const { setErrorMessage, setLoading, location, auth } = this.props;
+    const { setErrorMessage, setLoading, location, auth, common, setMaterialList } = this.props;
     const params = new URLSearchParams(location.search);
     if (params == null) {
       setErrorMessage('Không có mã yêu cầu nhập kho!!!');
@@ -88,6 +88,7 @@ class StockInOrderTest extends Component {
     }
     const orderID = params.get('orderID');
     setLoading(true);
+    let { materialList } = common;
     try {
       const getStockInOrderInfoResult = await getOrder(orderID);
       if (getStockInOrderInfoResult.data.orderInfo.tester !== auth.userID) {
@@ -100,11 +101,15 @@ class StockInOrderTest extends Component {
         setLoading(false);
         return;
       }
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getSupplierListResult = await getSupplierList();
       const getCategoryListResult = await getCategoryList();
-      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
       this.setState({
         testerList: getTesterListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
@@ -125,7 +130,7 @@ class StockInOrderTest extends Component {
         ],
         orderInfo: getStockInOrderInfoResult.data.orderInfo,
         orderDetailList: getStockInOrderInfoResult.data.orderDetailList.map((e) => {
-          const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
+          const selectedMaterial = materialList.find((item) => item.materialID === e.materialID);
           e.materialName = selectedMaterial.materialName;
           e.unit = selectedMaterial.unit;
           e.materialGroupName = selectedMaterial.materialGroupName;
@@ -654,7 +659,9 @@ StockInOrderTest.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
