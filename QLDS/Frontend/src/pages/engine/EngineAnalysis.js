@@ -28,12 +28,14 @@ import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import {
   addEngineAnalysisInfo,
+  approveEngineAnalysis,
   exportEngineAnalysisReport,
   getEngineAnalysisDetailList,
   getEngineAnalysisInfo,
   getEngineListByCompany,
   getMaterialListWithStockQuantity,
   getScrapClassifyList,
+  getUserList,
   insertEngineAnalysisDetailList,
   insertScrapClassifyList,
 } from '../../services';
@@ -50,12 +52,18 @@ class EngineAnalysis extends Component {
         companyID: auth.companyID,
         repairLevel: '',
         repairDate: this.formatDate(new Date()),
+        firstApprover: '',
+        secondApprover: '',
+        status: 'created',
       },
       engineAnalysisDetailList: [],
       scrapClassifyDetailList: [],
       engineAnalysisNameErrorMessage: '',
       engineIDErrorMessage: '',
       engineList: [],
+      approverList: [],
+      firstApproverErrorMessage: '',
+      secondApproverErrorMessage: '',
 
       materialList: [],
       searchResult: [],
@@ -82,11 +90,15 @@ class EngineAnalysis extends Component {
         setMaterialList(materialList);
       }
       const getEngineListResult = await getEngineListByCompany(auth.companyID);
+      const getApproverListResult = await getUserList('', '', auth.companyID, 'bangiamdoc');
       this.setState({
         materialList,
         searchResult: materialList,
         materialListDisplay: materialList.slice(0, 5),
         engineList: getEngineListResult.data,
+        approverList: getApproverListResult.data.map((e) => {
+          return { id: e.userID, label: e.username };
+        }),
       });
     } catch {
       setErrorMessage('Lỗi khi tải trang. Vui lòng thử lại!!!');
@@ -100,6 +112,7 @@ class EngineAnalysis extends Component {
         const getEngineAnalysisInfoResult = await getEngineAnalysisInfo(engineAnalysisID);
         const getEngineAnalysisDetailsResult = await getEngineAnalysisDetailList(engineAnalysisID);
         const getScrapClassifyResult = await getScrapClassifyList(engineAnalysisID);
+
         this.setState({
           engineAnalysisInfo: getEngineAnalysisInfoResult.data,
           engineAnalysisDetailList: getEngineAnalysisDetailsResult.data.map((e) => {
@@ -132,7 +145,7 @@ class EngineAnalysis extends Component {
       filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
     }
     if (filterMatetrialName !== '') {
-      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+      filterResult = filterResult.filter((e) => e.materialName.toUpperCase().includes(filterMatetrialName.toUpperCase()));
     }
     if (filterMaterialGroup !== '') {
       filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
@@ -165,6 +178,14 @@ class EngineAnalysis extends Component {
     if (engineAnalysisInfo.engineID === '') {
       hasError = true;
       this.setState({ engineIDErrorMessage: 'Số hiệu đầu máy không được bỏ trống' });
+    }
+    if (engineAnalysisInfo.firstApprover === '') {
+      hasError = true;
+      this.setState({ firstApproverErrorMessage: 'Trưởng phòng phê duyệt không được bỏ trống' });
+    }
+    if (engineAnalysisInfo.secondApprover === '') {
+      hasError = true;
+      this.setState({ secondApproverErrorMessage: 'Ban giám đốc phê duyệt không được bỏ trống' });
     }
 
     if (engineAnalysisDetailList.length === 0) {
@@ -207,6 +228,7 @@ class EngineAnalysis extends Component {
     try {
       let engineAnalysisID = engineAnalysisInfo.id;
       if (engineAnalysisInfo.id === '') {
+        engineAnalysisInfo.status = 'created';
         const saveEngineAnalysisInfoResult = await addEngineAnalysisInfo(engineAnalysisInfo);
         engineAnalysisID = saveEngineAnalysisInfoResult.data.id;
         this.setState({ engineAnalysisInfo: saveEngineAnalysisInfoResult.data });
@@ -262,6 +284,7 @@ class EngineAnalysis extends Component {
         unit: material.unit,
         quantity: 1,
         quanlity: '',
+        status: '',
       });
       this.setState({ scrapClassifyDetailList });
     } else {
@@ -281,6 +304,51 @@ class EngineAnalysis extends Component {
       quanlity: '',
     });
     this.setState({ scrapClassifyDetailList });
+  };
+
+  getEngineAnalysisInfoStatus = (status) => {
+    if (status === 'created') {
+      return 'Đã được khởi tạo';
+    }
+    if (status === 'half-approved') {
+      return 'Đã được trưởng phòng phê duyệt';
+    }
+    if (status === 'full-approved') {
+      return 'Đã được ban giám đóc phê duyệt';
+    }
+    return '';
+  };
+
+  firstApprove = async () => {
+    const { engineAnalysisInfo } = this.state;
+    const { setErrorMessage, setLoading, setSubmitResult } = this.props;
+    setLoading(true);
+    try {
+      const getEngineAnalysisInfoResult = await approveEngineAnalysis(engineAnalysisInfo.id, 'half-approved');
+      this.setState({ engineAnalysisInfo: getEngineAnalysisInfoResult.data });
+    } catch {
+      setErrorMessage('Có lỗi khi phê duyệt. Vui lòng thử lại');
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setSubmitResult('Biên bản giải thể đầu máy đã được phê duyệt bởi trưởng phòng kỹ thuật');
+  };
+
+  secondApprove = async () => {
+    const { engineAnalysisInfo } = this.state;
+    const { setErrorMessage, setLoading, setSubmitResult } = this.props;
+    setLoading(true);
+    try {
+      const getEngineAnalysisInfoResult = await approveEngineAnalysis(engineAnalysisInfo.id, 'full-approved');
+      this.setState({ engineAnalysisInfo: getEngineAnalysisInfoResult.data });
+    } catch {
+      setErrorMessage('Có lỗi khi phê duyệt. Vui lòng thử lại');
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setSubmitResult('Biên bản giải thể đầu máy đã được phê duyệt bởi ban giám đốc');
   };
 
   scrollToTop = () => {
@@ -304,6 +372,7 @@ class EngineAnalysis extends Component {
       engineAnalysisNameErrorMessage,
       engineIDErrorMessage,
       engineList,
+      approverList,
       filterMaterialID,
       filterMaterialGroup,
       filterMatetrialName,
@@ -312,6 +381,8 @@ class EngineAnalysis extends Component {
       searchResult,
       page,
       pageSize,
+      firstApproverErrorMessage,
+      secondApproverErrorMessage,
     } = this.state;
 
     const engineIDList = engineList.map((e) => {
@@ -337,6 +408,7 @@ class EngineAnalysis extends Component {
       { id: 'Loại I', label: 'Loại I' },
       { id: 'Loại II', label: 'Loại II' },
       { id: 'Loại III', label: 'Loại III' },
+      { id: 'Không thu hồi', label: 'Không thu hồi' },
     ];
 
     const materialGroups = [
@@ -485,7 +557,11 @@ class EngineAnalysis extends Component {
             </div>
             {auth.role === 'phongkythuat' && (
               <div className="bx--col-lg-3 bx--col-md-3">
-                <Button onClick={() => this.save()} style={{ marginTop: '1rem' }}>
+                <Button
+                  onClick={() => this.save()}
+                  style={{ marginTop: '1rem' }}
+                  disabled={engineAnalysisInfo.id !== '' && engineAnalysisInfo.status !== 'created'}
+                >
                   Lưu thông tin
                 </Button>
                 <Button onClick={() => this.exportReport()} style={{ marginTop: '1rem', marginLeft: '1rem' }}>
@@ -495,10 +571,69 @@ class EngineAnalysis extends Component {
             )}
           </div>
           <br />
+          <div className="bx--row">
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="first-approver-Dropdown"
+                titleText="Trưởng phòng phê duyệt"
+                label=""
+                items={approverList}
+                selectedItem={engineAnalysisInfo.firstApprover === '' ? null : approverList.find((e) => e.id === engineAnalysisInfo.firstApprover)}
+                onChange={(e) => this.setState((prevState) => ({ engineAnalysisInfo: { ...prevState.engineAnalysisInfo, firstApprover: e.selectedItem.id } }))}
+                invalid={firstApproverErrorMessage !== ''}
+                invalidText={firstApproverErrorMessage}
+                disabled={engineAnalysisInfo.id !== ''}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="second-approver-Dropdown"
+                titleText="Ban giám đốc phê duyệt"
+                label=""
+                items={approverList}
+                selectedItem={engineAnalysisInfo.secondApprover === '' ? null : approverList.find((e) => e.id === engineAnalysisInfo.secondApprover)}
+                onChange={(e) => this.setState((prevState) => ({ engineAnalysisInfo: { ...prevState.engineAnalysisInfo, secondApprover: e.selectedItem.id } }))}
+                invalid={secondApproverErrorMessage !== ''}
+                invalidText={secondApproverErrorMessage}
+                disabled={engineAnalysisInfo.id !== ''}
+              />
+            </div>
+            {engineAnalysisInfo.status !== '' && (
+              <div className="bx--col-lg-3 bx--col-md-3">
+                <TextInput
+                  id="status-TextInput"
+                  placeholder=""
+                  labelText="Trạng thái biên bản giải thể"
+                  value={this.getEngineAnalysisInfoStatus(engineAnalysisInfo.status)}
+                  onChange={(e) =>
+                    this.setState((prevState) => ({
+                      engineAnalysisInfo: { ...prevState.engineAnalysisInfo, status: e.target.value },
+                    }))
+                  }
+                  disabled
+                />
+              </div>
+            )}
+            {engineAnalysisInfo.firstApprover === auth.userID && engineAnalysisInfo.status === 'created' && (
+              <div className="bx--col-lg-3 bx--col-md-3">
+                <Button onClick={() => this.firstApprove()} style={{ marginTop: '1rem' }}>
+                  Trưởng phòng phê duyệt
+                </Button>
+              </div>
+            )}
+            {engineAnalysisInfo.secondApprover === auth.userID && engineAnalysisInfo.status === 'half-approved' && (
+              <div className="bx--col-lg-3 bx--col-md-3">
+                <Button onClick={() => this.secondApprove()} style={{ marginTop: '1rem' }}>
+                  Ban giám đốc phê duyệt
+                </Button>
+              </div>
+            )}
+          </div>
+          <br />
           <hr className="LeftNav-module--divider--1Z49I" />
           <br />
         </div>
-        {auth.role === 'phongkythuat' && (
+        {auth.role === 'phongkythuat' && engineAnalysisInfo.status === 'created' && (
           <div className="bx--grid">
             <div className="bx--row">
               <div className="bx--col-lg-4">
@@ -592,38 +727,38 @@ class EngineAnalysis extends Component {
                           <TableCell key={`action-${index.toString()}`}>
                             <OverflowMenu ariaLabel="overflow-menu" size="md">
                               <OverflowMenuItem
-                                itemText="Thêm vào phần Điện"
+                                itemText="Phần Điện"
                                 onClick={() => this.addEngineAnalysisDetail(material, 'phandien')}
                                 disabled={engineAnalysisDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
                               <OverflowMenuItem
-                                itemText="Thêm vào phần Khung Gầm"
+                                itemText="Phần Khung Gầm"
                                 onClick={() => this.addEngineAnalysisDetail(material, 'phankhunggam')}
                                 disabled={engineAnalysisDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
                               <OverflowMenuItem
-                                itemText="Thêm vào phần Động Cơ"
+                                itemText="Phần Động Cơ"
                                 onClick={() => this.addEngineAnalysisDetail(material, 'phandongco')}
                                 disabled={engineAnalysisDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
                               <OverflowMenuItem
-                                itemText="Thêm vào phần Hãm"
+                                itemText="Phần Hãm"
                                 onClick={() => this.addEngineAnalysisDetail(material, 'phanham')}
                                 disabled={engineAnalysisDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
                               <OverflowMenuItem
-                                itemText="Thêm vào phần Cơ Khí"
+                                itemText="Phần Cơ Khí"
                                 onClick={() => this.addEngineAnalysisDetail(material, 'phancokhi')}
                                 disabled={engineAnalysisDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
                               <OverflowMenuItem
-                                itemText="Thêm vào phần Truyền Động"
+                                itemText="Phần Truyền Động"
                                 onClick={() => this.addEngineAnalysisDetail(material, 'phantruyendong')}
                                 disabled={engineAnalysisDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
                               <OverflowMenuItem
                                 hasDivider
-                                itemText="Thêm vào phần Phế Liệu"
+                                itemText="Phần Phế Liệu"
                                 onClick={() => this.addScrapClassifyDetail(material)}
                                 disabled={scrapClassifyDetailList.find((e) => e.materialID === material.materialID) != null}
                               />
@@ -716,7 +851,7 @@ class EngineAnalysis extends Component {
                               }}
                               value={engineAnalysisDetailList[index].quantity}
                               invalidText="Số lượng không hợp lệ"
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`status-${index.toString()}`}>
@@ -728,7 +863,7 @@ class EngineAnalysis extends Component {
                                 this.setState({ engineAnalysisDetailList });
                               }}
                               value={engineAnalysisDetailList[index].status}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`measure-${index.toString()}`}>
@@ -744,7 +879,7 @@ class EngineAnalysis extends Component {
                                 engineAnalysisDetailList[index].measure = e.selectedItem.id;
                                 this.setState({ engineAnalysisDetailList });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell>
@@ -754,7 +889,7 @@ class EngineAnalysis extends Component {
                                   engineAnalysisDetailList: engineAnalysisDetailList.filter((e) => e.materialID !== row.materialID),
                                 });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             >
                               Xoá
                             </Button>
@@ -788,7 +923,7 @@ class EngineAnalysis extends Component {
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize].quantity}
                               invalidText="Số lượng không hợp lệ"
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`status-${index + electricPartSize}`}>
@@ -800,7 +935,7 @@ class EngineAnalysis extends Component {
                                 this.setState({ engineAnalysisDetailList });
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize].status}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`measure-${index + electricPartSize}`}>
@@ -818,7 +953,7 @@ class EngineAnalysis extends Component {
                                 engineAnalysisDetailList[index + electricPartSize].measure = e.selectedItem.id;
                                 this.setState({ engineAnalysisDetailList });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell>
@@ -828,7 +963,7 @@ class EngineAnalysis extends Component {
                                   engineAnalysisDetailList: engineAnalysisDetailList.filter((e) => e.materialID !== row.materialID),
                                 });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             >
                               Xoá
                             </Button>
@@ -862,7 +997,7 @@ class EngineAnalysis extends Component {
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize + chassisPartSize].quantity}
                               invalidText="Số lượng không hợp lệ"
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`status-${index + electricPartSize + chassisPartSize}`}>
@@ -874,7 +1009,7 @@ class EngineAnalysis extends Component {
                                 this.setState({ engineAnalysisDetailList });
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize + chassisPartSize].status}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`measure-${index + electricPartSize + chassisPartSize}`}>
@@ -892,7 +1027,7 @@ class EngineAnalysis extends Component {
                                 engineAnalysisDetailList[index + electricPartSize + chassisPartSize].measure = e.selectedItem.id;
                                 this.setState({ engineAnalysisDetailList });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell>
@@ -902,7 +1037,7 @@ class EngineAnalysis extends Component {
                                   engineAnalysisDetailList: engineAnalysisDetailList.filter((e) => e.materialID !== row.materialID),
                                 });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             >
                               Xoá
                             </Button>
@@ -936,7 +1071,7 @@ class EngineAnalysis extends Component {
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize].quantity}
                               invalidText="Số lượng không hợp lệ"
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`status-${index + electricPartSize + chassisPartSize + enginePartSize}`}>
@@ -948,7 +1083,7 @@ class EngineAnalysis extends Component {
                                 this.setState({ engineAnalysisDetailList });
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize].status}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`measure-${index + electricPartSize + chassisPartSize + enginePartSize}`}>
@@ -968,7 +1103,7 @@ class EngineAnalysis extends Component {
                                 engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize].measure = e.selectedItem.id;
                                 this.setState({ engineAnalysisDetailList });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell>
@@ -978,7 +1113,7 @@ class EngineAnalysis extends Component {
                                   engineAnalysisDetailList: engineAnalysisDetailList.filter((e) => e.materialID !== row.materialID),
                                 });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             >
                               Xoá
                             </Button>
@@ -1014,7 +1149,7 @@ class EngineAnalysis extends Component {
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize].quantity}
                               invalidText="Số lượng không hợp lệ"
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`status-${index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize}`}>
@@ -1026,7 +1161,7 @@ class EngineAnalysis extends Component {
                                 this.setState({ engineAnalysisDetailList });
                               }}
                               value={engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize].status}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`measure-${index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize}`}>
@@ -1047,7 +1182,7 @@ class EngineAnalysis extends Component {
                                 engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize].measure = e.selectedItem.id;
                                 this.setState({ engineAnalysisDetailList });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell>
@@ -1057,7 +1192,7 @@ class EngineAnalysis extends Component {
                                   engineAnalysisDetailList: engineAnalysisDetailList.filter((e) => e.materialID !== row.materialID),
                                 });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             >
                               Xoá
                             </Button>
@@ -1095,7 +1230,7 @@ class EngineAnalysis extends Component {
                                 engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize + machanicPartSize].quantity
                               }
                               invalidText="Số lượng không hợp lệ"
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`status-${index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize + machanicPartSize}`}>
@@ -1110,7 +1245,7 @@ class EngineAnalysis extends Component {
                               value={
                                 engineAnalysisDetailList[index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize + machanicPartSize].status
                               }
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell key={`measure-${index + electricPartSize + chassisPartSize + enginePartSize + breakPartSize + machanicPartSize}`}>
@@ -1135,7 +1270,7 @@ class EngineAnalysis extends Component {
                                   e.selectedItem.id;
                                 this.setState({ engineAnalysisDetailList });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             />
                           </TableCell>
                           <TableCell>
@@ -1145,14 +1280,14 @@ class EngineAnalysis extends Component {
                                   engineAnalysisDetailList: engineAnalysisDetailList.filter((e) => e.materialID !== row.materialID),
                                 });
                               }}
-                              disabled={auth.role !== 'phongkythuat'}
+                              disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                             >
                               Xoá
                             </Button>
                           </TableCell>
                         </TableRow>
                       ))}
-                    {auth.role === 'phongkythuat' && (
+                    {auth.role === 'phongkythuat' && engineAnalysisInfo.status === 'created' && (
                       <>
                         <TableRow />
                         <TableRow />
@@ -1177,7 +1312,9 @@ class EngineAnalysis extends Component {
                       <TableHeader key="stt" style={{ width: '5%' }}>
                         STT
                       </TableHeader>
-                      <TableHeader key="materialID">Mã vật tư</TableHeader>
+                      <TableHeader key="materialID" style={{ width: '10%' }}>
+                        Mã vật tư
+                      </TableHeader>
                       <TableHeader key="materialName">Tên vật tư</TableHeader>
                       <TableHeader key="unit" style={{ width: '5%' }}>
                         Đơn vị
@@ -1187,6 +1324,9 @@ class EngineAnalysis extends Component {
                       </TableHeader>
                       <TableHeader key="quality" style={{ width: '10%' }}>
                         Chất lượng
+                      </TableHeader>
+                      <TableHeader key="status" style={{ width: '15%' }}>
+                        Trạng thái hư hỏng
                       </TableHeader>
                       <TableHeader style={{ width: '7.5%' }} />
                     </TableRow>
@@ -1211,7 +1351,7 @@ class EngineAnalysis extends Component {
                             }}
                             value={scrapClassifyDetailList[index].quantity}
                             invalidText="Số lượng không hợp lệ"
-                            disabled={auth.role !== 'phongkythuat'}
+                            disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                           />
                         </TableCell>
                         <TableCell>
@@ -1227,7 +1367,19 @@ class EngineAnalysis extends Component {
                               scrapClassifyDetailList[index].quality = e.selectedItem.id;
                               this.setState({ scrapClassifyDetailList });
                             }}
-                            disabled={auth.role !== 'phongkythuat'}
+                            disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TextInput
+                            id={`scrap-status-textinput-${index}`}
+                            labelText=""
+                            onChange={(e) => {
+                              scrapClassifyDetailList[index].status = e.target.value;
+                              this.setState({ scrapClassifyDetailList });
+                            }}
+                            value={scrapClassifyDetailList[index].status}
+                            disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                           />
                         </TableCell>
                         <TableCell>
@@ -1237,7 +1389,7 @@ class EngineAnalysis extends Component {
                                 scrapClassifyDetailList: scrapClassifyDetailList.filter((e) => e.materialID !== row.materialID),
                               });
                             }}
-                            disabled={auth.role !== 'phongkythuat'}
+                            disabled={auth.role !== 'phongkythuat' || engineAnalysisInfo.status !== 'created'}
                           >
                             Xoá
                           </Button>

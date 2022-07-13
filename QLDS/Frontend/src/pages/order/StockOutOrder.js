@@ -113,7 +113,7 @@ class StockOutOrder extends Component {
         categoryList: [
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
-            return { id: e.categoryID, label: e.categoryName };
+            return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
           }),
         ],
         otherConsumerList: [
@@ -260,7 +260,7 @@ class StockOutOrder extends Component {
       filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
     }
     if (filterMatetrialName !== '') {
-      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+      filterResult = filterResult.filter((e) => e.materialName.toUpperCase().includes(filterMatetrialName.toUpperCase()));
     }
     if (filterMaterialGroup !== '') {
       filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);

@@ -42,6 +42,14 @@ public class EngineAnalysisInfo {
     @Column(name = "repair_date")
     private Date repairDate;
 
+    private String status;
+
+    @Column(name = "first_approver")
+    private String firstApprover;
+
+    @Column(name = "second_approver")
+    private String secondApprover;
+
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;
 

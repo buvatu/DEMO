@@ -126,7 +126,7 @@ class StockOutOrderTest extends Component {
         categoryList: [
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
-            return { id: e.categoryID, label: e.categoryName };
+            return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
           }),
         ],
         orderInfo: getStockOutOrderInfoResult.data.orderInfo,

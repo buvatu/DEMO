@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -105,6 +106,30 @@ public class EngineController {
         scrapClassifyDetailRepository.deleteByEngineAnalysisID(engineAnalysisID);
         scrapClassifyDetailList.forEach(e -> e.setEngineAnalysisID(engineAnalysisID));
         return ResponseEntity.ok().body(scrapClassifyDetailRepository.saveAll(scrapClassifyDetailList));
+    }
+
+    @PutMapping(value="/engine/analysis/info/approve")
+    public ResponseEntity<?> approveEngineAnalysis(@RequestParam Long engineAnalysisID,@RequestParam String status) {
+        Optional<EngineAnalysisInfo> engineAnalysisInfoOptional = engineAnalysisInfoRepository.findById(engineAnalysisID);
+        if (!engineAnalysisInfoOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        EngineAnalysisInfo engineAnalysisInfo = engineAnalysisInfoOptional.get();
+        if (!"created".equals(engineAnalysisInfo.getStatus()) && !"half-approved".equals(engineAnalysisInfo.getStatus())) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!"half-approved".equals(status) && !"full-approved".equals(status)) {
+            return ResponseEntity.notFound().build();
+        }
+        String userID = SecurityContextHolder.getContext().getAuthentication().getName();
+        if ("half-approved".equals(status) && !engineAnalysisInfo.getFirstApprover().equals(userID)) {
+            return ResponseEntity.notFound().build();
+        }
+        if ("full-approved".equals(status) && !engineAnalysisInfo.getSecondApprover().equals(userID)) {
+            return ResponseEntity.notFound().build();
+        }
+        engineAnalysisInfo.setStatus(status);
+        return ResponseEntity.ok().body(engineAnalysisInfoRepository.save(engineAnalysisInfo));
     }
 
 }

@@ -582,6 +582,14 @@ export const insertScrapClassifyList = (engineAnalysisID, scrapClassifyDetailLis
   });
 };
 
+export const approveEngineAnalysis = (engineAnalysisID, status) => {
+  return request({
+    url: '/engine/analysis/info/approve',
+    params: { engineAnalysisID, status },
+    method: PUT,
+  });
+};
+
 export const exportEngineAnalysisReport = (engineAnalysisID) => {
   return request({
     url: '/report/engine-analysis',

@@ -76,24 +76,24 @@ class MaterialList extends Component {
     });
   };
 
-  findMaterial = async () => {
+  findMaterial = () => {
     const { filterMaterialID, filterMaterialGroup, filterMatetrialName, filterMaterialType, pageSize, materialList } = this.state;
-    let filterResult = JSON.parse(JSON.stringify(materialList));
+    let searchResult = JSON.parse(JSON.stringify(materialList));
     if (filterMaterialID !== '') {
-      filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
+      searchResult = searchResult.filter((e) => e.materialID.includes(filterMaterialID));
     }
     if (filterMatetrialName !== '') {
-      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+      searchResult = searchResult.filter((e) => e.materialName.toUpperCase().includes(filterMatetrialName.toUpperCase()));
     }
     if (filterMaterialGroup !== '') {
-      filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
+      searchResult = searchResult.filter((e) => e.materialGroupID === filterMaterialGroup);
     }
     if (filterMaterialType !== '') {
-      filterResult = filterResult.filter((e) => e.materialTypeID === filterMaterialType);
+      searchResult = searchResult.filter((e) => e.materialTypeID === filterMaterialType);
     }
     this.setState({
-      searchResult: filterResult,
-      materialListDisplay: filterResult.slice(0, pageSize),
+      searchResult,
+      materialListDisplay: searchResult.slice(0, pageSize),
     });
   };
 
@@ -154,7 +154,6 @@ class MaterialList extends Component {
       filterMatetrialName,
       filterMaterialType,
       materialTypes,
-      materialList,
       materialListDisplay,
       searchResult,
       page,
@@ -276,7 +275,7 @@ class MaterialList extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2" />
             <div className="bx--col-lg-12">
-              <TableContainer title={`Có tất cả ${materialList.length} mục vật tư.`}>
+              <TableContainer title={`Tìm thấy tất cả ${searchResult.length} danh mục vật tư.`}>
                 <Table>
                   <TableHead>
                     <TableRow>
