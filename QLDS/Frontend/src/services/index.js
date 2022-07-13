@@ -615,10 +615,10 @@ export const saveVCF = (vcfKey, vcf, companyID, updatedUser) => {
   });
 };
 
-export const getFuelOrderList = (companyID, fromDate, toDate, fuelOrderType, supplier, consumer) => {
+export const getFuelOrderList = (role, userID) => {
   return request({
     url: '/fuel/order/list',
-    params: { companyID, fromDate, toDate, fuelOrderType, supplier, consumer },
+    params: { role, userID },
     method: GET,
   });
 };

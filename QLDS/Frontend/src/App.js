@@ -62,6 +62,7 @@ import UserUpdate from './pages/user/UserUpdate';
 import VCFAdjust from './pages/vcf/VCFAdjust';
 import { getUserInfoByToken, signout } from './services';
 import FuelOutOrder from './pages/fuel/FuelOutOrder';
+import FuelOrderList from './pages/fuel/FuelOrderList';
 
 class App extends Component {
   componentDidMount = async () => {
@@ -178,6 +179,9 @@ class App extends Component {
                       <SideNavMenuItem element={Link} to="/fuel/stock-out">
                         Yêu cầu xuất nhiên liệu
                       </SideNavMenuItem>
+                      <SideNavMenuItem element={Link} to="/fuel-order/list">
+                        Danh sách yêu cầu
+                      </SideNavMenuItem>
                       <SideNavMenuItem element={Link} to="/fuel">
                         Báo cáo nhiên liệu
                       </SideNavMenuItem>
@@ -271,6 +275,7 @@ class App extends Component {
             <Route exact path="/fuel/stock-in/detail" component={isAuthenticated ? FuelInOrderDetail : Home} />
             <Route exact path="/fuel/stock-out" component={isAuthenticated && role === 'phongkehoachvattu' ? FuelOutOrder : Home} />
             <Route exact path="/fuel" component={isAuthenticated ? FuelReport : Home} />
+            <Route exact path="/fuel-order/list" component={isAuthenticated ? FuelOrderList : Home} />
 
             <Route exact path="/stock/update" component={isAuthenticated ? StockUpdate : Home} />
 
