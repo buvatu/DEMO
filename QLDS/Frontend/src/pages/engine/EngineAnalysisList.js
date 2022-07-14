@@ -88,7 +88,7 @@ class EngineAnalysisList extends Component {
     const { engineAnalysisList, engineAnalysisName, engineID, repairLevel, repairDate } = this.state;
     let searchResult = JSON.parse(JSON.stringify(engineAnalysisList));
     if (engineAnalysisName.trim() !== '') {
-      searchResult = searchResult.filter((e) => e.engineAnalysisName.includes(engineAnalysisName));
+      searchResult = searchResult.filter((e) => e.engineAnalysisName.toUpperCase().includes(engineAnalysisName.toUpperCase()));
     }
     if (engineID !== '') {
       searchResult = searchResult.filter((e) => e.engineID === engineID);
@@ -244,7 +244,7 @@ class EngineAnalysisList extends Component {
                       <TableHeader key="engineID">Số hiệu đầu máy</TableHeader>
                       <TableHeader key="repairDate">Ngày vào sửa chữa</TableHeader>
                       <TableHeader key="repairLevel">Cấp sửa chữa</TableHeader>
-                      <TableHeader>Xoá</TableHeader>
+                      <TableHeader key="status">Trạng thái</TableHeader>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -257,8 +257,13 @@ class EngineAnalysisList extends Component {
                         <TableCell>{row.repairDate}</TableCell>
                         <TableCell>{row.repairLevel}</TableCell>
                         <TableCell>
-                          <Button onClick={() => this.delete(row.id)}>Xoá</Button>
+                          {row.status === 'created' && 'Đã được khởi tạo'}
+                          {row.status === 'half-approved' && 'Đã được trưởng phòng phê duyệt'}
+                          {row.status === 'full-approved' && 'Đã được ban giám đốc phê duyệt'}
                         </TableCell>
+                        {/* <TableCell>
+                          <Button onClick={() => this.delete(row.id)}>Xoá</Button>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                   </TableBody>

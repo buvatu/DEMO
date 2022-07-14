@@ -23,11 +23,12 @@ import {
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import {
   cancelOrder,
   exportStockInOrderRecipe,
   exportTestRecipe,
+  getAccountTitleList,
   getCategoryList,
   getMaterialListWithStockQuantity,
   getOrder,
@@ -84,11 +85,12 @@ class StockInOrderDetail extends Component {
       approverList: [],
       supplierList: [],
       categoryList: [],
+      accountList: [],
     };
   }
 
   componentDidMount = async () => {
-    const { setErrorMessage, setLoading, location, auth } = this.props;
+    const { setErrorMessage, setLoading, location, auth, common, setMaterialList } = this.props;
     const params = new URLSearchParams(location.search);
     if (params == null) {
       setErrorMessage('Không có mã yêu cầu nhập kho!!!');
@@ -96,6 +98,7 @@ class StockInOrderDetail extends Component {
     }
     const orderID = params.get('orderID');
     setLoading(true);
+    let { materialList } = common;
     try {
       const getStockInOrderInfoResult = await getOrder(orderID);
       if (
@@ -111,9 +114,14 @@ class StockInOrderDetail extends Component {
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getSupplierListResult = await getSupplierList();
       const getCategoryListResult = await getCategoryList();
-      const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+      const getAccountListResult = await getAccountTitleList();
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const orderDetailList = getStockInOrderInfoResult.data.orderDetailList.map((e) => {
-        const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
+        const selectedMaterial = materialList.find((item) => item.materialID === e.materialID);
         e.materialName = selectedMaterial.materialName;
         e.unit = selectedMaterial.unit;
         e.materialGroupName = selectedMaterial.materialGroupName;
@@ -173,7 +181,13 @@ class StockInOrderDetail extends Component {
         categoryList: [
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
-            return { id: e.categoryID, label: e.categoryName };
+            return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
+          }),
+        ],
+        accountList: [
+          { id: '', label: '' },
+          ...getAccountListResult.data.map((e) => {
+            return { id: e.accountID, label: e.accountID.concat(' - ').concat(e.accountName) };
           }),
         ],
         orderInfo: getStockInOrderInfoResult.data.orderInfo,
@@ -266,7 +280,7 @@ class StockInOrderDetail extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { orderInfo, testerList, approverList, orderDetailList, supplierList, categoryList, testRecipe, changedOrderDetailList } = this.state;
+    const { orderInfo, testerList, approverList, orderDetailList, supplierList, categoryList, testRecipe, changedOrderDetailList, accountList } = this.state;
 
     return (
       <div className="stock-in-detail">
@@ -417,8 +431,8 @@ class StockInOrderDetail extends Component {
                 titleText="Khoản mục"
                 placeholder=""
                 label=""
-                items={categoryList}
-                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                items={accountList}
+                selectedItem={orderInfo.category === '' ? null : accountList.find((e) => e.id === orderInfo.category)}
                 onChange={(e) =>
                   this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
                 }
@@ -691,7 +705,9 @@ StockInOrderDetail.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
@@ -719,6 +735,7 @@ const mapDispatchToProps = (dispatch) => ({
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StockInOrderDetail);

@@ -86,7 +86,7 @@ class StockUpdate extends Component {
       filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
     }
     if (filterMatetrialName !== '') {
-      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+      filterResult = filterResult.filter((e) => e.materialName.toUpperCase().includes(filterMatetrialName.toUpperCase()));
     }
     if (filterMaterialGroup !== '') {
       filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);

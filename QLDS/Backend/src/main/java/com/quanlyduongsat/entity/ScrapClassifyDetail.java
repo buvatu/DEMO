@@ -35,6 +35,7 @@ public class ScrapClassifyDetail {
 
     private Long quantity;
     private String quality;
+    private String status;
 
     @Column(name = "updated_timestamp")
     private Date updatedTimestamp;

@@ -23,6 +23,7 @@ import com.quanlyduongsat.entity.OrderInfo;
 import com.quanlyduongsat.entity.Stock;
 import com.quanlyduongsat.entity.TestRecipe;
 import com.quanlyduongsat.model.Order;
+import com.quanlyduongsat.repository.AccountTitleRepository;
 import com.quanlyduongsat.repository.CategoryRepository;
 import com.quanlyduongsat.repository.MaterialRepository;
 import com.quanlyduongsat.repository.OrderDetailRepository;
@@ -57,9 +58,17 @@ public class OrderController {
     @Autowired
     private MaterialRepository materialRepository;
 
+    @Autowired
+    private AccountTitleRepository accountTitleRepository;
+
     @GetMapping(value="/category/list")
     public ResponseEntity<?> getCategoryList() {
         return ResponseEntity.ok().body(categoryRepository.findAll());
+    }
+
+    @GetMapping(value="/account-title/list")
+    public ResponseEntity<?> getAccountTitleList() {
+        return ResponseEntity.ok().body(accountTitleRepository.findAll());
     }
 
     @GetMapping(value="/other-consumer/list")

@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
-import { addOrder, getCategoryList, getMaterialListWithStockQuantity, getSupplierList, getUserList } from '../../services';
+import { addOrder, getAccountTitleList, getCategoryList, getMaterialListWithStockQuantity, getSupplierList, getUserList } from '../../services';
 
 class StockInOrder extends Component {
   constructor(props) {
@@ -69,6 +69,7 @@ class StockInOrder extends Component {
       quantityErrorMessages: [],
       amountErrorMessages: [],
       categoryList: [],
+      accountList: [],
       materialList: [],
       searchResult: [],
       materialListDisplay: [],
@@ -95,6 +96,7 @@ class StockInOrder extends Component {
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getSupplierListResult = await getSupplierList();
       const getCategoryListResult = await getCategoryList();
+      const getAccountListResult = await getAccountTitleList();
       this.setState({
         testerList: getTesterListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
@@ -113,7 +115,13 @@ class StockInOrder extends Component {
         categoryList: [
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
-            return { id: e.categoryID, label: e.categoryName };
+            return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
+          }),
+        ],
+        accountList: [
+          { id: '', label: '' },
+          ...getAccountListResult.data.map((e) => {
+            return { id: e.accountID, label: e.accountID.concat(' - ').concat(e.accountName) };
           }),
         ],
       });
@@ -223,7 +231,7 @@ class StockInOrder extends Component {
       filterResult = filterResult.filter((e) => e.materialID.includes(filterMaterialID));
     }
     if (filterMatetrialName !== '') {
-      filterResult = filterResult.filter((e) => e.materialName.includes(filterMatetrialName));
+      filterResult = filterResult.filter((e) => e.materialName.toUpperCase().includes(filterMatetrialName.toUpperCase()));
     }
     if (filterMaterialGroup !== '') {
       filterResult = filterResult.filter((e) => e.materialGroupID === filterMaterialGroup);
@@ -257,6 +265,7 @@ class StockInOrder extends Component {
       supplierList,
       supplierErrorMessage,
       categoryList,
+      accountList,
       filterMaterialID,
       filterMaterialGroup,
       filterMatetrialName,
@@ -507,8 +516,8 @@ class StockInOrder extends Component {
                 titleText="Khoản mục"
                 placeholder=""
                 label=""
-                items={categoryList}
-                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                items={accountList}
+                selectedItem={orderInfo.category === '' ? null : accountList.find((e) => e.id === orderInfo.category)}
                 onChange={(e) =>
                   this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
                 }

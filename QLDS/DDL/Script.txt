@@ -236,26 +236,19 @@ create table qlds.stock (
     unique (company_id, material_id)
 );
 
-drop table if exists qlds.order_info;
-create table qlds.order_info (
-	order_id varchar primary key,
+drop table if exists qlds.engine_analysis_info;
+create table qlds.engine_analysis_info (
+	id serial primary key,
+	engine_analysis_name varchar,
 	company_id varchar,
-	order_type varchar(1),
-	order_name varchar,
+	engine_id varchar,
+	repair_level varchar,
+	repair_date date,
+	first_approver varchar,
+	second_approver varchar,
 	status varchar,
-	consumer varchar,
-	requestor varchar,
-	request_note varchar,
-	request_date timestamp,
-	tester varchar,
-	test_note varchar,
-	test_date timestamp,
-	approver varchar,
-	approve_note varchar,
-	approve_date timestamp,
-	address varchar,
-	stock_no varchar,
-	attached_document varchar
+	updated_timestamp timestamp,
+    updated_user varchar
 );
 
 drop table if exists qlds.fuel_order_info;
@@ -287,3 +280,83 @@ create table qlds.fuel_order_info (
 	updated_timestamp timestamp,
     	updated_user varchar
 );
+
+drop table if exists qlds.engine_analysis_detail;
+create table qlds.engine_analysis_detail (
+    id serial primary key,
+	engine_analysis_id integer,
+	part varchar,
+	material_id varchar,
+	quantity integer,
+	status varchar,
+	measure varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.scrap_classify_detail;
+create table qlds.scrap_classify_detail (
+    id serial primary key,
+    engine_analysis_id integer,
+    material_id varchar,
+    quantity integer,
+    quality varchar,
+    status varchar,
+    updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.price;
+create table qlds.price (
+    id serial primary key,
+    material_id varchar,
+    price decimal,
+    company_id varchar,
+    adjust_time varchar,
+    updated_timestamp timestamp,
+    updated_user varchar
+);
+
+drop table if exists qlds.vcf;
+create table qlds.vcf (
+	vcf_key varchar primary key,
+	vcf varchar,
+	company_id varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+select count(*) from qlds.material;
+select (amount/quantity) as price from qlds.stock;
+update order_details set quantity = (quantity + 10) where order_details_id = 1;
+
+drop table if exists qlds.fuel_stock;
+create table qlds.fuel_stock (
+	fuel_material_id varchar,
+	real_fuel_quantity decimal,
+	standard_fuel_quantity decimal,
+	company_id varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+ALTER TABLE qlds.fuel_stock ADD CONSTRAINT material_company_key UNIQUE (fuel_material_id, company_id);
+
+drop table if exists qlds.fuel_order;
+create table qlds.fuel_order (
+	fuel_order_id varchar primary key,
+	fuel_order_type varchar(1),
+	fuel_material_id varchar,
+	fuel_material_name varchar,
+	fuel_order_note varchar,
+	real_fuel_quantity decimal,
+	standard_fuel_quantity decimal,
+	request_date date,
+	recipe_no varchar,
+	supplier varchar,
+	consumer varchar,
+	company_id varchar,
+	updated_timestamp timestamp,
+    updated_user varchar
+);
+
+update qlds.material set minimum_quantity = null where minimum_quantity = '';

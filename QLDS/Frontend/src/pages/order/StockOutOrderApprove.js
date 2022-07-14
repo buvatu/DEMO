@@ -27,6 +27,7 @@ import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actio
 import {
   approveOrder,
   cancelOrder,
+  getAccountTitleList,
   getCategoryList,
   getEngineListByCompany,
   getMaterialListInStock,
@@ -75,6 +76,7 @@ class StockOutOrderApprove extends Component {
       quantityErrorMessages: [],
       amountErrorMessages: [],
       categoryList: [],
+      accountList: [],
       materialList: [],
     };
   }
@@ -106,6 +108,7 @@ class StockOutOrderApprove extends Component {
       const getMaterialListResult = await getMaterialListInStock(auth.companyID);
       const getOtherConsumerListResult = await getOtherConsumerList();
       const getEngineListResult = await getEngineListByCompany(auth.companyID);
+      const getAccountListResult = await getAccountTitleList();
       this.setState({
         testerList: getTesterListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
@@ -116,7 +119,13 @@ class StockOutOrderApprove extends Component {
         categoryList: [
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
-            return { id: e.categoryID, label: e.categoryName };
+            return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
+          }),
+        ],
+        accountList: [
+          { id: '', label: '' },
+          ...getAccountListResult.data.map((e) => {
+            return { id: e.accountID, label: e.accountID.concat(' - ').concat(e.accountName) };
           }),
         ],
         orderInfo: getStockOutOrderInfoResult.data.orderInfo,
@@ -265,6 +274,7 @@ class StockOutOrderApprove extends Component {
       approveNoteErrorMessage,
       changedOrderDetailList,
       engineList,
+      accountList,
     } = this.state;
 
     const repairGroupList = [
@@ -457,8 +467,8 @@ class StockOutOrderApprove extends Component {
                 titleText="Khoản mục"
                 placeholder=""
                 label=""
-                items={categoryList}
-                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                items={accountList}
+                selectedItem={orderInfo.category === '' ? null : accountList.find((e) => e.id === orderInfo.category)}
                 onChange={(e) =>
                   this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
                 }

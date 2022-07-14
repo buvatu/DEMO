@@ -45,6 +45,7 @@ import com.quanlyduongsat.entity.ScrapClassifyDetail;
 import com.quanlyduongsat.entity.Stock;
 import com.quanlyduongsat.entity.TestRecipe;
 import com.quanlyduongsat.model.Order;
+import com.quanlyduongsat.repository.AccountTitleRepository;
 import com.quanlyduongsat.repository.CategoryRepository;
 import com.quanlyduongsat.repository.CompanyRepository;
 import com.quanlyduongsat.repository.EngineAnalysisDetailRepository;
@@ -85,6 +86,9 @@ public class ReportController {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private AccountTitleRepository accountTitleRepository;
 
     @Autowired
     private StockRepository stockRepository;
@@ -701,23 +705,7 @@ public class ReportController {
             int year = today.getYear();
             dateCell.setCellValue(MessageFormat.format(dateValue, new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
-            // engine type
-            Cell engineTypeCell = sheet.getRow(7).getCell(1);
-            engineTypeCell.setCellValue(MessageFormat.format(engineTypeCell.getStringCellValue(), engine.getEngineType()));
-
-            // engine id
-            Cell engineIDCell = sheet.getRow(7).getCell(3);
-            engineIDCell.setCellValue(MessageFormat.format(engineIDCell.getStringCellValue(), engine.getEngineID()));
-
-            // repair level
-            Cell repairLevelCell = sheet.getRow(8).getCell(1);
-            repairLevelCell.setCellValue(MessageFormat.format(repairLevelCell.getStringCellValue(), engineAnalysisInfo.getRepairLevel()));
-
-            // repair date
-            Cell repairDateCell = sheet.getRow(8).getCell(3);
-            repairDateCell.setCellValue(MessageFormat.format(repairDateCell.getStringCellValue(), QLDSUtils.convertDateToString(engineAnalysisInfo.getRepairDate())));
-
-            int rowNumber = 15;
+            int rowNumber = 19;
             Row row = sheet.getRow(rowNumber);
             rowNumber++;
             List<ScrapClassifyDetail> scrapClassifyDetailList = scrapClassifyDetailRepository.findByEngineAnalysisID(engineAnalysisID);
@@ -728,7 +716,7 @@ public class ReportController {
 
                 Cell sttCell = tmpRow.createCell(1);
                 sttCell.setCellStyle(row.getCell(1).getCellStyle());
-                sttCell.setCellValue(rowNumber - 15);
+                sttCell.setCellValue(rowNumber - 19);
 
                 Material material = materialRepository.findByMaterialID(rowData.getMaterialID()).get();
 
@@ -744,9 +732,39 @@ public class ReportController {
                 quantityCell.setCellStyle(row.getCell(4).getCellStyle());
                 quantityCell.setCellValue(rowData.getQuantity());
 
-                Cell statusCell = tmpRow.createCell(5);
-                statusCell.setCellStyle(row.getCell(5).getCellStyle());
-                statusCell.setCellValue(rowData.getQuality());
+                if ("Loại I".equals(rowData.getQuality())) {
+                    Cell statusCell = tmpRow.createCell(5);
+                    statusCell.setCellStyle(row.getCell(5).getCellStyle());
+                    statusCell.setCellValue("x");
+                } else {
+                    Cell statusCell = tmpRow.createCell(5);
+                    statusCell.setCellStyle(row.getCell(5).getCellStyle());
+                    statusCell.setCellValue("");
+                }
+
+                if ("Loại II".equals(rowData.getQuality())) {
+                    Cell statusCell = tmpRow.createCell(6);
+                    statusCell.setCellStyle(row.getCell(6).getCellStyle());
+                    statusCell.setCellValue("x");
+                } else {
+                    Cell statusCell = tmpRow.createCell(6);
+                    statusCell.setCellStyle(row.getCell(6).getCellStyle());
+                    statusCell.setCellValue("");
+                }
+
+                if ("Loại III".equals(rowData.getQuality())) {
+                    Cell statusCell = tmpRow.createCell(7);
+                    statusCell.setCellStyle(row.getCell(7).getCellStyle());
+                    statusCell.setCellValue("x");
+                } else {
+                    Cell statusCell = tmpRow.createCell(7);
+                    statusCell.setCellStyle(row.getCell(7).getCellStyle());
+                    statusCell.setCellValue("");
+                }
+
+                Cell statusCell = tmpRow.createCell(8);
+                statusCell.setCellStyle(row.getCell(8).getCellStyle());
+                statusCell.setCellValue(rowData.getStatus());
 
                 rowNumber++;
             }
@@ -996,7 +1014,7 @@ public class ReportController {
 
             // Khoan muc
             Cell categoryCell = sheet.getRow(5).getCell(0);
-            categoryCell.setCellValue(MessageFormat.format(categoryCell.getStringCellValue(), category.isEmpty() ? "Tất cả" : category, category.isEmpty() ? "Tất cả" : categoryRepository.findByCategoryID(category).get().getCategoryName()));
+            categoryCell.setCellValue(MessageFormat.format(categoryCell.getStringCellValue(), category.isEmpty() ? "Tất cả" : category, category.isEmpty() ? "Tất cả" : accountTitleRepository.findByAccountID(category).get().getAccountName()));
 
             // Tai khoan kho
             Cell typeCell = sheet.getRow(6).getCell(0);
