@@ -27,7 +27,15 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { addOrder, getCategoryList, getEngineListByCompany, getMaterialListInStock, getOtherConsumerList, getUserList } from '../../services';
+import {
+  addOrder,
+  getAccountTitleList,
+  getCategoryList,
+  getEngineListByCompany,
+  getMaterialListInStock,
+  getOtherConsumerList,
+  getUserList,
+} from '../../services';
 
 class StockOutOrder extends Component {
   constructor(props) {
@@ -69,6 +77,7 @@ class StockOutOrder extends Component {
       quantityErrorMessages: [],
       amountErrorMessages: [],
       categoryList: [],
+      accountList: [],
       engineList: [],
       otherConsumerList: [],
       engineID: '',
@@ -100,6 +109,7 @@ class StockOutOrder extends Component {
       const getCategoryListResult = await getCategoryList();
       const getOtherConsumerListResult = await getOtherConsumerList();
       const getEngineListResult = await getEngineListByCompany(auth.companyID);
+      const getAccountListResult = await getAccountTitleList();
       this.setState({
         testerList: getTesterListResult.data.map((e) => {
           return { id: e.userID, label: e.username };
@@ -114,6 +124,12 @@ class StockOutOrder extends Component {
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
             return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
+          }),
+        ],
+        accountList: [
+          { id: '', label: '' },
+          ...getAccountListResult.data.map((e) => {
+            return { id: e.accountID, label: e.accountID.concat(' - ').concat(e.accountName) };
           }),
         ],
         otherConsumerList: [
@@ -292,6 +308,7 @@ class StockOutOrder extends Component {
       quantityErrorMessages,
       amountErrorMessages,
       categoryList,
+      accountList,
       filterMaterialID,
       filterMaterialGroup,
       filterMatetrialName,
@@ -579,8 +596,8 @@ class StockOutOrder extends Component {
                 titleText="Khoản mục"
                 placeholder=""
                 label=""
-                items={categoryList}
-                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                items={accountList}
+                selectedItem={orderInfo.category === '' ? null : accountList.find((e) => e.id === orderInfo.category)}
                 onChange={(e) =>
                   this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
                 }

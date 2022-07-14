@@ -714,6 +714,13 @@ export const getCategoryList = () => {
   });
 };
 
+export const getAccountTitleList = () => {
+  return request({
+    url: '/account-title/list',
+    method: GET,
+  });
+};
+
 export const getOtherConsumerList = () => {
   return request({
     url: '/other-consumer/list',

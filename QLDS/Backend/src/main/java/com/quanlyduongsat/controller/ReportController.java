@@ -45,6 +45,7 @@ import com.quanlyduongsat.entity.ScrapClassifyDetail;
 import com.quanlyduongsat.entity.Stock;
 import com.quanlyduongsat.entity.TestRecipe;
 import com.quanlyduongsat.model.Order;
+import com.quanlyduongsat.repository.AccountTitleRepository;
 import com.quanlyduongsat.repository.CategoryRepository;
 import com.quanlyduongsat.repository.CompanyRepository;
 import com.quanlyduongsat.repository.EngineAnalysisDetailRepository;
@@ -85,6 +86,9 @@ public class ReportController {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private AccountTitleRepository accountTitleRepository;
 
     @Autowired
     private StockRepository stockRepository;
@@ -1010,7 +1014,7 @@ public class ReportController {
 
             // Khoan muc
             Cell categoryCell = sheet.getRow(5).getCell(0);
-            categoryCell.setCellValue(MessageFormat.format(categoryCell.getStringCellValue(), category.isEmpty() ? "Tất cả" : category, category.isEmpty() ? "Tất cả" : categoryRepository.findByCategoryID(category).get().getCategoryName()));
+            categoryCell.setCellValue(MessageFormat.format(categoryCell.getStringCellValue(), category.isEmpty() ? "Tất cả" : category, category.isEmpty() ? "Tất cả" : accountTitleRepository.findByAccountID(category).get().getAccountName()));
 
             // Tai khoan kho
             Cell typeCell = sheet.getRow(6).getCell(0);

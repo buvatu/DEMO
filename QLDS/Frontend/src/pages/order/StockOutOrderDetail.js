@@ -24,7 +24,16 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
-import { cancelOrder, exportStockOutOrderRecipe, exportTestRecipe, getCategoryList, getMaterialListInStock, getOrder, getUserList } from '../../services';
+import {
+  cancelOrder,
+  exportStockOutOrderRecipe,
+  exportTestRecipe,
+  getAccountTitleList,
+  getCategoryList,
+  getMaterialListInStock,
+  getOrder,
+  getUserList,
+} from '../../services';
 
 class StockOutOrderDetail extends Component {
   constructor(props) {
@@ -76,6 +85,7 @@ class StockOutOrderDetail extends Component {
       engineList: [],
       otherConsumerList: [],
       categoryList: [],
+      accountList: [],
     };
   }
 
@@ -102,6 +112,7 @@ class StockOutOrderDetail extends Component {
       const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getCategoryListResult = await getCategoryList();
+      const getAccountListResult = await getAccountTitleList();
       const getMaterialListResult = await getMaterialListInStock(auth.companyID);
       const orderDetailList = getStockOutOrderInfoResult.data.orderDetailList.map((e) => {
         const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
@@ -160,6 +171,12 @@ class StockOutOrderDetail extends Component {
           { id: '', label: '' },
           ...getCategoryListResult.data.map((e) => {
             return { id: e.categoryID, label: e.categoryID.concat(' - ').concat(e.categoryName) };
+          }),
+        ],
+        accountList: [
+          { id: '', label: '' },
+          ...getAccountListResult.data.map((e) => {
+            return { id: e.accountID, label: e.accountID.concat(' - ').concat(e.accountName) };
           }),
         ],
         orderInfo: getStockOutOrderInfoResult.data.orderInfo,
@@ -252,7 +269,8 @@ class StockOutOrderDetail extends Component {
     const { submitResult, errorMessage, isLoading } = common;
 
     // Then state
-    const { orderInfo, testerList, approverList, orderDetailList, engineList, categoryList, testRecipe, changedOrderDetailList, otherConsumerList } = this.state;
+    const { orderInfo, testerList, approverList, orderDetailList, engineList, categoryList, testRecipe, changedOrderDetailList, otherConsumerList, accountList } =
+      this.state;
 
     const repairGroupList = [
       { id: 'Tổ Điện', label: 'Tổ Điện' },
@@ -447,8 +465,8 @@ class StockOutOrderDetail extends Component {
                 titleText="Khoản mục"
                 placeholder=""
                 label=""
-                items={categoryList}
-                selectedItem={orderInfo.category === '' ? null : categoryList.find((e) => e.id === orderInfo.category)}
+                items={accountList}
+                selectedItem={orderInfo.category === '' ? null : accountList.find((e) => e.id === orderInfo.category)}
                 onChange={(e) =>
                   this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, category: e.selectedItem == null ? '' : e.selectedItem.id } }))
                 }
