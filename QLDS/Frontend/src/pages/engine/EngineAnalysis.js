@@ -579,7 +579,12 @@ class EngineAnalysis extends Component {
                 label=""
                 items={approverList}
                 selectedItem={engineAnalysisInfo.firstApprover === '' ? null : approverList.find((e) => e.id === engineAnalysisInfo.firstApprover)}
-                onChange={(e) => this.setState((prevState) => ({ engineAnalysisInfo: { ...prevState.engineAnalysisInfo, firstApprover: e.selectedItem.id } }))}
+                onChange={(e) =>
+                  this.setState((prevState) => ({
+                    engineAnalysisInfo: { ...prevState.engineAnalysisInfo, firstApprover: e.selectedItem.id },
+                    firstApproverErrorMessage: '',
+                  }))
+                }
                 invalid={firstApproverErrorMessage !== ''}
                 invalidText={firstApproverErrorMessage}
                 disabled={engineAnalysisInfo.id !== ''}
@@ -592,7 +597,12 @@ class EngineAnalysis extends Component {
                 label=""
                 items={approverList}
                 selectedItem={engineAnalysisInfo.secondApprover === '' ? null : approverList.find((e) => e.id === engineAnalysisInfo.secondApprover)}
-                onChange={(e) => this.setState((prevState) => ({ engineAnalysisInfo: { ...prevState.engineAnalysisInfo, secondApprover: e.selectedItem.id } }))}
+                onChange={(e) =>
+                  this.setState((prevState) => ({
+                    engineAnalysisInfo: { ...prevState.engineAnalysisInfo, secondApprover: e.selectedItem.id },
+                    secondApproverErrorMessage: '',
+                  }))
+                }
                 invalid={secondApproverErrorMessage !== ''}
                 invalidText={secondApproverErrorMessage}
                 disabled={engineAnalysisInfo.id !== ''}

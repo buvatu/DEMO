@@ -187,7 +187,7 @@ class StockInOrderDetail extends Component {
         accountList: [
           { id: '', label: '' },
           ...getAccountListResult.data.map((e) => {
-            return { id: e.accountID, label: e.accountID.concat(' - ').concat(e.accountName) };
+            return { id: e.accountID, label: e.accountTitle.concat(' - ').concat(e.accountName) };
           }),
         ],
         orderInfo: getStockInOrderInfoResult.data.orderInfo,
