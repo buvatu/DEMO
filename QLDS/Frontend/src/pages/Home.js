@@ -57,13 +57,12 @@ class Home extends Component {
                 <div className="bx--grid bx--grid--no-gutter bx--grid--full-width" style={{ height: '50vh' }}>
                   <div className="bx--row landing-page__tab-content">
                     <div className="bx--col-lg-16">
-                      Cổng thông tin bao gồm các phần mục chính như:
-                      <ul>
-                        <li>Quản lý chung</li>
-                        <li>Quản lý vật tư</li>
-                        <li>Báo cáo</li>
-                        <li>Quản lý khác</li>
-                      </ul>
+                      <p className="landing-page__p">
+                        Cổng thông tin bao gồm các phần mục chính như: <br />
+                        - Quản lý chung <br />
+                        - Quản lý kỹ thuật <br />
+                        - Quản lý vật tư <br />- Báo cáo
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -71,7 +70,9 @@ class Home extends Component {
               <Tab label="Thông tin">
                 <div className="bx--grid bx--grid--no-gutter bx--grid--full-width" style={{ height: '50vh' }}>
                   <div className="bx--row landing-page__tab-content">
-                    <div className="bx--col-lg-16">Cổng thông tin được thiết kế và xây dựng bởi: Bùi Văn Tùng</div>
+                    <div className="bx--col-lg-16">
+                      <p className="landing-page__p">Cổng thông tin được thiết kế và xây dựng bởi: Bùi Văn Tùng</p>
+                    </div>
                   </div>
                 </div>
               </Tab>
