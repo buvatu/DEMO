@@ -23,14 +23,14 @@ import {
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import {
   cancelOrder,
   exportStockOutOrderRecipe,
   exportTestRecipe,
   getAccountTitleList,
   getCategoryList,
-  getMaterialListInStock,
+  getMaterialListWithStockQuantity,
   getOrder,
   getUserList,
 } from '../../services';
@@ -90,7 +90,7 @@ class StockOutOrderDetail extends Component {
   }
 
   componentDidMount = async () => {
-    const { setErrorMessage, setLoading, location, auth } = this.props;
+    const { setErrorMessage, setLoading, location, auth, common, setMaterialList } = this.props;
     const params = new URLSearchParams(location.search);
     if (params == null) {
       setErrorMessage('Không có mã yêu cầu nhập kho!!!');
@@ -98,6 +98,7 @@ class StockOutOrderDetail extends Component {
     }
     const orderID = params.get('orderID');
     setLoading(true);
+    let { materialList } = common;
     try {
       const getStockOutOrderInfoResult = await getOrder(orderID);
       if (
@@ -113,9 +114,13 @@ class StockOutOrderDetail extends Component {
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getCategoryListResult = await getCategoryList();
       const getAccountListResult = await getAccountTitleList();
-      const getMaterialListResult = await getMaterialListInStock(auth.companyID);
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const orderDetailList = getStockOutOrderInfoResult.data.orderDetailList.map((e) => {
-        const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
+        const selectedMaterial = materialList.find((item) => item.materialID === e.materialID);
         e.materialName = selectedMaterial.materialName;
         e.unit = selectedMaterial.unit;
         e.materialGroupName = selectedMaterial.materialGroupName;
@@ -628,7 +633,7 @@ class StockOutOrderDetail extends Component {
             </div>
             <div className="bx--col-lg-3 bx--col-md-3">
               <Button onClick={() => this.downloadStockOutRecipe()} style={{ marginTop: '1rem' }} disabled={orderInfo.status !== 'completed'}>
-                Tải phiếu nhập kho
+                Tải phiếu xuất kho
               </Button>
             </div>
           </div>
@@ -739,7 +744,9 @@ StockOutOrderDetail.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
@@ -767,6 +774,7 @@ const mapDispatchToProps = (dispatch) => ({
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StockOutOrderDetail);

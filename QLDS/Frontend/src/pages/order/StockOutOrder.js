@@ -83,7 +83,6 @@ class StockOutOrder extends Component {
       engineID: '',
       otherConsumer: '',
       engineIDErrorMessage: '',
-      otherConsumerErrorMessage: '',
       repairLevelErrorMessage: '',
       repairGroupErrorMessage: '',
 
@@ -133,6 +132,7 @@ class StockOutOrder extends Component {
           }),
         ],
         otherConsumerList: [
+          { id: '', label: '' },
           ...getOtherConsumerListResult.data.map((e) => {
             return { id: e.consumerID, label: e.consumerName };
           }),
@@ -160,7 +160,6 @@ class StockOutOrder extends Component {
       testerErrorMessage: '',
       approverErrorMessage: '',
       engineIDErrorMessage: '',
-      otherConsumerErrorMessage: '',
       repairLevelErrorMessage: '',
       repairGroupErrorMessage: '',
       quantityErrorMessages: Array(orderDetailList.length).fill('', 0, orderDetailList.length),
@@ -189,17 +188,13 @@ class StockOutOrder extends Component {
       hasError = true;
       this.setState({ repairGroupErrorMessage: 'Tổ sửa chữa không thể bỏ trống' });
     }
-    if (orderInfo.repairLevel === '') {
+    if (orderInfo.repairLevel === '' && engineID !== 'other') {
       hasError = true;
       this.setState({ repairLevelErrorMessage: 'Cấp sửa chữa không thể bỏ trống' });
     }
     if (engineID === '') {
       hasError = true;
       this.setState({ engineIDErrorMessage: 'Đầu máy tiêu thụ không thể bỏ trống' });
-    }
-    if (engineID === 'other' && otherConsumer === '') {
-      hasError = true;
-      this.setState({ otherConsumerErrorMessage: 'Đối tượng tiêu thụ không thể bỏ trống' });
     }
 
     if (orderDetailList.length === 0) {
@@ -322,7 +317,6 @@ class StockOutOrder extends Component {
       engineID,
       otherConsumer,
       engineIDErrorMessage,
-      otherConsumerErrorMessage,
       repairLevelErrorMessage,
       repairGroupErrorMessage,
     } = this.state;
@@ -506,7 +500,13 @@ class StockOutOrder extends Component {
                 label=""
                 items={engineList}
                 selectedItem={engineID === '' ? null : engineList.find((e) => e.id === engineID)}
-                onChange={(e) => this.setState({ engineID: e.selectedItem.id, engineIDErrorMessage: '' })}
+                onChange={(e) =>
+                  this.setState((prevState) => ({
+                    orderInfo: { ...prevState.orderInfo, repairLevel: e.selectedItem.id === 'other' ? '' : orderInfo.repairLevel },
+                    engineID: e.selectedItem.id,
+                    engineIDErrorMessage: '',
+                  }))
+                }
                 invalid={engineIDErrorMessage !== ''}
                 invalidText={engineIDErrorMessage}
               />
@@ -519,14 +519,12 @@ class StockOutOrder extends Component {
                 label=""
                 items={otherConsumerList}
                 selectedItem={otherConsumer === '' ? null : otherConsumerList.find((e) => e.id === otherConsumer)}
-                onChange={(e) => this.setState({ otherConsumer: e.selectedItem.id, otherConsumerErrorMessage: '' })}
+                onChange={(e) => this.setState({ otherConsumer: e.selectedItem == null ? '' : e.selectedItem.id })}
                 shouldFilterItem={({ item, inputValue }) => {
                   if (!inputValue) return true;
                   return item.label.toLowerCase().includes(inputValue.toLowerCase());
                 }}
                 disabled={engineID !== 'other'}
-                invalid={otherConsumerErrorMessage !== ''}
-                invalidText={otherConsumerErrorMessage}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">
@@ -541,6 +539,7 @@ class StockOutOrder extends Component {
                 }
                 invalid={repairLevelErrorMessage !== ''}
                 invalidText={repairLevelErrorMessage}
+                disabled={engineID === 'other'}
               />
             </div>
             <div className="bx--col-lg-2 bx--col-md-2">

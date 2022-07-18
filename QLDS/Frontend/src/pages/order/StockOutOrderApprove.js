@@ -23,14 +23,14 @@ import {
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { assignErrorMessage, setLoadingValue, setSubmitValue } from '../../actions/commonAction';
+import { assignErrorMessage, setLoadingValue, setMaterialListValue, setSubmitValue } from '../../actions/commonAction';
 import {
   approveOrder,
   cancelOrder,
   getAccountTitleList,
   getCategoryList,
   getEngineListByCompany,
-  getMaterialListInStock,
+  getMaterialListWithStockQuantity,
   getOrder,
   getOtherConsumerList,
   getUserList,
@@ -82,7 +82,7 @@ class StockOutOrderApprove extends Component {
   }
 
   componentDidMount = async () => {
-    const { setErrorMessage, setLoading, location, auth } = this.props;
+    const { setErrorMessage, setLoading, location, auth, common, setMaterialList } = this.props;
     const params = new URLSearchParams(location.search);
     if (params == null) {
       setErrorMessage('Không có mã yêu cầu nhập kho!!!');
@@ -90,6 +90,7 @@ class StockOutOrderApprove extends Component {
     }
     const orderID = params.get('orderID');
     setLoading(true);
+    let { materialList } = common;
     try {
       const getStockOutOrderInfoResult = await getOrder(orderID);
       if (getStockOutOrderInfoResult.data.orderInfo.approver !== auth.userID) {
@@ -105,7 +106,11 @@ class StockOutOrderApprove extends Component {
       const getTesterListResult = await getUserList('', '', auth.companyID, 'phongkythuat');
       const getApproverListResult = await getUserList('', '', auth.companyID, 'phongketoantaichinh');
       const getCategoryListResult = await getCategoryList();
-      const getMaterialListResult = await getMaterialListInStock(auth.companyID);
+      if (materialList.length === 0) {
+        const getMaterialListResult = await getMaterialListWithStockQuantity(auth.companyID);
+        materialList = getMaterialListResult.data;
+        setMaterialList(materialList);
+      }
       const getOtherConsumerListResult = await getOtherConsumerList();
       const getEngineListResult = await getEngineListByCompany(auth.companyID);
       const getAccountListResult = await getAccountTitleList();
@@ -130,7 +135,7 @@ class StockOutOrderApprove extends Component {
         ],
         orderInfo: getStockOutOrderInfoResult.data.orderInfo,
         orderDetailList: getStockOutOrderInfoResult.data.orderDetailList.map((e) => {
-          const selectedMaterial = getMaterialListResult.data.find((item) => item.materialID === e.materialID);
+          const selectedMaterial = materialList.find((item) => item.materialID === e.materialID);
           e.materialName = selectedMaterial.materialName;
           e.unit = selectedMaterial.unit;
           e.materialGroupName = selectedMaterial.materialGroupName;
@@ -152,7 +157,7 @@ class StockOutOrderApprove extends Component {
           }),
           { id: 'other', label: 'Đối tượng tiêu thụ khác' },
         ],
-        materialList: getMaterialListResult.data,
+        materialList,
       });
       this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, approveDate: this.formatDate(new Date()) } }));
     } catch {
@@ -669,7 +674,9 @@ StockOutOrderApprove.propTypes = {
   setErrorMessage: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setSubmitResult: PropTypes.func.isRequired,
-  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool }).isRequired,
+  setMaterialList: PropTypes.func.isRequired,
+  common: PropTypes.shape({ submitResult: PropTypes.string, errorMessage: PropTypes.string, isLoading: PropTypes.bool, materialList: PropTypes.arrayOf })
+    .isRequired,
   auth: PropTypes.shape({
     isAuthenticated: PropTypes.bool,
     userID: PropTypes.string,
@@ -697,6 +704,7 @@ const mapDispatchToProps = (dispatch) => ({
   setErrorMessage: (errorMessage) => dispatch(assignErrorMessage(errorMessage)),
   setLoading: (loading) => dispatch(setLoadingValue(loading)),
   setSubmitResult: (submitResult) => dispatch(setSubmitValue(submitResult)),
+  setMaterialList: (materialList) => dispatch(setMaterialListValue(materialList)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StockOutOrderApprove);

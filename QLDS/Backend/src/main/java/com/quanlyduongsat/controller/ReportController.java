@@ -132,11 +132,11 @@ public class ReportController {
             Sheet sheet = workbook.getSheetAt(0);
 
             // Don vi
-            Cell companyCell = sheet.getRow(0).getCell(0);
-            companyCell.setCellValue(MessageFormat.format(companyCell.getStringCellValue(), companyRepository.findByCompanyID(orderInfo.getCompanyID()).get().getCompanyName()));
+            Cell companyCell = sheet.getRow(1).getCell(1);
+            companyCell.setCellValue(MessageFormat.format(companyCell.getStringCellValue(), companyRepository.findByCompanyID(orderInfo.getCompanyID()).get().getCompanyName().toUpperCase()));
 
             // Ngay - thang - nam
-            Cell dateCell = sheet.getRow(7).getCell(0);
+            Cell dateCell = sheet.getRow(7).getCell(3);
             String dateValue = dateCell.getStringCellValue();
             LocalDate today = LocalDate.now();
             int day = today.getDayOfMonth();
@@ -145,11 +145,11 @@ public class ReportController {
             dateCell.setCellValue(MessageFormat.format(dateValue, new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
             // So
-            Cell row8Cell = sheet.getRow(8).getCell(7);
+            Cell row8Cell = sheet.getRow(8).getCell(3);
             row8Cell.setCellValue(MessageFormat.format(row8Cell.getStringCellValue(), getOrderNumber(orderInfo)));
 
             // so hoa don va supplier
-            Cell row9Cell = sheet.getRow(9).getCell(0);
+            Cell row9Cell = sheet.getRow(10).getCell(1);
             if ("I".equals(orderInfo.getOrderType())) {
                 Date recipeDate = orderInfo.getRecipeDate();
                 LocalDate localRecipeDate = recipeDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -162,16 +162,16 @@ public class ReportController {
             }
 
             // truong ban
-            Cell row11Cell = sheet.getRow(11).getCell(1);
+            Cell row11Cell = sheet.getRow(12).getCell(1);
             row11Cell.setCellValue(MessageFormat.format(row11Cell.getStringCellValue(), testRecipe.getLeader(), testRecipe.getLeaderPosition(), testRecipe.getLeaderRepresentation()));
             // Uy vien 1
-            Cell row12Cell = sheet.getRow(12).getCell(1);
+            Cell row12Cell = sheet.getRow(13).getCell(1);
             row12Cell.setCellValue(MessageFormat.format(row12Cell.getStringCellValue(), testRecipe.getFirstCommissioner(), testRecipe.getFirstCommissionerPosition(), testRecipe.getFirstCommissionerRepresentation()));
             // Uy vien 2
-            Cell row13Cell = sheet.getRow(13).getCell(1);
+            Cell row13Cell = sheet.getRow(14).getCell(1);
             row13Cell.setCellValue(MessageFormat.format(row13Cell.getStringCellValue(), testRecipe.getSecondCommissioner(), testRecipe.getSecondCommissionerPosition(), testRecipe.getSecondCommissionerRepresentation()));
 
-            int rowNumber = 20;
+            int rowNumber = 21;
             Row row = sheet.getRow(rowNumber);
             rowNumber++;
 
@@ -184,49 +184,48 @@ public class ReportController {
 
                 Material material = materialRepository.findByMaterialID(orderDetailList.get(i).getMaterialID()).get();
 
-                Cell sttCell = tmpRow.createCell(0);
+                Cell sttCell = tmpRow.createCell(1);
                 sttCell.setCellStyle(row.getCell(1).getCellStyle());
-                sttCell.setCellValue(rowNumber - 20);
+                sttCell.setCellValue(rowNumber - 21);
 
-                Cell materialNameCell = tmpRow.createCell(1);
-                materialNameCell.setCellStyle(row.getCell(1).getCellStyle());
+                Cell materialNameCell = tmpRow.createCell(2);
+                materialNameCell.setCellStyle(row.getCell(2).getCellStyle());
                 materialNameCell.setCellValue(material.getMaterialName());
 
-                Cell materialIDCell = tmpRow.createCell(2);
-                materialIDCell.setCellStyle(row.getCell(2).getCellStyle());
+                Cell materialIDCell = tmpRow.createCell(3);
+                materialIDCell.setCellStyle(row.getCell(3).getCellStyle());
                 materialIDCell.setCellValue(material.getMaterialID());
 
-                Cell methodCell = tmpRow.createCell(3);
-                methodCell.setCellStyle(row.getCell(3).getCellStyle());
+                Cell methodCell = tmpRow.createCell(4);
+                methodCell.setCellStyle(row.getCell(4).getCellStyle());
                 methodCell.setCellValue("Toàn bộ");
 
-                Cell unitCell = tmpRow.createCell(4);
-                unitCell.setCellStyle(row.getCell(4).getCellStyle());
+                Cell unitCell = tmpRow.createCell(5);
+                unitCell.setCellStyle(row.getCell(5).getCellStyle());
                 unitCell.setCellValue(material.getUnit());
 
-                Cell quantityCell = tmpRow.createCell(5);
-                quantityCell.setCellStyle(row.getCell(5).getCellStyle());
+                Cell quantityCell = tmpRow.createCell(6);
+                quantityCell.setCellStyle(row.getCell(6).getCellStyle());
                 quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity());
 
-                Cell quantityCell2 = tmpRow.createCell(6);
-                quantityCell2.setCellStyle(row.getCell(6).getCellStyle());
+                Cell quantityCell2 = tmpRow.createCell(7);
+                quantityCell2.setCellStyle(row.getCell(7).getCellStyle());
                 quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity());
 
-                Cell normalCell1 = tmpRow.createCell(7);
-                normalCell1.setCellStyle(row.getCell(7).getCellStyle());
+                Cell normalCell1 = tmpRow.createCell(8);
+                normalCell1.setCellStyle(row.getCell(8).getCellStyle());
                 normalCell1.setCellValue(orderDetailList.get(i).getRequestQuantity() - orderDetailList.get(i).getApproveQuantity());
 
-                Cell normalCell2 = tmpRow.createCell(8);
-                normalCell2.setCellStyle(row.getCell(8).getCellStyle());
+                Cell normalCell2 = tmpRow.createCell(9);
+                normalCell2.setCellStyle(row.getCell(9).getCellStyle());
 
                 rowNumber++;
             }
 
-            rowNumber++;
-            rowNumber++;
+            rowNumber = rowNumber + 4;
 
             // y kien ban kiem nghiem
-            Cell commentCell = sheet.getRow(rowNumber).getCell(0);
+            Cell commentCell = sheet.getRow(rowNumber).getCell(1);
             commentCell.setCellValue(MessageFormat.format(commentCell.getStringCellValue(), testRecipe.getComment()));
 
             workbook.write(bos);
@@ -263,11 +262,11 @@ public class ReportController {
             Sheet sheet = workbook.getSheetAt(0);
 
             // Don vi
-            Cell companyCell = sheet.getRow(0).getCell(0);
-            companyCell.setCellValue(MessageFormat.format(companyCell.getStringCellValue(), companyRepository.findByCompanyID(orderInfo.getCompanyID()).get().getCompanyName()));
+            Cell companyCell = sheet.getRow(1).getCell(1);
+            companyCell.setCellValue(MessageFormat.format(companyCell.getStringCellValue(), companyRepository.findByCompanyID(orderInfo.getCompanyID()).get().getCompanyName().toUpperCase()));
 
             // Ngay - thang - nam
-            Cell dateCell = sheet.getRow(5).getCell(0);
+            Cell dateCell = sheet.getRow(7).getCell(3);
             String dateValue = dateCell.getStringCellValue();
             LocalDate today = LocalDate.now();
             int day = today.getDayOfMonth();
@@ -276,35 +275,38 @@ public class ReportController {
             dateCell.setCellValue(MessageFormat.format(dateValue, new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
             // So
-            Cell row6Cell = sheet.getRow(6).getCell(0);
+            Cell row6Cell = sheet.getRow(8).getCell(3);
             row6Cell.setCellValue(MessageFormat.format(row6Cell.getStringCellValue(), getOrderNumber(orderInfo)));
 
             // No
-            Cell noCell = sheet.getRow(7).getCell(6);
+            Cell noCell = sheet.getRow(8).getCell(6);
             noCell.setCellValue(MessageFormat.format(noCell.getStringCellValue(), categoryRepository.findByCategoryID(orderInfo.getNo()).get().getCategoryName()));
 
             // Co
-            Cell coCell = sheet.getRow(8).getCell(6);
+            Cell coCell = sheet.getRow(9).getCell(6);
             coCell.setCellValue(MessageFormat.format(coCell.getStringCellValue(), categoryRepository.findByCategoryID(orderInfo.getCo()).get().getCategoryName()));
 
             // Nguoi giao hang
-            Cell deliverCell = sheet.getRow(9).getCell(0);
+            Cell deliverCell = sheet.getRow(10).getCell(1);
             deliverCell.setCellValue(MessageFormat.format(deliverCell.getStringCellValue(), orderInfo.getDeliver()));
 
             // so hoa don va supplier
-            Cell row10Cell = sheet.getRow(10).getCell(0);
+            Cell row10Cell = sheet.getRow(11).getCell(1);
             Date recipeDate = orderInfo.getRecipeDate();
             LocalDate localRecipeDate = recipeDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             row10Cell.setCellValue(MessageFormat.format(row10Cell.getStringCellValue(), new Object[] {orderInfo.getRecipeNo(),
-                    localRecipeDate.getDayOfMonth(), localRecipeDate.getMonthValue(), localRecipeDate.getYear(),
+                    localRecipeDate.getDayOfMonth(), localRecipeDate.getMonthValue(), String.valueOf(localRecipeDate.getYear()),
                     supplierRepository.findBySupplierID(orderInfo.getSupplier()).get().getSupplierName()}));
 
             // Address + stockNo
-            Cell stockCell = sheet.getRow(11).getCell(0);
-            stockCell.setCellValue(MessageFormat.format(stockCell.getStringCellValue(), orderInfo.getStockName(), orderInfo.getAddress()));
+            Cell stockCell = sheet.getRow(12).getCell(1);
+            stockCell.setCellValue(MessageFormat.format(stockCell.getStringCellValue(), orderInfo.getStockName()));
+
+            Cell addressCell = sheet.getRow(12).getCell(4);
+            addressCell.setCellValue(MessageFormat.format(addressCell.getStringCellValue(), orderInfo.getAddress()));
 
             BigDecimal total = new BigDecimal(0);
-            int rowNumber = 16;
+            int rowNumber = 19;
             Row row = sheet.getRow(rowNumber);
             rowNumber++;
 
@@ -316,37 +318,37 @@ public class ReportController {
 
                 Material material = materialRepository.findByMaterialID(orderDetailList.get(i).getMaterialID()).get();
 
-                Cell sttCell = tmpRow.createCell(0);
+                Cell sttCell = tmpRow.createCell(1);
                 sttCell.setCellStyle(row.getCell(1).getCellStyle());
-                sttCell.setCellValue(rowNumber - 16);
+                sttCell.setCellValue(rowNumber - 19);
 
-                Cell materialNameCell = tmpRow.createCell(1);
-                materialNameCell.setCellStyle(row.getCell(1).getCellStyle());
+                Cell materialNameCell = tmpRow.createCell(2);
+                materialNameCell.setCellStyle(row.getCell(2).getCellStyle());
                 materialNameCell.setCellValue(material.getMaterialName());
 
-                Cell materialIDCell = tmpRow.createCell(2);
-                materialIDCell.setCellStyle(row.getCell(2).getCellStyle());
+                Cell materialIDCell = tmpRow.createCell(3);
+                materialIDCell.setCellStyle(row.getCell(3).getCellStyle());
                 materialIDCell.setCellValue(material.getMaterialID());
 
-                Cell unitCell = tmpRow.createCell(3);
-                unitCell.setCellStyle(row.getCell(3).getCellStyle());
+                Cell unitCell = tmpRow.createCell(4);
+                unitCell.setCellStyle(row.getCell(4).getCellStyle());
                 unitCell.setCellValue(material.getUnit());
 
-                Cell quantityCell = tmpRow.createCell(4);
-                quantityCell.setCellStyle(row.getCell(4).getCellStyle());
+                Cell quantityCell = tmpRow.createCell(5);
+                quantityCell.setCellStyle(row.getCell(5).getCellStyle());
                 quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity());
 
-                Cell quantityCell2 = tmpRow.createCell(5);
-                quantityCell2.setCellStyle(row.getCell(5).getCellStyle());
+                Cell quantityCell2 = tmpRow.createCell(6);
+                quantityCell2.setCellStyle(row.getCell(6).getCellStyle());
                 quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity());
 
-                Cell priceCell = tmpRow.createCell(6);
-                priceCell.setCellStyle(row.getCell(6).getCellStyle());
+                Cell priceCell = tmpRow.createCell(7);
+                priceCell.setCellStyle(row.getCell(7).getCellStyle());
                 BigDecimal priceValue = orderDetailList.get(i).getApproveAmount().divide(new BigDecimal(orderDetailList.get(i).getApproveQuantity()));
                 priceCell.setCellValue(df.format(priceValue));
 
-                Cell amountCell = tmpRow.createCell(7);
-                amountCell.setCellStyle(row.getCell(7).getCellStyle());
+                Cell amountCell = tmpRow.createCell(8);
+                amountCell.setCellStyle(row.getCell(8).getCellStyle());
                 amountCell.setCellValue(df.format(orderDetailList.get(i).getApproveAmount()));
                 total = total.add(orderDetailList.get(i).getApproveAmount());
 
@@ -354,20 +356,25 @@ public class ReportController {
             }
 
             rowNumber++;
+            rowNumber++;
 
-            Cell totalCell = sheet.getRow(rowNumber).getCell(7);
+            Cell totalCell = sheet.getRow(rowNumber).getCell(8);
             totalCell.setCellValue(df.format(total));
 
             rowNumber++;
             rowNumber++;
 
-            Cell totalInWordCell = sheet.getRow(rowNumber).getCell(0);
+            Cell totalInWordCell = sheet.getRow(rowNumber).getCell(1);
             totalInWordCell.setCellValue(MessageFormat.format(totalInWordCell.getStringCellValue(), QLDSUtils.convertNumberToWord(total.longValue())));
 
             rowNumber++;
 
-            Cell attachedDocumentCell = sheet.getRow(rowNumber).getCell(0);
+            Cell attachedDocumentCell = sheet.getRow(rowNumber).getCell(1);
             attachedDocumentCell.setCellValue(MessageFormat.format(attachedDocumentCell.getStringCellValue(), orderInfo.getAttachedDocument()));
+
+            rowNumber++;
+            Cell dateCell2 = sheet.getRow(rowNumber).getCell(1);
+            dateCell2.setCellValue(MessageFormat.format(dateCell2.getStringCellValue(), new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
             workbook.write(bos);
             workbook.close();
@@ -403,11 +410,11 @@ public class ReportController {
             Sheet sheet = workbook.getSheetAt(0);
 
             // Don vi
-            Cell companyCell = sheet.getRow(0).getCell(0);
-            companyCell.setCellValue(MessageFormat.format(companyCell.getStringCellValue(), companyRepository.findByCompanyID(orderInfo.getCompanyID()).get().getCompanyName()));
+            Cell companyCell = sheet.getRow(1).getCell(1);
+            companyCell.setCellValue(MessageFormat.format(companyCell.getStringCellValue(), companyRepository.findByCompanyID(orderInfo.getCompanyID()).get().getCompanyName().toUpperCase()));
 
             // Ngay - thang - nam
-            Cell dateCell = sheet.getRow(5).getCell(0);
+            Cell dateCell = sheet.getRow(7).getCell(3);
             String dateValue = dateCell.getStringCellValue();
             LocalDate today = LocalDate.now();
             int day = today.getDayOfMonth();
@@ -416,31 +423,35 @@ public class ReportController {
             dateCell.setCellValue(MessageFormat.format(dateValue, new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
             // So
-            Cell row6Cell = sheet.getRow(6).getCell(0);
+            Cell row6Cell = sheet.getRow(8).getCell(3);
             row6Cell.setCellValue(MessageFormat.format(row6Cell.getStringCellValue(), getOrderNumber(orderInfo)));
 
             // No
-            Cell noCell = sheet.getRow(7).getCell(6);
+            Cell noCell = sheet.getRow(8).getCell(6);
             noCell.setCellValue(MessageFormat.format(noCell.getStringCellValue(), categoryRepository.findByCategoryID(orderInfo.getNo()).get().getCategoryName()));
 
             // Co
-            Cell coCell = sheet.getRow(8).getCell(6);
+            Cell coCell = sheet.getRow(9).getCell(6);
             coCell.setCellValue(MessageFormat.format(coCell.getStringCellValue(), categoryRepository.findByCategoryID(orderInfo.getCo()).get().getCategoryName()));
 
             // Ho ten nguoi nhan hang
-            Cell deliverCell = sheet.getRow(9).getCell(0);
+            Cell deliverCell = sheet.getRow(11).getCell(1);
             deliverCell.setCellValue(MessageFormat.format(deliverCell.getStringCellValue(), orderInfo.getRepairGroup()));
 
             // Ly do xuat kho
-            Cell row10Cell = sheet.getRow(10).getCell(0);
+            Cell row10Cell = sheet.getRow(12).getCell(1);
             row10Cell.setCellValue(MessageFormat.format(row10Cell.getStringCellValue(), orderInfo.getRequestNote().concat("-").concat(orderInfo.getConsumer()).concat(" - ").concat(orderInfo.getRepairLevel())));
 
-            // Address + stockNo
-            Cell stockCell = sheet.getRow(11).getCell(0);
-            stockCell.setCellValue(MessageFormat.format(stockCell.getStringCellValue(), orderInfo.getStockName(), orderInfo.getAddress()));
+            // stockNo
+            Cell stockCell = sheet.getRow(13).getCell(1);
+            stockCell.setCellValue(MessageFormat.format(stockCell.getStringCellValue(), orderInfo.getStockName()));
+
+            // Address
+            Cell addressCell = sheet.getRow(13).getCell(4);
+            addressCell.setCellValue(MessageFormat.format(addressCell.getStringCellValue(), orderInfo.getAddress()));
 
             BigDecimal total = new BigDecimal(0);
-            int rowNumber = 16;
+            int rowNumber = 20;
             Row row = sheet.getRow(rowNumber);
             rowNumber++;
 
@@ -452,32 +463,32 @@ public class ReportController {
 
                 Material material = materialRepository.findByMaterialID(orderDetailList.get(i).getMaterialID()).get();
 
-                Cell sttCell = tmpRow.createCell(0);
+                Cell sttCell = tmpRow.createCell(1);
                 sttCell.setCellStyle(row.getCell(1).getCellStyle());
-                sttCell.setCellValue(rowNumber - 16);
+                sttCell.setCellValue(rowNumber - 20);
 
-                Cell materialNameCell = tmpRow.createCell(1);
-                materialNameCell.setCellStyle(row.getCell(1).getCellStyle());
+                Cell materialNameCell = tmpRow.createCell(2);
+                materialNameCell.setCellStyle(row.getCell(2).getCellStyle());
                 materialNameCell.setCellValue(material.getMaterialName());
 
-                Cell materialIDCell = tmpRow.createCell(2);
-                materialIDCell.setCellStyle(row.getCell(2).getCellStyle());
+                Cell materialIDCell = tmpRow.createCell(3);
+                materialIDCell.setCellStyle(row.getCell(3).getCellStyle());
                 materialIDCell.setCellValue(material.getMaterialID());
 
-                Cell unitCell = tmpRow.createCell(3);
-                unitCell.setCellStyle(row.getCell(3).getCellStyle());
+                Cell unitCell = tmpRow.createCell(4);
+                unitCell.setCellStyle(row.getCell(4).getCellStyle());
                 unitCell.setCellValue(material.getUnit());
 
-                Cell quantityCell = tmpRow.createCell(4);
-                quantityCell.setCellStyle(row.getCell(4).getCellStyle());
+                Cell quantityCell = tmpRow.createCell(5);
+                quantityCell.setCellStyle(row.getCell(5).getCellStyle());
                 quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity());
 
-                Cell quantityCell2 = tmpRow.createCell(5);
-                quantityCell2.setCellStyle(row.getCell(5).getCellStyle());
+                Cell quantityCell2 = tmpRow.createCell(6);
+                quantityCell2.setCellStyle(row.getCell(6).getCellStyle());
                 quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity());
 
-                Cell priceCell = tmpRow.createCell(6);
-                priceCell.setCellStyle(row.getCell(6).getCellStyle());
+                Cell priceCell = tmpRow.createCell(7);
+                priceCell.setCellStyle(row.getCell(7).getCellStyle());
                 if (orderDetailList.get(i).getApproveAmount() != null) {
                     BigDecimal priceValue = orderDetailList.get(i).getApproveAmount().divide(new BigDecimal(orderDetailList.get(i).getApproveQuantity()));
                     priceCell.setCellValue(df.format(priceValue));
@@ -486,8 +497,8 @@ public class ReportController {
                     priceCell.setCellValue("");
                 }
 
-                Cell amountCell = tmpRow.createCell(7);
-                amountCell.setCellStyle(row.getCell(7).getCellStyle());
+                Cell amountCell = tmpRow.createCell(8);
+                amountCell.setCellStyle(row.getCell(8).getCellStyle());
                 if (orderDetailList.get(i).getApproveAmount() != null) {
                     amountCell.setCellValue(df.format(orderDetailList.get(i).getApproveAmount()));
                 } else {
@@ -498,9 +509,10 @@ public class ReportController {
             }
 
             rowNumber++;
+            rowNumber++;
 
-            Cell totalCell = sheet.getRow(rowNumber).getCell(7);
-            totalCell.setCellStyle(sheet.getRow(rowNumber).getCell(6).getCellStyle());
+            Cell totalCell = sheet.getRow(rowNumber).getCell(8);
+            totalCell.setCellStyle(sheet.getRow(rowNumber).getCell(8).getCellStyle());
             if (total.compareTo(new BigDecimal(0)) != 0) {
                 totalCell.setCellValue(df.format(total));
             } else {
@@ -510,7 +522,7 @@ public class ReportController {
             rowNumber++;
             rowNumber++;
 
-            Cell totalInWordCell = sheet.getRow(rowNumber).getCell(0);
+            Cell totalInWordCell = sheet.getRow(rowNumber).getCell(1);
             if (total.compareTo(new BigDecimal(0)) != 0) {
                 totalInWordCell.setCellValue(MessageFormat.format(totalInWordCell.getStringCellValue(), QLDSUtils.convertNumberToWord(total.longValue())));
             } else {
@@ -519,8 +531,13 @@ public class ReportController {
 
             rowNumber++;
 
-            Cell attachedDocumentCell = sheet.getRow(rowNumber).getCell(0);
+            Cell attachedDocumentCell = sheet.getRow(rowNumber).getCell(1);
             attachedDocumentCell.setCellValue(MessageFormat.format(attachedDocumentCell.getStringCellValue(), orderInfo.getAttachedDocument()));
+
+            rowNumber++;
+            rowNumber++;
+            Cell dateCell2 = sheet.getRow(rowNumber).getCell(1);
+            dateCell2.setCellValue(MessageFormat.format(dateCell2.getStringCellValue(), new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
             workbook.write(bos);
             workbook.close();
@@ -549,7 +566,7 @@ public class ReportController {
         }
         if ("O".equals(orderInfo.getOrderType())) {
             long orderNumber = orderInfoRepository.getOrderNumber(orderInfo.getOrderType(), orderInfo.getCompanyID(), Date.from(Instant.parse(year + "-" + String.format("%02d", month) + "-01T00:00:00.000Z")), orderInfo.getUpdatedTimestamp());
-            return String.format("%05d", orderNumber).concat("-PX-") + month + "-" + year;
+            return String.format("%05d", orderNumber + 1).concat("-PX-") + month + "-" + year;
         }
         return "";
     }
