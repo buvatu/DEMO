@@ -154,7 +154,7 @@ public class ReportController {
                 Date recipeDate = orderInfo.getRecipeDate();
                 LocalDate localRecipeDate = recipeDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 row9Cell.setCellValue(MessageFormat.format(row9Cell.getStringCellValue(), new Object[] {orderInfo.getRecipeNo(),
-                        localRecipeDate.getDayOfMonth(), localRecipeDate.getMonthValue(), localRecipeDate.getYear(),
+                        localRecipeDate.getDayOfMonth(), localRecipeDate.getMonthValue(), String.valueOf(localRecipeDate.getYear()),
                         supplierRepository.findBySupplierID(orderInfo.getSupplier()).get().getSupplierName()
                 }));
             } else {
@@ -162,14 +162,28 @@ public class ReportController {
             }
 
             // truong ban
-            Cell row11Cell = sheet.getRow(12).getCell(1);
-            row11Cell.setCellValue(MessageFormat.format(row11Cell.getStringCellValue(), testRecipe.getLeader(), testRecipe.getLeaderPosition(), testRecipe.getLeaderRepresentation()));
+            Cell row12NameCell = sheet.getRow(12).getCell(1);
+            row12NameCell.setCellValue(MessageFormat.format(row12NameCell.getStringCellValue(), testRecipe.getLeader()));
+            Cell row12PositionCell = sheet.getRow(12).getCell(3);
+            row12PositionCell.setCellValue(MessageFormat.format(row12PositionCell.getStringCellValue(), testRecipe.getLeaderPosition()));
+            Cell row12RepresentCell = sheet.getRow(12).getCell(5);
+            row12RepresentCell.setCellValue(MessageFormat.format(row12RepresentCell.getStringCellValue(), testRecipe.getLeaderRepresentation()));
+
             // Uy vien 1
-            Cell row12Cell = sheet.getRow(13).getCell(1);
-            row12Cell.setCellValue(MessageFormat.format(row12Cell.getStringCellValue(), testRecipe.getFirstCommissioner(), testRecipe.getFirstCommissionerPosition(), testRecipe.getFirstCommissionerRepresentation()));
+            Cell row13NameCell = sheet.getRow(13).getCell(1);
+            row13NameCell.setCellValue(MessageFormat.format(row13NameCell.getStringCellValue(), testRecipe.getFirstCommissioner()));
+            Cell row13PositionCell = sheet.getRow(13).getCell(3);
+            row13PositionCell.setCellValue(MessageFormat.format(row13PositionCell.getStringCellValue(), testRecipe.getFirstCommissionerPosition()));
+            Cell row13RepresentCell = sheet.getRow(13).getCell(5);
+            row13RepresentCell.setCellValue(MessageFormat.format(row13RepresentCell.getStringCellValue(), testRecipe.getFirstCommissionerRepresentation()));
+
             // Uy vien 2
-            Cell row13Cell = sheet.getRow(14).getCell(1);
-            row13Cell.setCellValue(MessageFormat.format(row13Cell.getStringCellValue(), testRecipe.getSecondCommissioner(), testRecipe.getSecondCommissionerPosition(), testRecipe.getSecondCommissionerRepresentation()));
+            Cell row14NameCell = sheet.getRow(14).getCell(1);
+            row14NameCell.setCellValue(MessageFormat.format(row14NameCell.getStringCellValue(), testRecipe.getSecondCommissioner()));
+            Cell row14PositionCell = sheet.getRow(14).getCell(3);
+            row14PositionCell.setCellValue(MessageFormat.format(row14PositionCell.getStringCellValue(), testRecipe.getSecondCommissionerPosition()));
+            Cell row14RepresentCell = sheet.getRow(14).getCell(5);
+            row14RepresentCell.setCellValue(MessageFormat.format(row14RepresentCell.getStringCellValue(), testRecipe.getSecondCommissionerRepresentation()));
 
             int rowNumber = 21;
             Row row = sheet.getRow(rowNumber);
@@ -206,15 +220,15 @@ public class ReportController {
 
                 Cell quantityCell = tmpRow.createCell(6);
                 quantityCell.setCellStyle(row.getCell(6).getCellStyle());
-                quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity());
+                quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity().toString());
 
                 Cell quantityCell2 = tmpRow.createCell(7);
                 quantityCell2.setCellStyle(row.getCell(7).getCellStyle());
-                quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity());
+                quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity().toString());
 
                 Cell normalCell1 = tmpRow.createCell(8);
                 normalCell1.setCellStyle(row.getCell(8).getCellStyle());
-                normalCell1.setCellValue(orderDetailList.get(i).getRequestQuantity() - orderDetailList.get(i).getApproveQuantity());
+                normalCell1.setCellValue(orderDetailList.get(i).getRequestQuantity().subtract(orderDetailList.get(i).getApproveQuantity()).toString());
 
                 Cell normalCell2 = tmpRow.createCell(9);
                 normalCell2.setCellStyle(row.getCell(9).getCellStyle());
@@ -336,15 +350,15 @@ public class ReportController {
 
                 Cell quantityCell = tmpRow.createCell(5);
                 quantityCell.setCellStyle(row.getCell(5).getCellStyle());
-                quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity());
+                quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity().toString());
 
                 Cell quantityCell2 = tmpRow.createCell(6);
                 quantityCell2.setCellStyle(row.getCell(6).getCellStyle());
-                quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity());
+                quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity().toString());
 
                 Cell priceCell = tmpRow.createCell(7);
                 priceCell.setCellStyle(row.getCell(7).getCellStyle());
-                BigDecimal priceValue = orderDetailList.get(i).getApproveAmount().divide(new BigDecimal(orderDetailList.get(i).getApproveQuantity()));
+                BigDecimal priceValue = orderDetailList.get(i).getApproveAmount().divide(orderDetailList.get(i).getApproveQuantity());
                 priceCell.setCellValue(df.format(priceValue));
 
                 Cell amountCell = tmpRow.createCell(8);
@@ -434,13 +448,17 @@ public class ReportController {
             Cell coCell = sheet.getRow(9).getCell(6);
             coCell.setCellValue(MessageFormat.format(coCell.getStringCellValue(), categoryRepository.findByCategoryID(orderInfo.getCo()).get().getCategoryName()));
 
-            // Ho ten nguoi nhan hang
-            Cell deliverCell = sheet.getRow(11).getCell(1);
-            deliverCell.setCellValue(MessageFormat.format(deliverCell.getStringCellValue(), orderInfo.getRepairGroup()));
+            // Repair Group
+            Cell repairGroupCell = sheet.getRow(11).getCell(1);
+            repairGroupCell.setCellValue(MessageFormat.format(repairGroupCell.getStringCellValue(), orderInfo.getRepairGroup()));
+
+            // Địa chỉ (bộ phận)
+            Cell deliverCell = sheet.getRow(11).getCell(4);
+            deliverCell.setCellValue(MessageFormat.format(deliverCell.getStringCellValue(), orderInfo.getDeliver()));
 
             // Ly do xuat kho
             Cell row10Cell = sheet.getRow(12).getCell(1);
-            row10Cell.setCellValue(MessageFormat.format(row10Cell.getStringCellValue(), orderInfo.getRequestNote().concat("-").concat(orderInfo.getConsumer()).concat(" - ").concat(orderInfo.getRepairLevel())));
+            row10Cell.setCellValue(MessageFormat.format(row10Cell.getStringCellValue(), orderInfo.getRequestNote().concat(" - ").concat(orderInfo.getConsumer()).concat(" - ").concat(orderInfo.getRepairLevel())));
 
             // stockNo
             Cell stockCell = sheet.getRow(13).getCell(1);
@@ -481,16 +499,16 @@ public class ReportController {
 
                 Cell quantityCell = tmpRow.createCell(5);
                 quantityCell.setCellStyle(row.getCell(5).getCellStyle());
-                quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity());
+                quantityCell.setCellValue(orderDetailList.get(i).getRequestQuantity().toString());
 
                 Cell quantityCell2 = tmpRow.createCell(6);
                 quantityCell2.setCellStyle(row.getCell(6).getCellStyle());
-                quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity());
+                quantityCell2.setCellValue(orderDetailList.get(i).getApproveQuantity().toString());
 
                 Cell priceCell = tmpRow.createCell(7);
                 priceCell.setCellStyle(row.getCell(7).getCellStyle());
                 if (orderDetailList.get(i).getApproveAmount() != null) {
-                    BigDecimal priceValue = orderDetailList.get(i).getApproveAmount().divide(new BigDecimal(orderDetailList.get(i).getApproveQuantity()));
+                    BigDecimal priceValue = orderDetailList.get(i).getApproveAmount().divide(orderDetailList.get(i).getApproveQuantity());
                     priceCell.setCellValue(df.format(priceValue));
                     total = total.add(orderDetailList.get(i).getApproveAmount());
                 } else {
@@ -722,7 +740,29 @@ public class ReportController {
             int year = today.getYear();
             dateCell.setCellValue(MessageFormat.format(dateValue, new Object[] {Integer.toString(day), Integer.toString(month), Integer.toString(year)}));
 
-            int rowNumber = 19;
+            // engine type
+            Cell engineTypeCell = sheet.getRow(9).getCell(1);
+            engineTypeCell.setCellValue(MessageFormat.format(engineTypeCell.getStringCellValue(), engine.getEngineType()));
+
+            // engine id
+            Cell engineIDCell = sheet.getRow(9).getCell(3);
+            engineIDCell.setCellValue(MessageFormat.format(engineIDCell.getStringCellValue(), engine.getEngineID()));
+
+            // repair level
+            Cell repairLevelCell = sheet.getRow(10).getCell(1);
+            repairLevelCell.setCellValue(MessageFormat.format(repairLevelCell.getStringCellValue(), engineAnalysisInfo.getRepairLevel()));
+
+            // repair date
+            Cell repairDateCell = sheet.getRow(10).getCell(3);
+            String repairDateString = "";
+            try {
+                repairDateString = new SimpleDateFormat("dd/MM/yyyy").format((Date) engineAnalysisInfo.getRepairDate());
+            } catch (Exception e) {
+                
+            }
+            repairDateCell.setCellValue(MessageFormat.format(repairDateCell.getStringCellValue(), repairDateString));
+
+            int rowNumber = 23;
             Row row = sheet.getRow(rowNumber);
             rowNumber++;
             List<ScrapClassifyDetail> scrapClassifyDetailList = scrapClassifyDetailRepository.findByEngineAnalysisID(engineAnalysisID);
@@ -733,7 +773,7 @@ public class ReportController {
 
                 Cell sttCell = tmpRow.createCell(1);
                 sttCell.setCellStyle(row.getCell(1).getCellStyle());
-                sttCell.setCellValue(rowNumber - 19);
+                sttCell.setCellValue(rowNumber - 23);
 
                 Material material = materialRepository.findByMaterialID(rowData.getMaterialID()).get();
 
@@ -916,7 +956,7 @@ public class ReportController {
                         record.put("quantity", 0);
                         record.put("amount", new BigDecimal(0));
                     }
-                    record.put("quantity", (Integer) record.get("quantity") + orderDetail.getApproveQuantity());
+                    record.put("quantity", orderDetail.getApproveQuantity().add((BigDecimal) record.get("quantity")));
                     record.put("amount", orderDetail.getApproveAmount().add((BigDecimal) record.get("amount")));
                     dataMap.put(materialID, record);
                 }
@@ -1104,7 +1144,7 @@ public class ReportController {
                         record.put("quantity", 0);
                         record.put("amount", new BigDecimal(0));
                     }
-                    record.put("quantity", (Integer) record.get("quantity") + orderDetail.getApproveQuantity());
+                    record.put("quantity", orderDetail.getApproveQuantity().add((BigDecimal) record.get("quantity")));
                     record.put("amount", (orderDetail.getApproveAmount() == null ? new BigDecimal(0) : orderDetail.getApproveAmount()).add((BigDecimal) record.get("amount")));
                     dataMap.put(key, record);
                 }
@@ -1469,21 +1509,21 @@ public class ReportController {
                 Optional<Stock> stockRecordOptional = stockList.stream().filter(e -> e.getMaterialID().equals(key)).findFirst();
 
                 BigDecimal stockAmount = stockRecordOptional.isPresent() ? stockRecordOptional.get().getAmount() : new BigDecimal(0);
-                Integer stockQuantity = stockRecordOptional.isPresent() ? stockRecordOptional.get().getQuantity() : 0;
+                BigDecimal stockQuantity = stockRecordOptional.isPresent() ? stockRecordOptional.get().getQuantity() : new BigDecimal(0);
 
-                Integer fromInQuantity = fromRecord.get("in_quantity") == null ? 0 : (Integer) fromRecord.get("in_quantity");
-                Integer fromOutQuantity = fromRecord.get("out_quantity") == null ? 0 : (Integer) fromRecord.get("out_quantity");
+                BigDecimal fromInQuantity = fromRecord.get("in_quantity") == null ? new BigDecimal(0) : (BigDecimal) fromRecord.get("in_quantity");
+                BigDecimal fromOutQuantity = fromRecord.get("out_quantity") == null ? new BigDecimal(0) : (BigDecimal) fromRecord.get("out_quantity");
                 BigDecimal fromInAmount = fromRecord.get("in_amount") == null ? new BigDecimal(0) : (BigDecimal) fromRecord.get("in_amount");
                 BigDecimal fromOutAmount = fromRecord.get("out_amount") == null ? new BigDecimal(0) : (BigDecimal) fromRecord.get("out_amount");
 
-                Integer toInQuantity = 0;
+                BigDecimal toInQuantity = new BigDecimal(0);
                 if (toRecord != null && toRecord.get("in_quantity") != null) {
-                    toInQuantity = (Integer) toRecord.get("in_quantity");
+                    toInQuantity = (BigDecimal) toRecord.get("in_quantity");
                 }
 
-                Integer toOutQuantity = 0;
+                BigDecimal toOutQuantity = new BigDecimal(0);
                 if (toRecord != null && toRecord.get("out_quantity") != null) {
-                    toOutQuantity = (Integer) toRecord.get("out_quantity");
+                    toOutQuantity = (BigDecimal) toRecord.get("out_quantity");
                 }
 
                 BigDecimal toInAmount = new BigDecimal(0);
@@ -1506,13 +1546,13 @@ public class ReportController {
                 record.put("materialID", fromRecord.get("materialID"));
                 record.put("materialName", material.getMaterialName());
                 record.put("unit", material.getUnit());
-                record.put("from_remain_quantity", stockQuantity + fromOutQuantity - fromInQuantity);
+                record.put("from_remain_quantity", stockQuantity.add(fromOutQuantity).subtract(fromInQuantity));
                 record.put("from_remain_amount", stockAmount.subtract(fromInAmount).add(fromOutAmount));
-                record.put("in_quantity", fromInQuantity - toInQuantity);
+                record.put("in_quantity", fromInQuantity.subtract(toInQuantity));
                 record.put("in_amount", fromInAmount.subtract(toInAmount));
-                record.put("out_quantity", fromOutQuantity - toOutQuantity);
+                record.put("out_quantity", fromOutQuantity.subtract(toOutQuantity));
                 record.put("out_amount", fromOutAmount.subtract(toOutAmount));
-                record.put("to_remain_quantity", stockQuantity + toOutQuantity - toInQuantity);
+                record.put("to_remain_quantity", stockQuantity.add(toOutQuantity).subtract(toInQuantity));
                 record.put("to_remain_amount", stockAmount.subtract(toInAmount).add(toOutAmount));
                 records.add(record);
             }
@@ -1630,17 +1670,17 @@ public class ReportController {
                     rowData = dataMap.get(materialID);
                 } else {
                     rowData.put("materialID", materialID);
-                    rowData.put("in_quantity", 0);
+                    rowData.put("in_quantity", new BigDecimal(0));
                     rowData.put("in_amount", new BigDecimal(0));
-                    rowData.put("out_quantity", 0);
+                    rowData.put("out_quantity", new BigDecimal(0));
                     rowData.put("out_amount", new BigDecimal(0));
                 }
                 if ("I".equals(completedOrderInfo.getOrderType())) {
-                    rowData.put("in_quantity", orderDetail.getApproveQuantity() + (Integer) rowData.get("in_quantity"));
-                    rowData.put("in_amount", ((BigDecimal) rowData.get("in_amount")).add(orderDetail.getApproveAmount()));
+                    rowData.put("in_quantity", orderDetail.getApproveQuantity().add((BigDecimal) rowData.get("in_quantity")));
+                    rowData.put("in_amount", orderDetail.getApproveAmount().add((BigDecimal) rowData.get("in_amount")));
                 } else {
-                    rowData.put("out_quantity", orderDetail.getApproveQuantity() + (Integer) rowData.get("out_quantity"));
-                    rowData.put("out_amount", ((BigDecimal) rowData.get("out_amount")).add(orderDetail.getApproveAmount() == null ?new BigDecimal(0) : orderDetail.getApproveAmount()));
+                    rowData.put("out_quantity", orderDetail.getApproveQuantity().add((BigDecimal) rowData.get("out_quantity")));
+                    rowData.put("out_amount", ((BigDecimal) rowData.get("out_amount")).add(orderDetail.getApproveAmount() == null ? new BigDecimal(0) : orderDetail.getApproveAmount()));
                 }
                 dataMap.put(materialID, rowData);
             }

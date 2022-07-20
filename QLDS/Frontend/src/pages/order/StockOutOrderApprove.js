@@ -180,13 +180,14 @@ class StockOutOrderApprove extends Component {
     let hasError = false;
 
     orderDetailList.forEach((e, index) => {
-      if (e.testQuantity === '') {
+      if (e.approveQuantity === '') {
         hasError = true;
         quantityErrorMessages[index] = 'Cần nhập vào số lượng';
       }
-      if ((e.testQuantity !== '' && !e.approveQuantity.toString().match(/^\d+$/)) || Number(e.approveQuantity) < 1) {
+      // eslint-disable-next-line no-restricted-globals
+      if ((e.approveQuantity !== '' && isNaN(e.approveQuantity)) || Number(e.approveQuantity) < 1) {
         hasError = true;
-        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
+        quantityErrorMessages[index] = 'Số lượng không hợp lệ';
       }
       if ((e.approveQuantity !== e.testQuantity || e.approveAmount !== e.testAmount) && orderInfo.approveNote.trim() === '') {
         hasError = true;
@@ -202,7 +203,8 @@ class StockOutOrderApprove extends Component {
         hasError = true;
         quantityErrorMessages[index] = 'Số lượng xuất vượt quá lượng tồn tối thiểu';
       }
-      if (e.approveAmount != null && !e.approveAmount.match(/^\d+$/)) {
+      // eslint-disable-next-line no-restricted-globals
+      if (e.approveAmount != null && isNaN(e.approveAmount)) {
         hasError = true;
         amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
       }
@@ -393,34 +395,6 @@ class StockOutOrderApprove extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="engineID-Dropdown"
-                titleText="Đầu máy tiêu thụ"
-                label=""
-                items={engineList}
-                selectedItem={
-                  engineList.find((e) => e.id === orderInfo.consumer) == null
-                    ? { id: 'other', label: 'Đối tượng tiêu thụ khác' }
-                    : engineList.find((e) => e.id === orderInfo.consumer)
-                }
-                disabled
-              />
-            </div>
-            <div className="bx--col-lg-4">
-              <ComboBox
-                id="otherConsumer-ComboBox"
-                titleText="Đối tượng chi phí khác"
-                placeholder=""
-                label=""
-                items={otherConsumerList}
-                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
-                onChange={(e) =>
-                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
-                }
-                disabled
-              />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Dropdown
                 id="repairLevel-Dropdown"
                 titleText="Cấp sửa chữa"
                 label=""
@@ -436,6 +410,37 @@ class StockOutOrderApprove extends Component {
                 label=""
                 items={repairGroupList}
                 selectedItem={orderInfo.repairGroup === '' ? null : repairGroupList.find((e) => e.id === orderInfo.repairGroup)}
+                disabled
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput id="deliver-TextInput" placeholder="" labelText="Địa chỉ (bộ phận)" value={orderInfo.deliver} disabled />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="engineID-Dropdown"
+                titleText="Đầu máy tiêu thụ"
+                label=""
+                items={engineList}
+                selectedItem={
+                  engineList.find((e) => e.id === orderInfo.consumer) == null
+                    ? { id: 'other', label: 'Khác' }
+                    : engineList.find((e) => e.id === orderInfo.consumer)
+                }
+                disabled
+              />
+            </div>
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
+                placeholder=""
+                label=""
+                items={otherConsumerList}
+                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                }
                 disabled
               />
             </div>

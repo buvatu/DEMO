@@ -192,9 +192,10 @@ class StockOutOrderTest extends Component {
         hasError = true;
         quantityErrorMessages[index] = 'Cần nhập vào số lượng';
       }
-      if ((e.testQuantity !== '' && !e.testQuantity.toString().match(/^\d+$/)) || Number(e.testQuantity) < 1) {
+      // eslint-disable-next-line no-restricted-globals
+      if ((e.testQuantity !== '' && isNaN(e.testQuantity)) || Number(e.testQuantity) < 1) {
         hasError = true;
-        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
+        quantityErrorMessages[index] = 'Số lượng không hợp lệ';
       }
       if (e.requestQuantity !== e.testQuantity && orderInfo.testNote.trim() === '') {
         hasError = true;
@@ -386,34 +387,6 @@ class StockOutOrderTest extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="engineID-Dropdown"
-                titleText="Đầu máy tiêu thụ"
-                label=""
-                items={engineList}
-                selectedItem={
-                  engineList.find((e) => e.id === orderInfo.consumer) == null
-                    ? { id: 'other', label: 'Đối tượng tiêu thụ khác' }
-                    : engineList.find((e) => e.id === orderInfo.consumer)
-                }
-                disabled
-              />
-            </div>
-            <div className="bx--col-lg-4">
-              <ComboBox
-                id="otherConsumer-ComboBox"
-                titleText="Đối tượng chi phí khác"
-                placeholder=""
-                label=""
-                items={otherConsumerList}
-                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
-                onChange={(e) =>
-                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
-                }
-                disabled
-              />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Dropdown
                 id="repairLevel-Dropdown"
                 titleText="Cấp sửa chữa"
                 label=""
@@ -429,6 +402,37 @@ class StockOutOrderTest extends Component {
                 label=""
                 items={repairGroupList}
                 selectedItem={orderInfo.repairGroup === '' ? null : repairGroupList.find((e) => e.id === orderInfo.repairGroup)}
+                disabled
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput id="deliver-TextInput" placeholder="" labelText="Địa chỉ (bộ phận)" value={orderInfo.deliver} disabled />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="engineID-Dropdown"
+                titleText="Đầu máy tiêu thụ"
+                label=""
+                items={engineList}
+                selectedItem={
+                  engineList.find((e) => e.id === orderInfo.consumer) == null
+                    ? { id: 'other', label: 'Khác' }
+                    : engineList.find((e) => e.id === orderInfo.consumer)
+                }
+                disabled
+              />
+            </div>
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
+                placeholder=""
+                label=""
+                items={otherConsumerList}
+                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                }
                 disabled
               />
             </div>

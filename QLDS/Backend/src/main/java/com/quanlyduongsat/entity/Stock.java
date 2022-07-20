@@ -35,7 +35,7 @@ public class Stock {
     @Column(name = "material_id")
     private String materialID;
 
-    private Integer quantity;
+    private BigDecimal quantity;
     private BigDecimal amount;
     private String status;
 

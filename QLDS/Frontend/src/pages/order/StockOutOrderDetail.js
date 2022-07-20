@@ -242,7 +242,7 @@ class StockOutOrderDetail extends Component {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'Phieu_nhap_kho.xlsx');
+        link.setAttribute('download', 'Phieu_xuat_kho.xlsx');
         document.body.appendChild(link);
         link.click();
       })
@@ -390,34 +390,6 @@ class StockOutOrderDetail extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="engineID-Dropdown"
-                titleText="Đầu máy tiêu thụ"
-                label=""
-                items={engineList}
-                selectedItem={
-                  engineList.find((e) => e.id === orderInfo.consumer) == null
-                    ? { id: 'other', label: 'Đối tượng tiêu thụ khác' }
-                    : engineList.find((e) => e.id === orderInfo.consumer)
-                }
-                disabled
-              />
-            </div>
-            <div className="bx--col-lg-4">
-              <ComboBox
-                id="otherConsumer-ComboBox"
-                titleText="Đối tượng chi phí khác"
-                placeholder=""
-                label=""
-                items={otherConsumerList}
-                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
-                onChange={(e) =>
-                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
-                }
-                disabled
-              />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Dropdown
                 id="repairLevel-Dropdown"
                 titleText="Cấp sửa chữa"
                 label=""
@@ -433,6 +405,37 @@ class StockOutOrderDetail extends Component {
                 label=""
                 items={repairGroupList}
                 selectedItem={orderInfo.repairGroup === '' ? null : repairGroupList.find((e) => e.id === orderInfo.repairGroup)}
+                disabled
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="engineID-Dropdown"
+                titleText="Đầu máy tiêu thụ"
+                label=""
+                items={engineList}
+                selectedItem={
+                  engineList.find((e) => e.id === orderInfo.consumer) == null
+                    ? { id: 'other', label: 'Đối tượng tiêu thụ khác' }
+                    : engineList.find((e) => e.id === orderInfo.consumer)
+                }
+                disabled
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput id="deliver-TextInput" placeholder="" labelText="Địa chỉ (bộ phận)" value={orderInfo.deliver} disabled />
+            </div>
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
+                placeholder=""
+                label=""
+                items={otherConsumerList}
+                selectedItem={otherConsumerList.find((e) => e.id === orderInfo.consumer)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, consumer: e.selectedItem == null ? '' : e.selectedItem.id } }))
+                }
                 disabled
               />
             </div>

@@ -137,12 +137,12 @@ public class OrderController {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Failed to commit data");
                 }
-                if (stockItem.getQuantity() < orderDetail.getApproveQuantity()) {
+                if (stockItem.getQuantity().compareTo(orderDetail.getApproveQuantity()) == -1 ) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Failed to commit data");
                 }
                 Material material = materialRepository.findByMaterialID(materialID).get();
-                if (material.getMinimumQuantity() != null && stockItem.getQuantity() - orderDetail.getApproveQuantity() < material.getMinimumQuantity()) {
+                if (material.getMinimumQuantity() != null && stockItem.getQuantity().subtract(orderDetail.getApproveQuantity()).intValue() < material.getMinimumQuantity()) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Failed to commit data");
                 }
@@ -150,7 +150,7 @@ public class OrderController {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Failed to commit data");
                 }
-                stockItem.setQuantity(stockItem.getQuantity() - orderDetail.getApproveQuantity());
+                stockItem.setQuantity(stockItem.getQuantity().subtract(orderDetail.getApproveQuantity()));
                 if (orderDetail.getApproveAmount() != null) {
                     stockItem.setAmount(stockItem.getAmount().subtract(orderDetail.getApproveAmount()));
                 }
@@ -163,7 +163,7 @@ public class OrderController {
                     stockItem = stockItemOptional.get();
                 }
                 if ("A".equals(stockItem.getStatus())) {
-                    stockItem.setQuantity(stockItem.getQuantity() + orderDetail.getApproveQuantity());
+                    stockItem.setQuantity(stockItem.getQuantity().add(orderDetail.getApproveQuantity()));
                     stockItem.setAmount(stockItem.getAmount().add(orderDetail.getApproveAmount()));
                 } else {
                     stockItem.setCompanyID(companyID);

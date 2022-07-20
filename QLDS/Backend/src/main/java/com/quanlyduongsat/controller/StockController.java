@@ -85,7 +85,7 @@ public class StockController {
         // Get all stock in order in this period time
         List<OrderInfo> stockInOrderInfoList = orderInfoRepository.getStockInOrderInfoList(companyID, fromTime, endTime);
         Map<String, BigDecimal> stockInAmountMap = new HashMap<String, BigDecimal>();
-        Map<String, Integer> stockInQuantityMap = new HashMap<String, Integer>();
+        Map<String, BigDecimal> stockInQuantityMap = new HashMap<String, BigDecimal>();
         for (OrderInfo stockInOrderInfo : stockInOrderInfoList) {
             List<OrderDetail> orderDetaiList = orderDetailRepository.findByOrderID(stockInOrderInfo.getId());
             for (OrderDetail orderDetail : orderDetaiList) {
@@ -94,10 +94,10 @@ public class StockController {
                     stockInAmountMap.put(materialID, new BigDecimal(0));
                 }
                 if (!stockInQuantityMap.containsKey(materialID)) {
-                    stockInQuantityMap.put(materialID, 0);
+                    stockInQuantityMap.put(materialID, new BigDecimal(0));
                 }
                 stockInAmountMap.put(materialID, stockInAmountMap.get(materialID).add(orderDetail.getApproveAmount()));
-                stockInQuantityMap.put(materialID, stockInQuantityMap.get(materialID) + (orderDetail.getApproveQuantity() == null ? 0 : orderDetail.getApproveQuantity()));
+                stockInQuantityMap.put(materialID, stockInQuantityMap.get(materialID).add(orderDetail.getApproveQuantity() == null ? new BigDecimal(0) : orderDetail.getApproveQuantity()));
             }
         }
 
@@ -105,11 +105,11 @@ public class StockController {
         for (Map.Entry<String, BigDecimal> entry : stockInAmountMap.entrySet()) {
             String materialID = entry.getKey();
             BigDecimal totalAmount = entry.getValue();
-            Integer totalQuantity = stockInQuantityMap.get(materialID);
-            if (totalQuantity == null || totalQuantity == 0) {
+            BigDecimal totalQuantity = stockInQuantityMap.get(materialID);
+            if (totalQuantity == null || totalQuantity.compareTo(new BigDecimal(0)) == 0) {
                 stockInPriceMap.put(materialID, new BigDecimal(0));
             } else {
-                stockInPriceMap.put(materialID, totalAmount.divide(new BigDecimal(totalQuantity)));
+                stockInPriceMap.put(materialID, totalAmount.divide(totalQuantity));
             }
         }
 
@@ -194,7 +194,7 @@ public class StockController {
                     continue;
                 }
                 Price price = priceList.stream().filter(e -> e.getMaterialID().equals(materialID)).findFirst().get();
-                BigDecimal approveAmount = new BigDecimal(orderDetail.getApproveQuantity()).multiply(price.getPrice());
+                BigDecimal approveAmount = orderDetail.getApproveQuantity().multiply(price.getPrice());
                 orderDetail.setApproveAmount(approveAmount);
                 Optional<Stock> stockOptional = stockRepository.findByCompanyIDAndMaterialID(companyID, materialID);
                 if (!stockOptional.isPresent()) {

@@ -64,6 +64,7 @@ class StockOutOrder extends Component {
         stockName: '',
         address: '',
         category: '',
+        deliver: '',
 
         companyID: auth.companyID,
       },
@@ -141,7 +142,7 @@ class StockOutOrder extends Component {
           ...getEngineListResult.data.map((e) => {
             return { id: e.engineID, label: e.engineID };
           }),
-          { id: 'other', label: 'Đối tượng tiêu thụ khác' },
+          { id: 'other', label: 'Khác' },
         ],
       });
     } catch {
@@ -207,9 +208,10 @@ class StockOutOrder extends Component {
         hasError = true;
         quantityErrorMessages[index] = 'Cần nhập vào số lượng';
       }
-      if ((e.requestQuantity !== '' && !e.requestQuantity.match(/^\d+$/)) || Number(e.requestQuantity) < 1) {
+      // eslint-disable-next-line no-restricted-globals
+      if ((e.requestQuantity !== '' && isNaN(e.requestQuantity)) || Number(e.requestQuantity) < 1) {
         hasError = true;
-        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
+        quantityErrorMessages[index] = 'Số lượng không hợp lệ';
       }
       const material = materialList.find((item) => item.materialID === e.materialID);
       if (Number(e.requestQuantity) > material.stockQuantity) {
@@ -220,7 +222,8 @@ class StockOutOrder extends Component {
         hasError = true;
         quantityErrorMessages[index] = 'Số lượng xuất vượt quá lượng tồn tối thiểu';
       }
-      if (e.requestAmount !== '' && !e.requestAmount.match(/^\d+$/)) {
+      // eslint-disable-next-line no-restricted-globals
+      if (e.requestAmount !== '' && isNaN(e.requestAmount)) {
         hasError = true;
         amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
       }
@@ -495,40 +498,6 @@ class StockOutOrder extends Component {
           <div className="bx--row">
             <div className="bx--col-lg-2 bx--col-md-2">
               <Dropdown
-                id="engineID-Dropdown"
-                titleText="Đầu máy tiêu thụ"
-                label=""
-                items={engineList}
-                selectedItem={engineID === '' ? null : engineList.find((e) => e.id === engineID)}
-                onChange={(e) =>
-                  this.setState((prevState) => ({
-                    orderInfo: { ...prevState.orderInfo, repairLevel: e.selectedItem.id === 'other' ? '' : orderInfo.repairLevel },
-                    engineID: e.selectedItem.id,
-                    engineIDErrorMessage: '',
-                  }))
-                }
-                invalid={engineIDErrorMessage !== ''}
-                invalidText={engineIDErrorMessage}
-              />
-            </div>
-            <div className="bx--col-lg-4">
-              <ComboBox
-                id="otherConsumer-ComboBox"
-                titleText="Đối tượng chi phí khác"
-                placeholder=""
-                label=""
-                items={otherConsumerList}
-                selectedItem={otherConsumer === '' ? null : otherConsumerList.find((e) => e.id === otherConsumer)}
-                onChange={(e) => this.setState({ otherConsumer: e.selectedItem == null ? '' : e.selectedItem.id })}
-                shouldFilterItem={({ item, inputValue }) => {
-                  if (!inputValue) return true;
-                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
-                }}
-                disabled={engineID !== 'other'}
-              />
-            </div>
-            <div className="bx--col-lg-2 bx--col-md-2">
-              <Dropdown
                 id="repairLevel-Dropdown"
                 titleText="Cấp sửa chữa"
                 label=""
@@ -554,6 +523,49 @@ class StockOutOrder extends Component {
                 }
                 invalid={repairGroupErrorMessage !== ''}
                 invalidText={repairGroupErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <TextInput
+                id="deliver-TextInput"
+                placeholder=""
+                labelText="Địa chỉ (bộ phận)"
+                value={orderInfo.deliver}
+                onChange={(e) => this.setState((prevState) => ({ orderInfo: { ...prevState.orderInfo, deliver: e.target.value } }))}
+              />
+            </div>
+            <div className="bx--col-lg-2 bx--col-md-2">
+              <Dropdown
+                id="engineID-Dropdown"
+                titleText="Đầu máy"
+                label=""
+                items={engineList}
+                selectedItem={engineID === '' ? null : engineList.find((e) => e.id === engineID)}
+                onChange={(e) =>
+                  this.setState((prevState) => ({
+                    orderInfo: { ...prevState.orderInfo, repairLevel: e.selectedItem.id === 'other' ? '' : orderInfo.repairLevel },
+                    engineID: e.selectedItem.id,
+                    engineIDErrorMessage: '',
+                  }))
+                }
+                invalid={engineIDErrorMessage !== ''}
+                invalidText={engineIDErrorMessage}
+              />
+            </div>
+            <div className="bx--col-lg-3 bx--col-md-3">
+              <ComboBox
+                id="otherConsumer-ComboBox"
+                titleText="Đối tượng chi phí khác"
+                placeholder=""
+                label=""
+                items={otherConsumerList}
+                selectedItem={otherConsumer === '' ? null : otherConsumerList.find((e) => e.id === otherConsumer)}
+                onChange={(e) => this.setState({ otherConsumer: e.selectedItem == null ? '' : e.selectedItem.id })}
+                shouldFilterItem={({ item, inputValue }) => {
+                  if (!inputValue) return true;
+                  return item.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
+                disabled={engineID !== 'other'}
               />
             </div>
           </div>

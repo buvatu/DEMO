@@ -35,11 +35,11 @@ public class OrderDetail {
     private String materialID;
 
     @Column(name = "request_quantity")
-    private Integer requestQuantity;
+    private BigDecimal requestQuantity;
     @Column(name = "test_quantity")
-    private Integer testQuantity;
+    private BigDecimal testQuantity;
     @Column(name = "approve_quantity")
-    private Integer approveQuantity;
+    private BigDecimal approveQuantity;
 
     @Column(name = "request_amount")
     private BigDecimal requestAmount;

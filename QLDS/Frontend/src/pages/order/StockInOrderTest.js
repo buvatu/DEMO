@@ -185,15 +185,17 @@ class StockInOrderTest extends Component {
         hasError = true;
         quantityErrorMessages[index] = 'Cần nhập vào số lượng';
       }
-      if ((e.testQuantity !== '' && !e.testQuantity.toString().match(/^\d+$/)) || Number(e.testQuantity) < 1) {
+      // eslint-disable-next-line no-restricted-globals
+      if ((e.testQuantity !== '' && isNaN(e.testQuantity)) || Number(e.testQuantity) < 1) {
         hasError = true;
-        quantityErrorMessages[index] = 'Số lượng cần phải là số nguyên dương';
+        quantityErrorMessages[index] = 'Số lượng không hợp lệ';
       }
       if (e.testAmount === '') {
         hasError = true;
         amountErrorMessages[index] = 'Cần nhập vào thành tiền';
       }
-      if ((e.testAmount !== '' && !e.testAmount.toString().match(/^\d+$/)) || Number(e.testAmount) < 1) {
+      // eslint-disable-next-line no-restricted-globals
+      if ((e.testAmount !== '' && isNaN(e.testAmount)) || Number(e.testAmount) < 1) {
         hasError = true;
         amountErrorMessages[index] = 'Thành tiền không đúng định dạng';
       }
